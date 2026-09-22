@@ -1,57 +1,79 @@
 # Kathy's Hub
 
-A responsive cafe member interface with a cream, red, and indigo theme, built with HTML, CSS, JavaScript, Express, and SQLite (sql.js).
+A responsive cafe member experience built with HTML, CSS, JavaScript, Express, and Supabase Auth.
+
+**Live website:** https://kathy-s.onrender.com
+
+## Features
+
+- Supabase email registration, login, email confirmation, and password recovery
+- Persistent browser sessions with protected account display
+- Responsive member dashboard with filterable sample menu cards
+- Render-ready Express server with security headers and a health endpoint
+- Rewards, reservations, and online ordering placeholders
 
 ## Run locally
 
-Install a supported Node.js LTS release, then run:
+Requirements: Node.js 22 and a Supabase project.
+
+1. Copy `.env.example` to `.env`.
+2. Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` from Supabase Project Settings.
+3. Install dependencies and start the server:
 
 ```sh
 npm ci
 npm start
 ```
 
-Open http://localhost:3000. The server creates a local `kathyshub.sqlite` file on first start. The existing demo account is `admin@site.dev` with password `1234`.
+Open http://localhost:3000. Do not open `public/index.html` directly because the browser must load the app through Express.
 
-## Features
+## Supabase setup
 
-- Registration and login connected to the Express API
-- Personalized member dashboard and account display
-- Filterable illustrative menu cards
-- Responsive desktop and phone layouts
-- Rewards and reservation placeholders (coming soon)
+In Supabase Authentication URL Configuration, set:
 
-## Structure
+- Site URL: your local or Render URL
+- Redirect URL: the same URL with a trailing `/`
+
+The application only uses the publishable key in the browser. Never put a Supabase `service_role` key in `.env.example`, the frontend, or GitHub.
+
+To store registration details in Supabase Table Editor, open the SQL Editor, run [`supabase/schema.sql`](supabase/schema.sql), and then register a new account. This creates `public.profiles` and automatically copies each user's name, birthday, and gender from Auth metadata into that table. The SQL also backfills existing Auth users.
+
+## Deploy to Render
+
+This repository includes `render.yaml` for a Render Blueprint deployment.
+
+1. Push the repository to GitHub.
+2. In Render, choose **New > Blueprint** and select the repository.
+3. Enter values for `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` when prompted.
+4. Add the resulting Render URL to Supabase Authentication URL Configuration.
+
+The equivalent manual settings are:
 
 ```text
-public/
-  index.html
-  styles.css
-  app.js
-  js/
-    api.js
-    elements.js
-    tabs.js
-    login.js
-    register.js
-    password-reset.js
-    dashboard.js
-    menu.js
-    navigation.js
-  assets/logo.jpg
-server.js
-package.json
-package-lock.json
+Build command: npm ci
+Start command: npm start
+Health check path: /health
 ```
 
-## Demo limitations
+Render supplies the `PORT` value. `NODE_ENV=production` enables production security headers.
 
-Frontend logic is organized into ES modules. `app.js` only initializes each feature; each feature registers named event callbacks. `api(path, body, callback)` calls `callback(null, data)` on success or `callback(error, null)` on failure. Open the app through the Node server, not by double-clicking the HTML file, so the browser can load the modules.
+## Project structure
 
-This is a development demo, not ready for public deployment. The existing password-reset endpoint does not verify account ownership; login does not establish a persistent server session; demo credentials and missing rate limits must be addressed before use with real accounts. Menu items are illustrative, and ordering, reservations, and rewards are not connected to backend services.
+```text
+public/          Browser UI and feature modules
+server/app.js    Express app, security headers, and account verification
+server.js        Production entrypoint
+test/            Node test suite
+supabase/schema.sql  Profiles table and Auth trigger
+render.yaml      Render deployment configuration
+```
 
-Database files and node_modules are intentionally excluded. Keep customer data and secrets out of Git. Configure persistent storage, HTTPS, backups, and production authentication before deployment. GitHub Pages alone cannot run this Express backend.
+## Development notes
 
-## Verification
+Menu items are illustrative. Ordering, reservations, and rewards are not connected to backend services yet. Supabase controls authentication and email delivery; configure its email provider and production policies before inviting real customers.
 
-The dashboard was browser-tested on desktop and at a 390px phone width, using simulated API responses for successful/failed login, menu filtering, and logout. Those checks do not validate production backend security.
+Run the tests with:
+
+```sh
+npm test
+```

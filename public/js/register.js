@@ -38,6 +38,12 @@ function handleRegister(event) {
     return;
   }
   registerSubmit.disabled = true;
+  if (rPass.value.length < 12) {
+    registerSubmit.disabled = false;
+    registerMsg.textContent = 'Please use a password with at least 12 characters.';
+    registerMsg.className = 'msg bad';
+    return;
+  }
   registerMsg.textContent = 'creating your account on the server…';
   registerMsg.className = 'msg pending';
   api('/api/register', {
@@ -57,7 +63,7 @@ function handleRegisterResult(error, data) {
     registerMsg.className = 'msg bad';
     return;
   }
-  registerMsg.textContent = 'welcome to the Hub! redirecting to sign in…';
+  registerMsg.textContent = 'Check your email to confirm your account before signing in.';
   registerMsg.className = 'msg ok';
   clearTimeout(redirectTimer);
   redirectTimer = setTimeout(function returnToLogin() {
@@ -67,7 +73,7 @@ function handleRegisterResult(error, data) {
     lEmail.value = data.email;
     lPass.value = '';
     lPass.focus();
-    loginMsg.textContent = 'account created — please sign in.';
+    loginMsg.textContent = 'Check your email for a confirmation link before signing in. If you already have an account, sign in or request a password reset.';
     loginMsg.className = 'msg ok';
   }, 900);
 }
@@ -94,4 +100,3 @@ function cancelRegistration() {
     registerMsg.className = 'msg';
   }, 1200);
 }
-

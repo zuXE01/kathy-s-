@@ -27,7 +27,7 @@
     <div class="form-view active" id="loginView">
       <div>
         <p class="lead">Welcome back</p>
-        <p class="sub">Sign in to order ahead, book a table, and collect your Hub Rewards points.</p>
+        <p class="sub">Sign in to explore the menu and your member account. Ordering, bookings, and rewards are coming soon.</p>
       </div>
 
       <form id="loginForm" novalidate>
@@ -40,37 +40,42 @@
           <input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
         </div>
         <div class="row-between">
-          <a id="forgotLink">Forgot password?</a>
-          <a id="toRegister">New here? Join the Hub</a>
+          <a id="forgotLink" href="#resetPanel">Forgot password?</a>
+          <a id="toRegister" href="#registerView">New here? Join the Hub</a>
         </div>
         <button class="submit" type="submit" id="loginSubmit">Sign in</button>
-        <div class="msg" id="loginMsg"></div>
+        <div class="msg" id="loginMsg" role="status" aria-live="polite"></div>
       </form>
 
       <div class="subpanel" id="resetPanel">
         <div class="cap">Reset password</div>
+        <p id="resetHelp" class="sub">We will email a secure recovery link.</p>
         <div class="field">
           <label for="resetEmail">Account email</label>
           <input id="resetEmail" type="text" placeholder="you@example.com">
         </div>
-        <div class="field">
+        <div class="field" hidden>
           <label for="newPass">New password</label>
-          <input id="newPass" type="password" placeholder="new password">
+          <input id="newPass" type="password" autocomplete="new-password" minlength="12" placeholder="at least 12 characters">
+        </div>
+        <div class="field" id="resetConfirmField" hidden>
+          <label for="resetConfirm">Confirm new password</label>
+          <input id="resetConfirm" type="password" autocomplete="new-password" minlength="12">
         </div>
         <div class="btn-row">
           <button class="ghost" id="cancelReset" type="button">Cancel</button>
-          <button class="submit" id="confirmReset" type="button">Reset password</button>
+          <button class="submit" id="confirmReset" type="button">Send recovery email</button>
         </div>
       </div>
 
-      <div class="hint">Backed by a real Node.js server and a SQLite database on disk (<code>kathyshub.db</code>) — <b>register below</b>, then sign in with the same email &amp; password any time. Demo account: <b>admin@site.dev</b> / <b>1234</b>.</div>
+      <div class="hint">Your account is protected by Supabase authentication. Confirm your email after joining. Accounts from the old local demo must register again.</div>
     </div>
 
     <!-- REGISTER FORM -->
     <div class="form-view" id="registerView">
       <div>
         <p class="lead">Join the Hub</p>
-        <p class="sub">Create an account to start earning Hub Rewards on every visit.</p>
+        <p class="sub">Create your member account. Hub Rewards are coming soon.</p>
       </div>
 
       <form id="registerForm" novalidate>
@@ -100,14 +105,14 @@
         </div>
         <div class="field">
           <label for="rPass">Password</label>
-          <input id="rPass" type="password" placeholder="••••••••">
+          <input id="rPass" type="password" autocomplete="new-password" minlength="12" placeholder="at least 12 characters">
         </div>
         <div class="field">
           <label for="rConfirm">Confirm password</label>
           <input id="rConfirm" type="password" placeholder="••••••••">
         </div>
         <button class="submit" type="submit" id="registerSubmit">Create account</button>
-        <div class="msg" id="registerMsg"></div>
+        <div class="msg" id="registerMsg" role="status" aria-live="polite"></div>
       </form>
 
       <div class="subpanel" id="continuePanel">
@@ -118,7 +123,7 @@
         </div>
       </div>
 
-      <div class="hint">On submit, this calls <code>POST /api/register</code> on the Node server, which hashes your password with bcrypt and writes a new row into the <code>users</code> table.</div>
+      <div class="hint">Use a unique password with at least 12 characters. We will send an email confirmation before you can sign in.</div>
     </div>
 
   </div>
@@ -140,6 +145,7 @@
     </nav>
     <div class="sidebar-note"><span class="tiny-label">MADE FOR SLOW MOMENTS</span><p>A good cup.<br>A familiar place.<br>A little time for you.</p><span class="note-flower" aria-hidden="true">✳</span></div>
     <button class="hub-signout" id="signOutBtn" type="button">Sign out <span aria-hidden="true">↗</span></button>
+    <p id="signOutMessage" role="status" aria-live="polite"></p>
   </aside>
   <main class="hub-main" id="overview">
     <header class="hub-topbar"><span class="breadcrumb">Your Hub <span>/</span> Overview</span><div class="member-chip"><span class="avatar" id="memberInitial" aria-hidden="true">K</span><span id="memberName">Member</span></div></header>
@@ -170,6 +176,7 @@
     </div>
   </main>
 </div>
+<script src="/vendor/supabase.js"></script>
 <script type="module" src="app.js"></script>
 
 </body>

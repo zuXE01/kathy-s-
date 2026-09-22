@@ -1,5 +1,6 @@
 import { tabsEl, loginView, registerView, authCard, signedInView, lPass, lEmail, statusTag, resetPanel } from './elements.js';
 import { showTab } from './tabs.js';
+import { authAction } from './auth-client.js';
 export function goSignedIn(email, name){
     tabsEl.style.display = 'none';
     loginView.classList.remove('active');
@@ -19,7 +20,7 @@ export function goSignedIn(email, name){
     window.scrollTo(0, 0);
     document.getElementById('signedInName').focus({ preventScroll: true });
   }
-  function handleSignOut(){
+  export function goSignedOut(){
     tabsEl.style.display = 'flex';
     signedInView.hidden = true;
     authCard.hidden = false;
@@ -40,3 +41,17 @@ export function initDashboard() {
   document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
 }
 
+function handleSignOut() {
+  const button = document.getElementById('signOutBtn');
+  button.disabled = true;
+  authAction(client => client.auth.signOut(), function signedOut(error) {
+    button.disabled = false;
+    if (error) {
+      document.getElementById('signOutMessage').textContent = 'Sign-out failed. Check your connection and try again.';
+      return;
+    }
+    document.getElementById('signOutMessage').textContent = '';
+    sessionStorage.removeItem('hub-recovery');
+    goSignedOut();
+  });
+}

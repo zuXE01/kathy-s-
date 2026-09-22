@@ -1,14 +1,16 @@
 {
   "name": "kathys-hub-auth",
   "version": "1.0.0",
-  "description": "Kathy's Hub login & registration backed by a real Node.js server and a SQLite database (via sql.js, no native compiler required)",
+  "description": "Kathy's Hub with Supabase authentication and cloud account storage",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node --env-file-if-exists=.env server.js",
+    "test": "node --test test/*.test.cjs"
   },
+  "engines": { "node": "22.x" },
   "dependencies": {
-    "express": "^4.19.2",
-    "sql.js": "^1.10.3",
-    "bcryptjs": "^2.4.3"
+    "express": "5.2.1",
+    "helmet": "8.3.0",
+    "@supabase/supabase-js": "2.116.0"
   }
 }

@@ -6,6 +6,7 @@ import { initPasswordReset } from './js/password-reset.js';
 import { initDashboard } from './js/dashboard.js';
 import { initMenu } from './js/menu.js';
 import { initNavigation } from './js/navigation.js';
+import { initSession } from './js/session.js';
 
 initTabs();
 initLogin();
@@ -14,3 +15,4 @@ initPasswordReset();
 initDashboard();
 initMenu();
 initNavigation();
+initSession();
