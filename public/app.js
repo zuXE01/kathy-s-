@@ -1,0 +1,16 @@
+// Entry point: feature modules own their logic and named event callbacks.
+import { initTabs } from './js/tabs.js';
+import { initLogin } from './js/login.js';
+import { initRegister } from './js/register.js';
+import { initPasswordReset } from './js/password-reset.js';
+import { initDashboard } from './js/dashboard.js';
+import { initMenu } from './js/menu.js';
+import { initNavigation } from './js/navigation.js';
+
+initTabs();
+initLogin();
+initRegister();
+initPasswordReset();
+initDashboard();
+initMenu();
+initNavigation();

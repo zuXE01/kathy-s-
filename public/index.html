@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kathy's Hub — Sign in</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="card" id="authCard">
+  <div class="card-header">
+    <div class="mark"><img src="/assets/logo.jpg" alt="Kathy's Hub logo"></div>
+    <div class="word">Kathy's Hub</div>
+    <div class="tagline">Cafe &amp; Restaurant</div>
+    <span class="status-pill" id="statusTag">not signed in</span>
+
+    <div class="tabs">
+      <button id="tabLoginBtn" class="active">Sign in</button>
+      <button id="tabRegisterBtn">Join the Hub</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <!-- LOGIN FORM -->
+    <div class="form-view active" id="loginView">
+      <div>
+        <p class="lead">Welcome back</p>
+        <p class="sub">Sign in to order ahead, book a table, and collect your Hub Rewards points.</p>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="lEmail">Email</label>
+          <input id="lEmail" type="text" autocomplete="username" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="lPass">Password</label>
+          <input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <div class="row-between">
+          <a id="forgotLink">Forgot password?</a>
+          <a id="toRegister">New here? Join the Hub</a>
+        </div>
+        <button class="submit" type="submit" id="loginSubmit">Sign in</button>
+        <div class="msg" id="loginMsg"></div>
+      </form>
+
+      <div class="subpanel" id="resetPanel">
+        <div class="cap">Reset password</div>
+        <div class="field">
+          <label for="resetEmail">Account email</label>
+          <input id="resetEmail" type="text" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="newPass">New password</label>
+          <input id="newPass" type="password" placeholder="new password">
+        </div>
+        <div class="btn-row">
+          <button class="ghost" id="cancelReset" type="button">Cancel</button>
+          <button class="submit" id="confirmReset" type="button">Reset password</button>
+        </div>
+      </div>
+
+      <div class="hint">Backed by a real Node.js server and a SQLite database on disk (<code>kathyshub.db</code>) — <b>register below</b>, then sign in with the same email &amp; password any time. Demo account: <b>admin@site.dev</b> / <b>1234</b>.</div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="form-view" id="registerView">
+      <div>
+        <p class="lead">Join the Hub</p>
+        <p class="sub">Create an account to start earning Hub Rewards on every visit.</p>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <div class="field">
+          <label for="rName">Full name</label>
+          <input id="rName" type="text" placeholder="Jordan Blake">
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label for="rDob">Birthday</label>
+            <input id="rDob" type="date">
+          </div>
+          <div class="field">
+            <label for="rGender">Gender</label>
+            <select id="rGender">
+              <option value="">select…</option>
+              <option>Female</option>
+              <option>Male</option>
+              <option>Other</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="rEmail">Email</label>
+          <input id="rEmail" type="text" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="rPass">Password</label>
+          <input id="rPass" type="password" placeholder="••••••••">
+        </div>
+        <div class="field">
+          <label for="rConfirm">Confirm password</label>
+          <input id="rConfirm" type="password" placeholder="••••••••">
+        </div>
+        <button class="submit" type="submit" id="registerSubmit">Create account</button>
+        <div class="msg" id="registerMsg"></div>
+      </form>
+
+      <div class="subpanel" id="continuePanel">
+        <div class="cap">Continue registration?</div>
+        <div class="btn-row">
+          <button class="ghost" id="noContinue" type="button">No, exit</button>
+          <button class="submit" id="yesContinue" type="button">Yes, re-enter password</button>
+        </div>
+      </div>
+
+      <div class="hint">On submit, this calls <code>POST /api/register</code> on the Node server, which hashes your password with bcrypt and writes a new row into the <code>users</code> table.</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="hub" id="signedInView" hidden>
+  <aside class="hub-sidebar">
+    <a class="hub-brand" href="#overview" aria-label="Kathy's Hub home">
+      <span class="brand-monogram" aria-hidden="true">K.</span>
+      <span><span class="word">Kathy's Hub</span><span class="tagline">Cafe &amp; Restaurant</span></span>
+    </a>
+    <p class="nav-caption">YOUR LITTLE CORNER</p>
+    <nav class="hub-nav" aria-label="Dashboard">
+      <a href="#overview" class="selected" aria-current="page"><span aria-hidden="true">⌂</span> Overview</a>
+      <a href="#menu"><span aria-hidden="true">☕</span> Explore the menu</a>
+      <a href="#rewards"><span aria-hidden="true">☆</span> Hub Rewards</a>
+      <a href="#reservations"><span aria-hidden="true">▦</span> Reservations</a>
+      <a href="#account"><span aria-hidden="true">○</span> My account</a>
+    </nav>
+    <div class="sidebar-note"><span class="tiny-label">MADE FOR SLOW MOMENTS</span><p>A good cup.<br>A familiar place.<br>A little time for you.</p><span class="note-flower" aria-hidden="true">✳</span></div>
+    <button class="hub-signout" id="signOutBtn" type="button">Sign out <span aria-hidden="true">↗</span></button>
+  </aside>
+  <main class="hub-main" id="overview">
+    <header class="hub-topbar"><span class="breadcrumb">Your Hub <span>/</span> Overview</span><div class="member-chip"><span class="avatar" id="memberInitial" aria-hidden="true">K</span><span id="memberName">Member</span></div></header>
+    <div class="dashboard-content">
+      <div class="welcome-row"><div><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1 id="signedInName" tabindex="-1">Welcome back.</h1><p class="intro-copy">Something delicious. Somewhere to unwind. All right here.</p></div><span class="small-seal">GOOD FOOD<br><b>good company</b></span></div>
+      <section class="hero-panel" aria-labelledby="heroTitle">
+        <div class="hero-copy"><span class="hero-kicker">THE EVERYDAY ESCAPE</span><h2 id="heroTitle">Your next favorite<br>moment starts here.</h2><p>Take a break, find a new favorite, and settle into your kind of day.</p><a class="hub-button" href="#menu">Explore the menu <span aria-hidden="true">↗</span></a><span class="hero-footnote">A little inspiration for your next visit.</span></div>
+        <div class="coffee-art" aria-hidden="true"><div class="art-orbit"></div><span class="art-spark spark-one">✳</span><span class="art-spark spark-two">✧</span><div class="saucer"><div class="cup-handle"></div><div class="coffee-cup"><div class="coffee-surface"><span>♡</span></div></div></div><span class="art-caption">brewed with love</span></div>
+      </section>
+      <div class="dashboard-grid">
+        <section class="menu-section" id="menu" aria-labelledby="menuTitle">
+          <div class="section-heading"><div><p class="eyebrow">FIND YOUR NEXT FAVORITE</p><h2 id="menuTitle">A taste of the Hub</h2></div><span class="preview-tag">Sample menu</span></div>
+          <p class="section-description">A preview of the experience. Items are illustrative; online ordering is coming soon.</p>
+          <div class="menu-filters" role="group" aria-label="Filter sample menu"><button type="button" class="active" data-filter="all" aria-pressed="true">All favorites</button><button type="button" data-filter="coffee" aria-pressed="false">Coffee</button><button type="button" data-filter="bites" aria-pressed="false">Bites</button><button type="button" data-filter="sweet" aria-pressed="false">Something sweet</button></div>
+          <div class="menu-grid">
+            <article class="menu-card" data-category="coffee"><div class="menu-illustration latte-art" aria-hidden="true"><span>☕</span><i>01 / SIP</i></div><div class="menu-card-copy"><span class="menu-category">COFFEE</span><h3>Signature latte</h3><p>Smooth espresso, a soft swirl of milk.</p></div></article>
+            <article class="menu-card" data-category="bites"><div class="menu-illustration toast-art" aria-hidden="true"><span>🥪</span><i>02 / SAVOR</i></div><div class="menu-card-copy"><span class="menu-category">SAVORY BITES</span><h3>Toasted goodness</h3><p>A cozy little bite for your coffee break.</p></div></article>
+            <article class="menu-card" data-category="sweet"><div class="menu-illustration cake-art" aria-hidden="true"><span>🍰</span><i>03 / INDULGE</i></div><div class="menu-card-copy"><span class="menu-category">SWEET TREATS</span><h3>A slice of happy</h3><p>Because there's always room for dessert.</p></div></article>
+          </div><p class="sr-only" id="menuResult" role="status" aria-live="polite"></p>
+          <section class="reservation-panel" id="reservations" aria-labelledby="reservationTitle"><div class="reservation-icon" aria-hidden="true">▦</div><div><p class="eyebrow">SAVE A LITTLE TIME TOGETHER</p><h2 id="reservationTitle">Good company deserves a table.</h2><p>Online reservations are coming soon. No bookings can be made here yet.</p></div><span class="coming-soon">Coming soon</span></section>
+        </section>
+        <aside class="dashboard-rail">
+          <section class="rewards-panel" id="rewards" aria-labelledby="rewardsTitle"><div class="rewards-heading"><span class="eyebrow">A LITTLE EXTRA JOY</span><span aria-hidden="true">✳</span></div><h2 id="rewardsTitle">Your visits.<br>More rewarding.</h2><p>Something good is brewing for our regulars.</p><div class="stamp-row" aria-hidden="true"><span>♡</span><span>♡</span><span>♡</span><span>♡</span><span>☆</span></div><div class="rewards-status">Hub Rewards · Coming soon</div><p class="rewards-fineprint">Points and rewards are not available yet.</p></section>
+          <section class="account-panel" id="account" aria-labelledby="accountTitle"><p class="eyebrow">HELLO, HUB MEMBER</p><h2 id="accountTitle">Your corner of the café</h2><dl><dt>Name</dt><dd id="accountName"></dd><dt>Email</dt><dd id="accountEmail"></dd></dl><p>You're signed in. Make yourself comfortable.</p></section>
+        </aside>
+      </div>
+      <footer class="hub-footer"><span class="word">Kathy's Hub</span><span>A little comfort in every visit.</span><a href="#overview">Back to top ↑</a></footer>
+    </div>
+  </main>
+</div>
+<script type="module" src="app.js"></script>
+
+</body>
+</html>

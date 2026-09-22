@@ -1,0 +1,14 @@
+{
+  "name": "kathys-hub-auth",
+  "version": "1.0.0",
+  "description": "Kathy's Hub login & registration backed by a real Node.js server and a SQLite database (via sql.js, no native compiler required)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "sql.js": "^1.10.3",
+    "bcryptjs": "^2.4.3"
+  }
+}
