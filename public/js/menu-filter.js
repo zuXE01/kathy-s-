@@ -6,9 +6,13 @@ export function filterMenu(items, { search = '', category = 'all', section = 'al
   const minimum = item => Math.min(...getOptions(item).map(option => Number(option.price)));
   return result.sort((a,b) => (sort === 'price-low' ? minimum(a)-minimum(b) : sort === 'price-high' ? minimum(b)-minimum(a) : 0) || a.name.localeCompare(b.name) || (a.section || '').localeCompare(b.section || ''));
 }
+export function getSections(items) {
+  return [...new Set(items.map(item => item.section || 'House Favorites'))].sort((a,b) =>
+    a === "Fire Fighter's Meal" ? -1 : b === "Fire Fighter's Meal" ? 1 : a.localeCompare(b));
+}
 export function fillSections(select, items) {
   const selected = select.value; select.replaceChildren();
-  ['all',...new Set(items.map(item => item.section || 'House Favorites').sort())].forEach(section => {
+  ['all',...getSections(items)].forEach(section => {
     const option = document.createElement('option'); option.value = section; option.textContent = section === 'all' ? 'All sections' : section; select.append(option);
   });
   if ([...select.options].some(option => option.value === selected)) select.value = selected;

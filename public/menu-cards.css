@@ -20,3 +20,6 @@
 .catalog-toolbar :focus-visible,.catalog-card :focus-visible{outline:3px solid #2a2e86;outline-offset:3px}
 @media(max-width:760px){.catalog-toolbar{grid-template-columns:1fr 1fr}.catalog-toolbar label:first-child{grid-column:1/-1}.catalog-toolbar input,.catalog-toolbar select,.catalog-option{font-size:16px}.catalog-card{padding:20px}}
 @media(prefers-reduced-motion:reduce){.catalog-card{transition:none}}
+.menu-filters#catalogFilters{display:flex;flex-wrap:wrap;gap:8px}
+#catalogFilters button{min-height:40px;padding:10px 14px;line-height:1.4}
+#catalogFilters button:focus-visible{outline:3px solid #2a2e86;outline-offset:3px}

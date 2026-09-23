@@ -6,6 +6,8 @@ One product owns its sizes/portions. For example, a cheesecake has Slice and Who
 
 ## Reuse and growth
 
+The member menu has data-generated section buttons matching the photos, starting with Fire Fighter's Meal. All 22 sections are directly selectable; adding a new section in the manager automatically adds its filter after reload. Category selection resets the section, and selecting a section resets the category to prevent incompatible filters. Search and sorting remain available.
+
 - `public/js/menu-card.js`: one safe DOM renderer shared by members and admins, including option selection and price updates.
 - `public/js/menu-filter.js`: shared name/section search, category/section filtering and price sorting.
 - `public/js/menu-options.js`: parses the admin option editor.

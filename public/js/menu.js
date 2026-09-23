@@ -1,9 +1,20 @@
 import { createMenuCard } from './menu-card.js';
-import { filterMenu, fillSections } from './menu-filter.js';
+import { filterMenu, getSections } from './menu-filter.js';
 const el = id => document.getElementById(id);
-let items = [], category = 'all', visible = 12;
+let items = [], section = 'all', visible = 12;
+function renderSections() {
+  const filters = el('catalogFilters'); filters.replaceChildren();
+  ['all', ...getSections(items)].forEach(value => {
+    const button = document.createElement('button');
+    button.type = 'button'; button.dataset.filter = value;
+    button.textContent = value === 'all' ? 'All menu' : value;
+    button.classList.toggle('active', value === section);
+    button.setAttribute('aria-pressed', String(value === section));
+    filters.append(button);
+  });
+}
 function render() {
-  const matches = filterMenu(items,{ category, section:el('catalogSection').value, search:el('catalogSearch').value, sort:el('catalogSort').value });
+  const matches = filterMenu(items,{ category:el('catalogCategory').value, section, search:el('catalogSearch').value, sort:el('catalogSort').value });
   const grid = el('catalogGrid'); grid.replaceChildren();
   matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item)));
   el('catalogMore').hidden = matches.length <= visible;
@@ -17,19 +28,25 @@ function loadMenu() {
   fetch('/api/menu').then(function checked(response) {
     if (!response.ok) throw new Error('Menu unavailable'); return response.json();
   }).then(function loaded(data) {
-    items = data.items; fillSections(el('catalogSection'),items); render();
+    items = data.items; renderSections(); render();
   }).catch(function failed() {
     el('menuResult').textContent = 'We could not load the menu. Please try again.'; el('catalogRetry').hidden = false;
   }).finally(() => el('catalogGrid').setAttribute('aria-busy','false'));
 }
 export function initMenu() {
-  document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click',function filterCategory() {
-    category = button.dataset.filter;
-    document.querySelectorAll('[data-filter]').forEach(filter => { filter.classList.toggle('active',filter===button); filter.setAttribute('aria-pressed',String(filter===button)); });
+  el('catalogFilters').addEventListener('click',function filterSection(event) {
+    const button = event.target.closest('button[data-filter]');
+    if (!button) return;
+    section = button.dataset.filter;
+    el('catalogCategory').value = 'all';
+    el('catalogFilters').querySelectorAll('[data-filter]').forEach(filter => { filter.classList.toggle('active',filter===button); filter.setAttribute('aria-pressed',String(filter===button)); });
     filtersChanged();
-  }));
+  });
   el('catalogSearch').addEventListener('input',filtersChanged);
-  el('catalogSection').addEventListener('change',filtersChanged); el('catalogSort').addEventListener('change',filtersChanged);
+  el('catalogCategory').addEventListener('change',function filterCategory() {
+    section = 'all'; renderSections(); filtersChanged();
+  });
+  el('catalogSort').addEventListener('change',filtersChanged);
   el('catalogMore').addEventListener('click',function more() { visible += 12; render(); });
   el('catalogRetry').addEventListener('click',loadMenu);
   loadMenu();

@@ -46,7 +46,11 @@ test('option editor parses explicit prices and rejects incomplete or duplicate r
 });
 test('shared filters search sections, combine filters and sort prices without mutating data', () => {
   const {getOptions}=feature('menu-card.js');
-  const {filterMenu}=feature('menu-filter.js',{getOptions});
+  const {filterMenu,getSections}=feature('menu-filter.js',{getOptions});
+  assert.equal(getSections(items).length,22);
+  assert.equal(getSections(items)[0],"Fire Fighter's Meal");
+  assert.equal(filterMenu(items,{section:"Fire Fighter's Meal"}).length,9);
+  assert.equal(filterMenu(items,{section:'Coffee'}).length,15);
   assert.equal(filterMenu(items,{section:'Pasta'}).length,5);
   assert.equal(filterMenu(items,{category:'bites',search:'matcha'}).length,0);
   assert.equal(filterMenu(items,{search:'cheesecake'}).length,7);
