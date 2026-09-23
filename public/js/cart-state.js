@@ -1,4 +1,4 @@
-// Cart drafts are intentionally memory-only: refresh or sign-out clears them.
+// Pure cart state; the interface stores the draft in this tab's session storage.
 export function createCart() {
   const lines = new Map();
   const key = (id, label) => JSON.stringify([id, label]);

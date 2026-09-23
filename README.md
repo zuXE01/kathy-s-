@@ -11,7 +11,7 @@ A responsive cafe member experience built with HTML, CSS, JavaScript, Express, a
 - Responsive member dashboard with 120 photo-transcribed menu products, search, section filters, sorting and size/portion prices
 - Shared menu cards and admin editing, with database duplicate protection
 - Render-ready Express server with security headers and a health endpoint
-- Mobile-first draft cart (checkout not yet available)
+- Mobile-first cart and separate [demo checkout](CHECKOUT.md) with COD, simulated online payment, and delivery address
 
 ## Run locally
 

@@ -1,7 +1,8 @@
 import { createCart } from './cart-state.js';
+import { readCart, saveCart, forgetCart } from './cart-storage.js';
 import { formatPrice } from './menu-card.js';
 const cart = createCart();
-let dialog, launcher, list, total, status;
+let dialog, launcher, list, total, status, checkout;
 const node = (tag, text, className) => {
   const element = document.createElement(tag);
   if (text !== undefined) element.textContent = text;
@@ -16,6 +17,8 @@ function button(text, callback, label) {
 }
 function render() {
   const state = cart.snapshot(); list.replaceChildren();
+  if (checkout) checkout.disabled = !state.count;
+  try { saveCart(state.items); } catch { /* Checkout reports storage errors explicitly. */ }
   launcher.textContent = 'View cart · ' + state.count + ' · ' + formatPrice(state.total/100);
   total.textContent = 'Subtotal: ' + formatPrice(state.total/100);
   if (!state.items.length) list.append(node('p','Your cart is empty. Add a favorite from the menu.'));
@@ -42,10 +45,19 @@ export function addToCart(item, option) {
 }
 export function clearCart() {
   cart.clear();
+  forgetCart();
   if (!dialog) return;
   dialog.close(); render(); status.textContent = '';
 }
 export function initCart() {
+  window.addEventListener('pageshow',event=>{ if(event.persisted) window.location.reload(); });
+  for (const line of readCart()) {
+    try {
+      const [id,label]=JSON.parse(line.id);
+      if (!Number.isInteger(line.quantity) || line.quantity<1 || line.quantity>99) continue;
+      for(let n=0;n<line.quantity;n++) cart.add({id,name:line.name,section:line.section},{label,price:line.cents/100});
+    } catch { /* Ignore a corrupt saved line. */ }
+  }
   launcher = button('View cart · 0 · ₱0',()=>dialog.showModal());
   launcher.className = 'cart-launcher'; launcher.setAttribute('aria-haspopup','dialog');
   status = node('p',undefined,'cart-status'); status.setAttribute('role','status');
@@ -55,7 +67,11 @@ export function initCart() {
   header.append(heading,button('Close',()=>dialog.close()));
   list = node('div',undefined,'cart-lines');
   total = node('p',undefined,'cart-total'); total.setAttribute('aria-live','polite');
-  dialog.append(header,list,total,node('p','Demo cart only. Checkout is not available; no order or payment is submitted. Refreshing or signing out clears your cart.','cart-note'),
+  checkout = button('Continue to checkout',function openCheckout() {
+    try { saveCart(cart.snapshot().items); window.location.assign('/checkout.html'); }
+    catch { status.textContent='Enable browser session storage to continue to checkout.'; }
+  });
+  dialog.append(header,list,total,node('p','Demo checkout supports COD and simulated online payment. No real order or payment is submitted. Your cart stays in this browser tab until sign-out.','cart-note'),checkout,
     button('Continue browsing',()=>dialog.close()));
   document.getElementById('signedInView').append(launcher,status,dialog);
   render();
