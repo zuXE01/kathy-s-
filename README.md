@@ -11,7 +11,7 @@ A responsive cafe member experience built with HTML, CSS, JavaScript, Express, a
 - Responsive member dashboard with 120 photo-transcribed menu products, search, section filters, sorting and size/portion prices
 - Shared menu cards and admin editing, with database duplicate protection
 - Render-ready Express server with security headers and a health endpoint
-- Rewards, reservations, and online ordering placeholders
+- Mobile-first draft cart (checkout not yet available)
 
 ## Run locally
 
@@ -71,7 +71,7 @@ render.yaml      Render deployment configuration
 
 ## Development notes
 
-The menu was transcribed from the supplied Kathy's Diners / Cafe photos. See [menu setup, editing and verification](MENU_CATALOG.md) before setting up another database. Ordering, reservations, and rewards are not connected to backend services yet. Supabase controls authentication and email delivery; configure its email provider and production policies before inviting real customers.
+The menu was transcribed from the supplied Kathy's Diners / Cafe photos. See [menu setup, editing and verification](MENU_CATALOG.md) before setting up another database. Checkout is not connected to backend services yet. Supabase controls authentication and email delivery; configure its email provider and production policies before inviting real customers.
 
 Run the tests with:
 
