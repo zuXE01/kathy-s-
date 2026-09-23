@@ -1,4 +1,5 @@
 import { createMenuCard } from './menu-card.js';
+import { initCart, addToCart } from './cart.js';
 import { filterMenu, getSections, fillSections } from './menu-filter.js';
 const el = id => document.getElementById(id);
 let items = [], section = 'all', visible = 12;
@@ -18,7 +19,7 @@ function renderSections() {
 function render() {
   const matches = filterMenu(items,{ section, search:el('catalogSearch').value });
   const grid = el('catalogGrid'); grid.replaceChildren();
-  matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item)));
+  matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item,{onAdd:addToCart})));
   el('catalogMore').hidden = matches.length <= visible;
   el('catalogEmpty').hidden = matches.length > 0;
   el('menuResult').textContent = matches.length ? 'Showing ' + Math.min(visible,matches.length) + ' of ' + matches.length + ' items' : 'No matching items. Try a different search or section.';
@@ -36,6 +37,7 @@ function loadMenu() {
   }).finally(() => el('catalogGrid').setAttribute('aria-busy','false'));
 }
 export function initMenu() {
+  initCart();
   el('catalogFilters').addEventListener('click',function filterSection(event) {
     const button = event.target.closest('button[data-filter]');
     if (!button) return;

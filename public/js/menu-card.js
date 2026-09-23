@@ -4,7 +4,7 @@ export function getOptions(item) {
   const options = Array.isArray(item.variants) ? item.variants.filter(option => option && typeof option.label === 'string' && Number.isFinite(Number(option.price))) : [];
   return options.length ? options : [{ label: 'Regular', price: Number(item.price) }];
 }
-export function createMenuCard(item, { onEdit, onRemove } = {}) {
+export function createMenuCard(item, { onEdit, onRemove, onAdd } = {}) {
   const node = (tag, className, text) => { const element = document.createElement(tag); element.className = className; if (text !== undefined) element.textContent = text; return element; };
   const card = node('article', 'catalog-card');
   const top = node('div','catalog-card-top');
@@ -13,15 +13,21 @@ export function createMenuCard(item, { onEdit, onRemove } = {}) {
   card.append(top, node('h3','catalog-name',item.name));
   if (item.description) card.append(node('p','catalog-description',item.description));
   const options = getOptions(item), footer = node('div','catalog-card-footer');
+  let selected = 0;
   const price = node('strong','catalog-price',formatPrice(options[0].price)); price.setAttribute('aria-live','polite');
   const label = node('label','catalog-option-label',options.length > 1 ? 'Choose size / portion' : options[0].label);
   if (options.length > 1) {
     const select = node('select','catalog-option'); select.setAttribute('aria-label','Size or portion for ' + item.name);
     options.forEach((option,index) => { const choice = node('option','',option.label + ' — ' + formatPrice(option.price)); choice.value = index; select.append(choice); });
-    select.addEventListener('change', function changeSize() { price.textContent = formatPrice(options[Number(select.value)].price); });
+    select.addEventListener('change', function changeSize() { selected = Number(select.value); price.textContent = formatPrice(options[selected].price); });
     label.append(select);
   }
   footer.append(label,price); card.append(footer);
+  if (onAdd) {
+    const add = node('button','cart-add','Add to cart'); add.type = 'button';
+    add.setAttribute('aria-label','Add ' + item.name + ' to cart');
+    add.addEventListener('click',()=>onAdd(item,options[selected])); footer.append(add);
+  }
   if (onEdit) {
     card.append(node('span','catalog-availability',item.available ? 'Available' : 'Hidden from members'));
     const actions = node('div','catalog-actions');

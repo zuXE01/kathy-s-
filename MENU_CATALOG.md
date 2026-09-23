@@ -36,7 +36,9 @@ The source file is the original import snapshot. Supabase is the live editable c
 
 Sign in with the existing admin account, then open `/admin.html` → Menu manager. Choose a section and enter options as one `label | price` per line, for example `Slice | 145` and `Whole | 1088`. With options present, the starting price is calculated automatically. Leave options empty for a single regular price. Hidden products are excluded from the public menu by database policy. Reload an already-open member page to see changes.
 
-No customer orders, carts, payments or reservations are submitted by these cards. A size selection only updates its displayed price.
+Member cards support a mobile-first draft cart. Selected sizes become separate cart lines; repeat additions of the same product/size increase quantity (maximum 99). The bottom cart button shows item count and subtotal; the dialog supports quantity changes and removal. Prices are calculated in integer centavos. Cart logic is separate in `public/js/cart-state.js`, with its interface in `public/js/cart.js` and mobile-first styling in `public/cart.css`.
+
+The cart is memory-only and clears on refresh or sign-out. No customer orders, payments or reservations are submitted. Production checkout will need server-side price/availability validation and an order API; browser totals must never be trusted for payment.
 
 ## Verification and deployment
 

@@ -1,6 +1,7 @@
 import { tabsEl, loginView, registerView, authCard, signedInView, lPass, lEmail, statusTag, resetPanel } from './elements.js';
 import { showTab } from './tabs.js';
 import { authAction } from './auth-client.js';
+import { clearCart } from './cart.js';
 export function goSignedIn(email, name){
     tabsEl.style.display = 'none';
     loginView.classList.remove('active');
@@ -21,6 +22,7 @@ export function goSignedIn(email, name){
     document.getElementById('signedInName').focus({ preventScroll: true });
   }
   export function goSignedOut(){
+    clearCart();
     document.getElementById('adminLink').hidden = true;
     tabsEl.style.display = 'flex';
     signedInView.hidden = true;
