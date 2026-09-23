@@ -5,13 +5,13 @@ const { validateItem } = require('../server/admin');
 const config = { SUPABASE_URL: 'https://example.supabase.co', SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test' };
 const item = { name: ' Latte ', description: 'Coffee', category: 'coffee', price: 120.50, available: true };
 test('menu input validates types, limits and prices and discards extra fields', () => {
-  assert.deepEqual(validateItem({ ...item, hub_role: 'admin' }), { ...item, name: 'Latte' });
+  assert.deepEqual(validateItem({ ...item, hub_role: 'admin' }), { ...item, name: 'Latte', section:'House Favorites', variants:[] });
   for (const invalid of [null, [], {...item,name:''}, {...item,price:-1}, {...item,price:Infinity}, {...item,price:1.001}, {...item,price:'12'}, {...item,price:100001}, {...item,available:'true'}, {...item,category:'other'}, {...item,description:'x'.repeat(501)}]) assert.equal(validateItem(invalid), null);
 });
 test('public menu query exposes only available catalog fields', async t => {
   const calls = [];
   const query = {};
-  for (const method of ['select','eq','order','limit']) query[method] = (...args) => { calls.push([method,...args]); return query; };
+  for (const method of ['select','eq','order','limit','range']) query[method] = (...args) => { calls.push([method,...args]); return query; };
   query.then = resolve => Promise.resolve({data:[],error:null}).then(resolve);
   const app = createApp(config, () => ({from(table) { assert.equal(table,'menu_items'); return query; }}));
   const server = app.listen(0,'127.0.0.1'); await new Promise(resolve => server.once('listening',resolve));
@@ -19,7 +19,7 @@ test('public menu query exposes only available catalog fields', async t => {
   const response = await fetch(`http://127.0.0.1:${server.address().port}/api/menu`);
   assert.equal(response.status,200); assert.deepEqual(await response.json(),{items:[]});
   assert.ok(calls.some(call => call[0]==='eq' && call[1]==='available' && call[2]===true));
-  assert.ok(calls.some(call => call[0]==='select' && call[1]==='id,name,description,category,price'));
+  assert.ok(calls.some(call => call[0]==='select' && call[1]==='id,name,description,category,section,price,variants'));
 });
 test('admin routes deny anonymous, invalid, ordinary and forged-metadata users before database access', async t => {
   let queries = 0;

@@ -1,42 +1,36 @@
+import { createMenuCard } from './menu-card.js';
+import { filterMenu, fillSections } from './menu-filter.js';
+const el = id => document.getElementById(id);
+let items = [], category = 'all', visible = 12;
+function render() {
+  const matches = filterMenu(items,{ category, section:el('catalogSection').value, search:el('catalogSearch').value, sort:el('catalogSort').value });
+  const grid = el('catalogGrid'); grid.replaceChildren();
+  matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item)));
+  el('catalogMore').hidden = matches.length <= visible;
+  el('catalogEmpty').hidden = matches.length > 0;
+  el('menuResult').textContent = matches.length ? 'Showing ' + Math.min(visible,matches.length) + ' of ' + matches.length + ' items' : 'No matching items. Try a different search or section.';
+}
+function filtersChanged() { visible = 12; render(); }
+function loadMenu() {
+  el('catalogRetry').hidden = true; el('catalogGrid').setAttribute('aria-busy','true');
+  el('menuResult').textContent = 'Loading the menu…';
+  fetch('/api/menu').then(function checked(response) {
+    if (!response.ok) throw new Error('Menu unavailable'); return response.json();
+  }).then(function loaded(data) {
+    items = data.items; fillSections(el('catalogSection'),items); render();
+  }).catch(function failed() {
+    el('menuResult').textContent = 'We could not load the menu. Please try again.'; el('catalogRetry').hidden = false;
+  }).finally(() => el('catalogGrid').setAttribute('aria-busy','false'));
+}
 export function initMenu() {
-  document.querySelectorAll('[data-filter]').forEach(function bindFilter(button) {
-    button.addEventListener('click', handleFilter);
-  });
-  fetch('/api/menu').then(function check(response) {
-    if (!response.ok) throw new Error('Menu unavailable');
-    return response.json();
-  }).then(renderSavedMenu).catch(function unavailable() {
-    document.querySelector('.section-description').textContent = 'The saved menu is temporarily unavailable. Illustrative samples are shown below.';
-  });
-}
-function renderSavedMenu(data) {
-  const grid = document.querySelector('.menu-grid');
-  grid.replaceChildren();
-  document.querySelector('.preview-tag').textContent = 'Demo catalog';
-  document.querySelector('.section-description').textContent = data.items.length ? 'Our latest menu. Online ordering is coming soon.' : 'Our menu is being prepared. Check back soon.';
-  const money = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
-  data.items.forEach(function render(item) {
-    const card = document.createElement('article'); card.className = 'menu-card'; card.dataset.category = item.category;
-    const art = document.createElement('div'); art.className = 'menu-illustration ' + ({coffee:'latte-art',bites:'toast-art',sweet:'cake-art'}[item.category] || 'latte-art'); art.setAttribute('aria-hidden', 'true');
-    const icon = document.createElement('span'); icon.textContent = {coffee:'☕',bites:'🥪',sweet:'🍰'}[item.category] || '☕'; art.append(icon);
-    const copy = document.createElement('div'); copy.className = 'menu-card-copy';
-    [['span', item.category.toUpperCase()], ['h3', item.name], ['p', item.description], ['strong', money.format(item.price)]].forEach(function field([tag, value]) {
-      const node = document.createElement(tag); node.textContent = value; copy.append(node);
-    });
-    card.append(art, copy); grid.append(card);
-  });
-  document.querySelector('[data-filter].active').click();
-}
-function handleFilter(event) {
-  const button = event.currentTarget;
-  document.querySelectorAll('[data-filter]').forEach(function updateFilter(filter) {
-    filter.classList.toggle('active', filter === button);
-    filter.setAttribute('aria-pressed', String(filter === button));
-  });
-  let count = 0;
-  document.querySelectorAll('[data-category]').forEach(function updateCard(card) {
-    card.hidden = button.dataset.filter !== 'all' && card.dataset.category !== button.dataset.filter;
-    if (!card.hidden) count++;
-  });
-  document.getElementById('menuResult').textContent = count + ' menu ' + (count === 1 ? 'item' : 'items') + ' shown.';
+  document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click',function filterCategory() {
+    category = button.dataset.filter;
+    document.querySelectorAll('[data-filter]').forEach(filter => { filter.classList.toggle('active',filter===button); filter.setAttribute('aria-pressed',String(filter===button)); });
+    filtersChanged();
+  }));
+  el('catalogSearch').addEventListener('input',filtersChanged);
+  el('catalogSection').addEventListener('change',filtersChanged); el('catalogSort').addEventListener('change',filtersChanged);
+  el('catalogMore').addEventListener('click',function more() { visible += 12; render(); });
+  el('catalogRetry').addEventListener('click',loadMenu);
+  loadMenu();
 }

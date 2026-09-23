@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kathy's Hub — Sign in</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="/menu-cards.css">
 </head>
 <body>
 
@@ -158,14 +159,15 @@
       </section>
       <div class="dashboard-grid">
         <section class="menu-section" id="menu" aria-labelledby="menuTitle">
-          <div class="section-heading"><div><p class="eyebrow">FIND YOUR NEXT FAVORITE</p><h2 id="menuTitle">A taste of the Hub</h2></div><span class="preview-tag">Sample menu</span></div>
-          <p class="section-description">A preview of the experience. Items are illustrative; online ordering is coming soon.</p>
-          <div class="menu-filters" role="group" aria-label="Filter sample menu"><button type="button" class="active" data-filter="all" aria-pressed="true">All favorites</button><button type="button" data-filter="coffee" aria-pressed="false">Coffee</button><button type="button" data-filter="bites" aria-pressed="false">Bites</button><button type="button" data-filter="sweet" aria-pressed="false">Something sweet</button></div>
-          <div class="menu-grid">
-            <article class="menu-card" data-category="coffee"><div class="menu-illustration latte-art" aria-hidden="true"><span>☕</span><i>01 / SIP</i></div><div class="menu-card-copy"><span class="menu-category">COFFEE</span><h3>Signature latte</h3><p>Smooth espresso, a soft swirl of milk.</p></div></article>
-            <article class="menu-card" data-category="bites"><div class="menu-illustration toast-art" aria-hidden="true"><span>🥪</span><i>02 / SAVOR</i></div><div class="menu-card-copy"><span class="menu-category">SAVORY BITES</span><h3>Toasted goodness</h3><p>A cozy little bite for your coffee break.</p></div></article>
-            <article class="menu-card" data-category="sweet"><div class="menu-illustration cake-art" aria-hidden="true"><span>🍰</span><i>03 / INDULGE</i></div><div class="menu-card-copy"><span class="menu-category">SWEET TREATS</span><h3>A slice of happy</h3><p>Because there's always room for dessert.</p></div></article>
-          </div><p class="sr-only" id="menuResult" role="status" aria-live="polite"></p>
+          <div class="section-heading"><div><p class="eyebrow">KATHY'S DINERS &amp; CAFE</p><h2 id="menuTitle">Find your next favorite.</h2></div><span class="preview-tag">Full menu</span></div>
+          <p class="section-description">Explore our food, drinks, and sweet treats. Prices in PHP. Select a size to see its price. Online ordering is coming soon.</p>
+          <div class="menu-filters" role="group" aria-label="Menu categories"><button type="button" class="active" data-filter="all" aria-pressed="true">All favorites</button><button type="button" data-filter="coffee" aria-pressed="false">Cafe &amp; drinks</button><button type="button" data-filter="bites" aria-pressed="false">Diner &amp; bites</button><button type="button" data-filter="sweet" aria-pressed="false">Something sweet</button></div>
+          <div class="catalog-toolbar"><label>Search the menu<input type="search" id="catalogSearch" placeholder="Try matcha, pasta, cheesecake…"></label><label>Section<select id="catalogSection"><option value="all">All sections</option></select></label><label>Sort by<select id="catalogSort"><option value="name">Name A–Z</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option></select></label></div>
+          <p id="menuResult" class="catalog-feedback" role="status" aria-live="polite">Loading the menu…</p>
+          <div class="catalog-grid" id="catalogGrid" aria-busy="true"></div>
+          <p class="catalog-empty" id="catalogEmpty" hidden>No favorites found. Try another filter.</p>
+          <button class="catalog-retry" id="catalogRetry" type="button" hidden>Try again</button>
+          <button class="catalog-more" id="catalogMore" type="button" hidden>Show more items</button>
           <section class="reservation-panel" id="reservations" aria-labelledby="reservationTitle"><div class="reservation-icon" aria-hidden="true">▦</div><div><p class="eyebrow">SAVE A LITTLE TIME TOGETHER</p><h2 id="reservationTitle">Good company deserves a table.</h2><p>Online reservations are coming soon. No bookings can be made here yet.</p></div><span class="coming-soon">Coming soon</span></section>
         </section>
         <aside class="dashboard-rail">

@@ -1,16 +1,7 @@
 const express = require('express');
+const { validateItem } = require('./menu-validation');
+const { readMenu } = require('./menu-store');
 const validId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function validateItem(body) {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) return null;
-  const { name, description, category, price, available } = body;
-  if (typeof name !== 'string' || !name.trim() || name.trim().length > 100 ||
-      typeof description !== 'string' || description.length > 500 ||
-      !['coffee', 'bites', 'sweet'].includes(category) ||
-      typeof price !== 'number' || !Number.isFinite(price) || price < 0 || price > 100000 ||
-      Math.abs(price * 100 - Math.round(price * 100)) > 0.00001 || typeof available !== 'boolean') return null;
-  return { name: name.trim(), description: description.trim(), category, price, available };
-}
 
 function adminRouter(url, key, createClient) {
   const router = express.Router();
@@ -52,22 +43,21 @@ function adminRouter(url, key, createClient) {
     res.json({ items: data, total: count, page });
   });
   router.get('/menu', async (req, res) => {
-    const { data, error } = await req.adminClient.from('menu_items').select('*').order('name').limit(500);
-    if (error) return res.status(503).json({ error: 'Unable to load menu.' });
-    res.json({ items: data });
+    try { res.json({ items: await readMenu(req.adminClient) }); }
+    catch { res.status(503).json({ error: 'Unable to load menu.' }); }
   });
   router.post('/menu', async (req, res) => {
     const item = validateItem(req.body);
-    if (!item) return res.status(400).json({ error: 'Enter a name, category, price up to 100,000 with at most 2 decimals, and a description of at most 500 characters.' });
+    if (!item) return res.status(400).json({ error: 'Check the name, section, category and prices. Use unique option labels and prices with at most 2 decimals.' });
     const { data, error } = await req.adminClient.from('menu_items').insert(item).select().single();
-    if (error) return res.status(503).json({ error: 'Could not save this item.' });
+    if (error) return res.status(error.code === '23505' ? 409 : 503).json({ error: error.code === '23505' ? 'This item already exists in that section. Edit the existing card instead.' : 'Could not save this item.' });
     res.status(201).json({ item: data });
   });
   router.put('/menu/:id', async (req, res) => {
     const item = validateItem(req.body);
     if (!validId.test(req.params.id) || !item) return res.status(400).json({ error: 'Invalid menu details.' });
     const { data, error } = await req.adminClient.from('menu_items').update(item).eq('id', req.params.id).select().maybeSingle();
-    if (error) return res.status(503).json({ error: 'Could not update this item.' });
+    if (error) return res.status(error.code === '23505' ? 409 : 503).json({ error: error.code === '23505' ? 'This item already exists in that section.' : 'Could not update this item.' });
     if (!data) return res.status(404).json({ error: 'Item no longer exists. Refresh the menu.' });
     res.json({ item: data });
   });

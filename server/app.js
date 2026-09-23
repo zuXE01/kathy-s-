@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const path = require('node:path');
 const { createClient } = require('@supabase/supabase-js');
 const { adminRouter } = require('./admin');
+const { readMenu } = require('./menu-store');
 
 function createApp(env = process.env, createAuthClient = createClient) {
   const url = env.SUPABASE_URL;
@@ -45,9 +46,7 @@ function createApp(env = process.env, createAuthClient = createClient) {
     res.set('Cache-Control', 'no-store');
     try {
       const client = createAuthClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-      const { data, error } = await client.from('menu_items').select('id,name,description,category,price').eq('available', true).order('name').limit(500);
-      if (error) throw error;
-      res.json({ items: data });
+      res.json({ items: await readMenu(client,{publicOnly:true}) });
     } catch { res.status(503).json({ error: 'Menu is temporarily unavailable.' }); }
   });
   // Old unauthenticated mutation endpoints are deliberately removed.
