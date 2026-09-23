@@ -40,6 +40,7 @@ export function initSession() {
             openRecovery();
           } else {
             goSignedIn(user.email, user.user_metadata?.name || '');
+            document.getElementById('adminLink').hidden = user.app_metadata?.hub_role !== 'admin';
           }
         }).catch(function failed() {
           if (current !== revision) return;

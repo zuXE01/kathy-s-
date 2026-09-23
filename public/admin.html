@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin — Kathy's Hub</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/admin.css"></head>
+<body class="admin-page">
+<section id="adminGate" class="admin-gate"><span class="word">Kathy's Hub</span><h1>Admin workspace</h1><p id="gateMessage" role="status">Checking your access…</p><a href="/">Back to sign in</a></section>
+<div id="adminShell" class="admin-shell" hidden>
+  <aside class="admin-sidebar">
+    <a class="admin-brand" href="/"><span class="brand-monogram">K.</span><span><span class="word">Kathy's Hub</span><small>THE ADMIN WORKSPACE</small></span></a>
+    <p class="nav-caption">KEEP THE HUB RUNNING</p>
+    <nav aria-label="Admin sections"><button data-section="overview" class="selected" aria-current="page">Overview <span>01</span></button><button data-section="members">Members <span>02</span></button><button data-section="menu">Menu manager <span>03</span></button><button data-section="reservations">Reservations <span>04</span></button></nav>
+    <div class="admin-note"><span class="eyebrow">A LITTLE CARE, EVERY DAY</span><p>Good food.<br>Happy people.<br>Your little Hub.</p></div>
+    <a href="/">↗ View member site</a><button id="adminLogout" class="admin-logout">Sign out</button>
+  </aside>
+  <main class="admin-main">
+    <header class="admin-topbar"><span>Workspace / <b id="sectionLabel">Overview</b></span><span class="admin-badge">DEMO ADMIN</span></header>
+    <div class="admin-content">
+      <p id="adminMessage" class="admin-message" role="status" aria-live="polite"></p>
+      <section data-panel="overview">
+        <div class="admin-heading"><div><p class="eyebrow">A FRESH START</p><h1>Welcome to your Hub.</h1><p>A little overview of the people and flavors that make it yours.</p></div><button class="admin-button secondary" id="refreshOverview">Refresh</button></div>
+        <div class="admin-stats"><article><span>Member profiles</span><strong id="memberCount">—</strong><small>Registered in your member database</small></article><article><span>Menu items</span><strong id="menuCount">—</strong><small>Your saved demo catalog</small></article><article><span>Available items</span><strong id="availableCount">—</strong><small>Ready to show on the menu</small></article></div>
+        <div class="admin-feature"><div><p class="eyebrow">MADE FOR GOOD TASTE</p><h2>Something good<br>is always brewing.</h2><p>Keep your menu fresh. Add a favorite, adjust a price, or pause an item for the day.</p><button class="admin-button" data-open-menu>Manage the menu ↗</button></div><span class="admin-cup" aria-hidden="true">☕</span></div>
+        <div class="admin-detail"><h2>Your demo, at a glance</h2><p id="adminIdentity"></p><p>Member access is read-only. Menu changes are saved to Supabase. No orders, payments, or bookings are processed here.</p></div>
+      </section>
+      <section data-panel="members" hidden>
+        <div class="admin-heading"><div><p class="eyebrow">THE PEOPLE BEHIND THE VISITS</p><h1>Hub members</h1><p>Registered member profiles. Personal birthdays and gender are not shown here.</p></div></div>
+        <div class="admin-table-wrap"><table><caption class="sr-only">Registered members</caption><thead><tr><th>Name</th><th>Joined</th><th>Member ID</th></tr></thead><tbody id="memberRows"></tbody></table></div>
+        <p id="memberEmpty" hidden>No member profiles yet.</p><div class="admin-pagination"><button class="admin-button secondary" id="memberPrev">Previous</button><span id="memberPage"></span><button class="admin-button secondary" id="memberNext">Next</button></div>
+      </section>
+      <section data-panel="menu" hidden>
+        <div class="admin-heading"><div><p class="eyebrow">CURATE THE GOOD STUFF</p><h1>Menu manager</h1><p>Add, edit, or remove items from your demo catalog.</p></div><button class="admin-button" id="addItem">+ Add an item</button></div>
+        <div class="admin-toolbar"><label>Find an item<input id="menuSearch" type="search" placeholder="Search by name…"></label><label>Category<select id="menuCategory"><option value="all">All categories</option><option value="coffee">Coffee</option><option value="bites">Bites</option><option value="sweet">Something sweet</option></select></label></div>
+        <div id="adminMenuGrid" class="admin-menu-grid"></div><p id="menuEmpty" hidden>No items here yet. Add your first favorite.</p>
+      </section>
+      <section data-panel="reservations" hidden><p class="eyebrow">SOMETHING TO LOOK FORWARD TO</p><h1>A table for good company.</h1><div class="admin-detail"><span class="admin-badge">COMING SOON</span><h2>Reservations aren't available yet.</h2><p>This demo does not accept or store bookings.</p></div></section>
+    </div>
+  </main>
+</div>
+<dialog id="itemDialog"><form id="itemForm"><div class="dialog-heading"><h2 id="itemTitle">Add menu item</h2><button type="button" id="closeItem" aria-label="Close editor">×</button></div><input id="itemId" type="hidden"><label>Name<input id="itemName" required maxlength="100"></label><label>Description<textarea id="itemDescription" maxlength="500" rows="3"></textarea></label><div class="admin-form-row"><label>Category<select id="itemCategory"><option value="coffee">Coffee</option><option value="bites">Bites</option><option value="sweet">Something sweet</option></select></label><label>Price (PHP)<input id="itemPrice" type="number" min="0" max="100000" step="0.01" required></label></div><label class="admin-check"><input id="itemAvailable" type="checkbox" checked> Available on the menu</label><p id="itemError" role="alert"></p><button class="admin-button" id="saveItem" type="submit">Save item</button></form></dialog>
+<dialog id="deleteDialog"><h2>Remove this item?</h2><p id="deletePrompt"></p><p>This removes the saved item. To hide it temporarily, edit it and switch off availability instead.</p><p id="deleteError" role="alert"></p><div class="admin-form-row"><button id="cancelDelete" class="admin-button secondary">Keep item</button><button id="confirmDelete" class="admin-button">Remove item</button></div></dialog>
+<script src="/vendor/supabase.js"></script><script type="module" src="/js/admin/main.js"></script>
+</body></html>

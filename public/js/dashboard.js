@@ -21,6 +21,7 @@ export function goSignedIn(email, name){
     document.getElementById('signedInName').focus({ preventScroll: true });
   }
   export function goSignedOut(){
+    document.getElementById('adminLink').hidden = true;
     tabsEl.style.display = 'flex';
     signedInView.hidden = true;
     authCard.hidden = false;

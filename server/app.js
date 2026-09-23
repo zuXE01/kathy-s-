@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const path = require('node:path');
 const { createClient } = require('@supabase/supabase-js');
+const { adminRouter } = require('./admin');
 
 function createApp(env = process.env, createAuthClient = createClient) {
   const url = env.SUPABASE_URL;
@@ -38,6 +39,16 @@ function createApp(env = process.env, createAuthClient = createClient) {
     } catch {
       res.status(503).json({ error: 'Account service temporarily unavailable.' });
     }
+  });
+  app.use('/api/admin', adminRouter(url, key, createAuthClient));
+  app.get('/api/menu', async (_req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+      const client = createAuthClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+      const { data, error } = await client.from('menu_items').select('id,name,description,category,price').eq('available', true).order('name').limit(500);
+      if (error) throw error;
+      res.json({ items: data });
+    } catch { res.status(503).json({ error: 'Menu is temporarily unavailable.' }); }
   });
   // Old unauthenticated mutation endpoints are deliberately removed.
   app.use('/api', (_req, res) => res.status(404).json({ error: 'Endpoint not found.' }));

@@ -1,6 +1,7 @@
 import { rName, rDob, rGender, rEmail, rPass, rConfirm, registerForm, registerSubmit, registerMsg, continuePanel, yesContinue, noContinue, lEmail, lPass, loginMsg } from './elements.js';
 import { api } from './api.js';
 import { showTab } from './tabs.js';
+import { goSignedIn } from './dashboard.js';
 
 let redirectTimer;
 let cancelTimer;
@@ -63,6 +64,16 @@ function handleRegisterResult(error, data) {
     registerMsg.className = 'msg bad';
     return;
   }
+  if (data.session) {
+    clearTimeout(redirectTimer);
+    clearTimeout(cancelTimer);
+    registerForm.reset();
+    registerSubmit.disabled = false;
+    registerMsg.textContent = '';
+    goSignedIn(data.email, data.name);
+    return;
+  }
+  // Retain the fallback if confirmation is re-enabled in Supabase later.
   registerMsg.textContent = 'Check your email to confirm your account before signing in.';
   registerMsg.className = 'msg ok';
   clearTimeout(redirectTimer);
