@@ -71,8 +71,7 @@ export function initCart() {
     try { saveCart(cart.snapshot().items); window.location.assign('/checkout.html'); }
     catch { status.textContent='Enable browser session storage to continue to checkout.'; }
   });
-  dialog.append(header,list,total,node('p','Demo checkout supports COD and simulated online payment. No real order or payment is submitted. Your cart stays in this browser tab until sign-out.','cart-note'),checkout,
-    button('Continue browsing',()=>dialog.close()));
+  dialog.append(header,list,total,node('p','s','cart-note'),checkout);
   document.getElementById('signedInView').append(launcher,status,dialog);
   render();
 }
