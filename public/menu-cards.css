@@ -1,4 +1,4 @@
-.catalog-toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin:20px 0}
+.catalog-toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:20px 0}
 .catalog-toolbar label,.catalog-option-label{display:flex;flex-direction:column;gap:7px;font-size:11px;font-weight:600;color:#6c5d48}
 .catalog-toolbar input,.catalog-toolbar select,.catalog-option{width:100%;min-width:0;padding:12px;border:1px solid #d8ccb6;border-radius:10px;background:#fffdf8;color:#241f1a;font:inherit}
 .catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:16px}
@@ -18,7 +18,7 @@
 .catalog-more,.catalog-retry{display:block;border:1px solid #2a2e86;background:#2a2e86;color:white;border-radius:24px;padding:12px 22px;margin:22px auto;font:600 12px Inter,sans-serif;cursor:pointer}
 .catalog-empty{padding:28px;text-align:center;border:1px dashed #bfb298;border-radius:16px;color:#6c5d48}
 .catalog-toolbar :focus-visible,.catalog-card :focus-visible{outline:3px solid #2a2e86;outline-offset:3px}
-@media(max-width:760px){.catalog-toolbar{grid-template-columns:1fr 1fr}.catalog-toolbar label:first-child{grid-column:1/-1}.catalog-toolbar input,.catalog-toolbar select,.catalog-option{font-size:16px}.catalog-card{padding:20px}}
+@media(max-width:760px){.catalog-toolbar input,.catalog-toolbar select,.catalog-option{font-size:16px}.catalog-card{padding:20px}}
 @media(prefers-reduced-motion:reduce){.catalog-card{transition:none}}
 .menu-filters#catalogFilters{display:flex;flex-wrap:wrap;gap:8px}
 #catalogFilters button{min-height:40px;padding:10px 14px;line-height:1.4}

@@ -16,7 +16,7 @@ function renderSections() {
   });
 }
 function render() {
-  const matches = filterMenu(items,{ category:el('catalogCategory').value, section, search:el('catalogSearch').value, sort:el('catalogSort').value });
+  const matches = filterMenu(items,{ section, search:el('catalogSearch').value });
   const grid = el('catalogGrid'); grid.replaceChildren();
   matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item)));
   el('catalogMore').hidden = matches.length <= visible;
@@ -41,20 +41,14 @@ export function initMenu() {
     if (!button) return;
     section = button.dataset.filter;
     el('mobileMenuSection').value = section;
-    el('catalogCategory').value = 'all';
     el('catalogFilters').querySelectorAll('[data-filter]').forEach(filter => { filter.classList.toggle('active',filter===button); filter.setAttribute('aria-pressed',String(filter===button)); });
     filtersChanged();
   });
   el('mobileMenuSection').addEventListener('change',function selectMobileSection() {
     section = this.value;
-    el('catalogCategory').value = 'all';
     renderSections(); filtersChanged();
   });
   el('catalogSearch').addEventListener('input',filtersChanged);
-  el('catalogCategory').addEventListener('change',function filterCategory() {
-    section = 'all'; renderSections(); filtersChanged();
-  });
-  el('catalogSort').addEventListener('change',filtersChanged);
   el('catalogMore').addEventListener('click',function more() { visible += 12; render(); });
   el('catalogRetry').addEventListener('click',loadMenu);
   loadMenu();
