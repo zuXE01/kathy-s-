@@ -6,6 +6,8 @@ One product owns its sizes/portions. For example, a cheesecake has Slice and Who
 
 ## Reuse and growth
 
+Mobile-first filters (760px and below): one horizontally swipeable row, 44px touch targets, and a native section picker populated from the same catalog. The picker and buttons stay synchronized. Search/select fields use 16px text and 48px minimum heights. Checked at 320px and 390px widths without page overflow, including meal and pasta selection; desktop retains wrapped section buttons.
+
 The member menu has data-generated section buttons matching the photos, starting with Fire Fighter's Meal. All 22 sections are directly selectable; adding a new section in the manager automatically adds its filter after reload. Category selection resets the section, and selecting a section resets the category to prevent incompatible filters. Search and sorting remain available.
 
 - `public/js/menu-card.js`: one safe DOM renderer shared by members and admins, including option selection and price updates.

@@ -23,3 +23,14 @@
 .menu-filters#catalogFilters{display:flex;flex-wrap:wrap;gap:8px}
 #catalogFilters button{min-height:40px;padding:10px 14px;line-height:1.4}
 #catalogFilters button:focus-visible{outline:3px solid #2a2e86;outline-offset:3px}
+.mobile-section-picker{display:none}
+@media(max-width:760px){
+  .mobile-section-picker{display:flex;flex-direction:column;gap:8px;margin:18px 0 10px;font-size:13px;font-weight:600;color:#1e2266}
+  .mobile-section-picker select{width:100%;min-height:48px;padding:12px;border:1px solid #d8ccb6;border-radius:12px;background:#fffdf8;color:#1e2266;font:inherit;font-size:16px}
+  .mobile-section-picker select:focus-visible{outline:3px solid #2a2e86;outline-offset:3px}
+  .menu-filters#catalogFilters{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding:4px 3px 10px;gap:8px;overscroll-behavior-x:contain;scrollbar-width:thin}
+  #catalogFilters button{flex:0 0 auto;white-space:nowrap;min-height:44px;font-size:13px}
+  .catalog-toolbar{gap:10px;margin:14px 0}
+  .catalog-toolbar label{min-width:0;font-size:12px}
+  .catalog-toolbar input,.catalog-toolbar select{min-height:48px}
+}

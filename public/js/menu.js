@@ -1,8 +1,10 @@
 import { createMenuCard } from './menu-card.js';
-import { filterMenu, getSections } from './menu-filter.js';
+import { filterMenu, getSections, fillSections } from './menu-filter.js';
 const el = id => document.getElementById(id);
 let items = [], section = 'all', visible = 12;
 function renderSections() {
+  fillSections(el('mobileMenuSection'), items);
+  el('mobileMenuSection').value = section;
   const filters = el('catalogFilters'); filters.replaceChildren();
   ['all', ...getSections(items)].forEach(value => {
     const button = document.createElement('button');
@@ -38,9 +40,15 @@ export function initMenu() {
     const button = event.target.closest('button[data-filter]');
     if (!button) return;
     section = button.dataset.filter;
+    el('mobileMenuSection').value = section;
     el('catalogCategory').value = 'all';
     el('catalogFilters').querySelectorAll('[data-filter]').forEach(filter => { filter.classList.toggle('active',filter===button); filter.setAttribute('aria-pressed',String(filter===button)); });
     filtersChanged();
+  });
+  el('mobileMenuSection').addEventListener('change',function selectMobileSection() {
+    section = this.value;
+    el('catalogCategory').value = 'all';
+    renderSections(); filtersChanged();
   });
   el('catalogSearch').addEventListener('input',filtersChanged);
   el('catalogCategory').addEventListener('change',function filterCategory() {
