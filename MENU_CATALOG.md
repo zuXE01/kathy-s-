@@ -8,7 +8,7 @@ One product owns its sizes/portions. For example, a cheesecake has Slice and Who
 
 Mobile-first filters (760px and below): one horizontally swipeable row, 44px touch targets, and a native section picker populated from the same catalog. The picker and buttons stay synchronized. Search/select fields use 16px text and 48px minimum heights. Checked at 320px and 390px widths without page overflow, including meal and pasta selection; desktop retains wrapped section buttons.
 
-The member menu has data-generated section buttons matching the photos, starting with Fire Fighter's Meal. All 22 sections are directly selectable; adding a new section in the manager automatically adds its filter after reload. Category selection resets the section, and selecting a section resets the category to prevent incompatible filters. Search and sorting remain available.
+The member menu has data-generated section buttons matching the photos, starting with Fire Fighter's Meal. All 22 sections are directly selectable; adding a new section in the manager automatically adds its filter after reload. The member menu keeps section selection and search without redundant category/sort controls.
 
 - `public/js/menu-card.js`: one safe DOM renderer shared by members and admins, including option selection and price updates.
 - `public/js/menu-filter.js`: shared name/section search, category/section filtering and price sorting.
@@ -38,11 +38,11 @@ Sign in with the existing admin account, then open `/admin.html` → Menu manage
 
 Member cards support a mobile-first draft cart. Selected sizes become separate cart lines; repeat additions of the same product/size increase quantity (maximum 99). The bottom cart button shows item count and subtotal; the dialog supports quantity changes and removal. Prices are calculated in integer centavos. Cart logic is separate in `public/js/cart-state.js`, with its interface in `public/js/cart.js` and mobile-first styling in `public/cart.css`.
 
-The cart now survives page navigation and refresh using this tab's session storage. Sign-out or successful demo checkout clears it. See [demo checkout](CHECKOUT.md) for COD, simulated online payment, address fields, and limitations. No real orders or payments are submitted; production checkout requires server-side validation and an order API.
+The cart now survives page navigation and refresh using this tab's session storage. Sign-out or successful demo checkout clears it. See [demo checkout](CHECKOUT.md) for COD, simulated online payment, address fields, and limitations. Checkout now saves demo orders through an authenticated server API with database-enforced prices. Admins can manage them in Orders; payments and delivery booking remain simulated.
 
 ## Verification and deployment
 
-15 automated tests pass, including source counts, option validation, price changes, filtering and multi-batch loading. The live database import was run twice and stayed at 120 items. A rolled-back database check verified duplicate-name rejection and anonymous read-only access. Browser checks used the isolated loopback fixture (`node test/admin-preview.cjs`), including a 390px phone viewport and admin option editing; no real prices were changed during UI tests.
+25 automated tests pass, including source counts, option validation, price changes, filtering and multi-batch loading. The live database import was run twice and stayed at 120 items. A rolled-back database check verified duplicate-name rejection and anonymous read-only access. Browser checks used the isolated loopback fixture (`node test/admin-preview.cjs`), including a 390px phone viewport and admin option editing; no real prices were changed during UI tests.
 
 The existing Supabase advisories about signup-trigger execution permissions and disabled leaked-password protection are unrelated and remain unchanged. See [function permissions](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) and [password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
 

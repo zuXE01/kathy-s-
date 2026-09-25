@@ -1,6 +1,7 @@
 const express = require('express');
 const { validateItem } = require('./menu-validation');
 const { readMenu } = require('./menu-store');
+const { mountAdminOrders } = require('./orders');
 const validId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function adminRouter(url, key, createClient) {
@@ -24,6 +25,7 @@ function adminRouter(url, key, createClient) {
     } catch { res.status(503).json({ error: 'Authentication service unavailable.' }); }
   });
   router.use(express.json({ limit: '8kb' }));
+  mountAdminOrders(router);
   router.get('/overview', async (req, res) => {
     const [members, menu, available] = await Promise.all([
       req.adminClient.from('profiles').select('id', { count: 'exact', head: true }),

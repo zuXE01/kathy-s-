@@ -1,0 +1,12 @@
+.orders-controls{display:flex;flex-direction:column;gap:14px;margin:20px 0}.orders-controls label{display:flex;flex-direction:column;gap:8px}
+.orders-controls select,#orderUpdateForm select,#orderUpdateForm textarea{width:100%;min-height:48px;padding:12px;font:inherit;font-size:16px;border:1px solid #d8ccb6;border-radius:10px;background:#fffdf8;color:#1e2266}
+.order-list{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.order-card{padding:20px;border:1px solid #e6ddc6;background:#fffdf8;border-radius:18px;overflow-wrap:anywhere}
+body:has(#orderDialog[open]){overflow:hidden}
+.order-card h2{font-size:19px}.order-card p{font-size:14px;line-height:1.6}.order-badge{font-weight:700;color:#2a2e86}.order-card button{width:100%;min-height:48px;font-size:16px}
+#orderDialog{box-sizing:border-box;width:calc(100% - 24px);max-width:640px;max-height:90dvh;overflow:auto;padding:20px;overflow-wrap:anywhere}
+#orderDetails{font-size:15px;line-height:1.7}#orderDetails ul,#orderDetails ol{padding-left:22px}#orderUpdateForm label{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+#orderClose,#orderSave,.orders-controls button,#ordersPrev,#ordersNext{min-height:48px;font-size:16px}
+#orderClose{flex-shrink:0;white-space:nowrap;padding:10px 14px}
+.admin-page .order-card button,.admin-page #orderClose,.admin-page #orderSave,.admin-page .orders-controls button{font-size:16px!important}
+#orderUpdateMessage{font-size:14px;line-height:1.6}#orderDialog [hidden]{display:none!important}
+@media(min-width:761px){.order-list{grid-template-columns:repeat(2,minmax(0,1fr))}.orders-controls{flex-direction:row;align-items:end}.orders-controls label{flex:1}}

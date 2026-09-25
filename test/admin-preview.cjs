@@ -4,9 +4,12 @@ const express = require('express');
 const { createApp } = require('../server/app');
 const { randomUUID } = require('node:crypto');
 const rows = require('../server/menu-catalog.cjs').items.map(item => ({...item,id:randomUUID()}));
+const {createOrderFixture,memberId}=require('./order-fixture.cjs');
+const orderFixture=createOrderFixture(rows);
 const fakeClient = () => ({
-  auth: { getUser: async () => ({ data: { user: { email: 'demo@example.test', app_metadata: { hub_role: 'admin' } } } }) },
+  auth: { getUser: async () => ({ data: { user: { id:memberId, email: 'demo@example.test', user_metadata:{name:'Demo member'}, app_metadata: { hub_role: 'admin' } } } }) },
   from(table) {
+    if(table==='orders')return orderFixture.client(null,null,{global:{headers:{Authorization:'Bearer admin'}}}).from(table);
     let filtered = table === 'profiles' ? [{id:'demo-member', name:'Demo member', created_at:'2026-09-23'}] : [...rows];
     let action, payload, single = false;
     const query = {
@@ -28,7 +31,7 @@ const fakeClient = () => ({
 });
 const app = express();
 app.get('/vendor/supabase.js', (_req,res) => res.type('js').send(`
-const fixtureUser={id:'fixture',email:'demo@example.test',user_metadata:{name:'Demo member'},app_metadata:{hub_role:'admin'}};
+const fixtureUser={id:'${memberId}',email:'demo@example.test',user_metadata:{name:'Demo member'},app_metadata:{hub_role:'admin'}};
 window.supabase={createClient(){let changed;return {auth:{
 getSession:async()=>({data:{session:{access_token:'fixture',user:fixtureUser}}}),
 getUser:async()=>({data:{user:fixtureUser}}),

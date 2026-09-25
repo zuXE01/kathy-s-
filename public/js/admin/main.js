@@ -2,8 +2,10 @@ import { getAuthClient } from '../auth-client.js';
 import { request, cancelRequests } from './request.js';
 import { initMembers, loadMembers } from './members.js';
 import { initMenuManager, loadMenu, clearMenu } from './menu.js';
+import { initOrders, loadOrders, clearOrders } from './orders.js';
 const el = id => document.getElementById(id);
 function deny(message) {
+  clearOrders();
   cancelRequests(); el('adminShell').hidden = true; el('adminGate').hidden = false;
   el('gateMessage').textContent = message; el('memberRows').replaceChildren(); clearMenu();
   document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
@@ -30,8 +32,9 @@ function navigate(section) {
   if (section === 'overview') overview();
   if (section === 'members') loadMembers();
   if (section === 'menu') loadMenu();
+  if (section === 'orders') loadOrders();
 }
-initMembers(); initMenuManager();
+initMembers(); initMenuManager(); initOrders();
 document.querySelectorAll('[data-section]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.section)));
 document.querySelector('[data-open-menu]').addEventListener('click', () => navigate('menu'));
 el('refreshOverview').addEventListener('click', overview);

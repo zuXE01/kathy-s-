@@ -1,13 +1,37 @@
-# Demo checkout
+# Saved orders and admin order management
 
-Open the member cart and select **Continue to checkout**. The separate `/checkout.html` page supports customer name, email, phone, Philippine delivery address, notes, cash on delivery, and simulated online payment.
+## What works
 
-This is a frontend demonstration, not an order-processing system. Neither payment choice creates a database order, books delivery, sends an email, or charges money. COD is shown as unpaid; online success is explicitly simulated. Do not enter card credentials or OTPs. Delivery is displayed as ₱0 for demo purposes only.
+Signed-in customers submit checkout through `POST /api/orders`. Orders are stored in Supabase with customer name, contact details, address, notes, item/size/quantity snapshots, current prices, payment method, timestamps and status history. All orders remain explicitly marked as demo orders until real payment/delivery functionality is built.
 
-Cart products are stored in this browser tab's session storage to survive navigation and refresh. Sign-out and successful demo confirmation clear the cart. Customer information is only held in the form and confirmation DOM; application code does not persist or transmit it. Use sample information. Checkout does not require an additional login check because it has no privileged or persistent operations.
+Admin: open `/admin.html` → **Orders**. The default filter is Pending. Use **Refresh orders** for new arrivals, select a status filter, and open a card to inspect customer and item details. The list is paginated at 20 orders per page.
 
-Checkout resolves product IDs and option labels against the current public menu, ignoring stored names and prices. It rechecks before confirmation and requests review if prices changed. Missing products/options and invalid quantities are rejected. This browser validation is not a security boundary: real checkout requires authenticated server-side validation, durable orders, idempotency, delivery pricing, and verified payment-provider callbacks.
+Allowed progression: Pending → Accepted → Preparing → Ready → Completed. Pending, Accepted and Preparing can instead be Rejected, with a required reason. Completed and Rejected are terminal. Each update records the actor, time and note. Concurrent edits use a version check, so stale changes fail rather than overwriting newer work.
 
-Modules: `cart-storage.js` handles navigation storage; `checkout-model.js` handles totals and validation; `checkout.js` handles page interaction. Styles are mobile-first in `checkout.css`.
+COD stays unpaid; completing an order does not collect cash. Online payment remains simulated, never marked as real paid money. Delivery fee is ₱0 for the demo. No delivery booking, notifications, customer order-history page, refunds, inventory deduction or payment collection is added in this phase.
 
-Verification: 19 automated tests pass. Browser fixture checks cover COD, simulated online payment, clearing after confirmation, empty-cart handling, and 320px/390px layouts. No real customer data or payment provider was used. Changes must be deployed before appearing on Render.
+## Setup and deployment
+
+The connected Supabase project has already received `supabase/orders-setup.sql`. For another database, run it after `schema.sql`, `admin-setup.sql` and `menu-catalog-setup.sql`. It is an additive, repeatable setup script, not a CLI migration-history entry. No new service-role key or environment variable is needed.
+
+Code changes are local until committed/pushed and deployed to Render. Keep production ordering disabled as a business process until delivery pricing, abuse controls, payments, notifications and operational policies are ready.
+
+## Data protection and integrity
+
+- The server verifies Supabase users, rejects unsigned/anonymous sessions, and checks trusted app metadata for admin actions.
+- Database row-level security permits customers to read their own orders only; admins can read and progress all orders.
+- Column grants restrict writes, and invoker triggers in a non-public schema enforce totals, available products, valid options, quantities and legal status transitions even for direct database API calls.
+- Menu rows are locked while creating each snapshot. Changes to menu names/prices later do not rewrite saved orders.
+- Prices are calculated in integer centavos. A mismatch requires the customer to review the updated total.
+- A request UUID and unique user/request constraint prevent duplicates on retries. The same UUID with different checkout details is rejected. A page reload can recover a saved request whose response was lost.
+- Customer details are now saved in the database and shown only to the owner/admin; the page explicitly discloses this before submission. The browser stores the cart and request ID, not the customer's address form.
+- Orders cannot be deleted through this UI/API. Account deletion is restricted by the order foreign key; define a retention/anonymization process before real customer use.
+- No customer contact details are placed in URLs or application logs.
+
+## Verification
+
+25 automated tests cover existing functionality plus order validation, authentication, customer isolation, retries, concurrent duplicates, price changes, status filters, rejection reasons, and stale admin updates. `supabase/orders-verification.sql` tests actual database policies, snapshot repricing and transitions inside a rolled-back transaction. It requires two existing users; no sample orders remain after the test.
+
+The loopback-only browser fixture verified checkout → admin queue → Accepted → Preparing → Ready → Completed, including persistence across page reload and 320px/390px screens. Fixture data is in memory and never sent to the real database.
+
+Database advisors reported no new order security warnings. Existing warnings remain for [anonymous signup-trigger execution](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable), [authenticated signup-trigger execution](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) and [disabled leaked-password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Existing profile/menu policy performance notices remain. New order indexes are naturally reported unused until real workload arrives.

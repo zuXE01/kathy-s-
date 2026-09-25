@@ -71,7 +71,7 @@ export function initCart() {
     try { saveCart(cart.snapshot().items); window.location.assign('/checkout.html'); }
     catch { status.textContent='Enable browser session storage to continue to checkout.'; }
   });
-  dialog.append(header,list,total,node('p','s','cart-note'),checkout);
+  dialog.append(header,list,total,node('p','Checkout saves your order for admin review. Payments and delivery booking remain demo-only.','cart-note'),checkout);
   document.getElementById('signedInView').append(launcher,status,dialog);
   render();
 }

@@ -9,5 +9,6 @@ export function readCart() {
   } catch { return []; }
 }
 export function forgetCart() {
+  try { sessionStorage.removeItem('kathys-checkout-request'); } catch {}
   try { sessionStorage.removeItem(key); } catch { /* Storage may be disabled. */ }
 }

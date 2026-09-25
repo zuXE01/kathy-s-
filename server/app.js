@@ -4,6 +4,7 @@ const path = require('node:path');
 const { createClient } = require('@supabase/supabase-js');
 const { adminRouter } = require('./admin');
 const { readMenu } = require('./menu-store');
+const { ordersRouter } = require('./orders');
 
 function createApp(env = process.env, createAuthClient = createClient) {
   const url = env.SUPABASE_URL;
@@ -42,6 +43,7 @@ function createApp(env = process.env, createAuthClient = createClient) {
     }
   });
   app.use('/api/admin', adminRouter(url, key, createAuthClient));
+  app.use('/api/orders', ordersRouter(url,key,createAuthClient));
   app.get('/api/menu', async (_req, res) => {
     res.set('Cache-Control', 'no-store');
     try {
