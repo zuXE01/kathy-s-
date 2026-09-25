@@ -3,6 +3,7 @@ import { resolveCheckout, customerDetails } from './checkout-model.js';
 import { formatPrice } from './menu-card.js';
 import { orderRequest } from './order-api.js';
 import { getAuthClient } from './auth-client.js';
+import { showSkeleton } from './loading.js';
 const el=id=>document.getElementById(id), requestKey='kathys-checkout-request';
 let order,saved,submitting=false,requestId,userId,active=true;
 window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
@@ -34,6 +35,8 @@ function confirmation(value) {
   el('confirmation').hidden=false;el('confirmation').focus();
 }
 async function load() {
+  const loading=el('checkoutLoading');loading.hidden=false;
+  const finishLoading=showSkeleton(loading,2);
   try {
     const client=await getAuthClient();
     client.auth.onAuthStateChange((event,session)=>{
@@ -61,10 +64,13 @@ async function load() {
     el('checkoutStatus').textContent='Your order and contact details will be saved and visible to restaurant admins.';
     el('checkoutContent').hidden=false;
   } catch(error){el('checkoutStatus').textContent=error.message+' Reload to retry, or return to the menu.';}
+  finally {finishLoading();loading.hidden=true;}
 }
 el('checkoutForm').addEventListener('submit',async function submitOrder(event) {
   event.preventDefault();if(submitting||!active)return;
   submitting=true;el('placeOrder').disabled=true;el('checkoutError').textContent='';
+  el('placeOrder').textContent='Saving your order…';
+  el('placeOrder').setAttribute('aria-busy','true');
   try {
     const customer=customerDetails(new FormData(this));
     requestId=requestId||crypto.randomUUID();
@@ -79,6 +85,6 @@ el('checkoutForm').addEventListener('submit',async function submitOrder(event) {
     if(error.status===409) {
       try {order=await currentOrder();drawOrder();} catch(menuError){el('checkoutError').textContent=menuError.message;}
     }
-  } finally {submitting=false;el('placeOrder').disabled=false;}
+  } finally {submitting=false;el('placeOrder').disabled=false;el('placeOrder').textContent='Place demo order';el('placeOrder').setAttribute('aria-busy','false');}
 });
 load();

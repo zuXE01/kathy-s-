@@ -1,18 +1,22 @@
 import { request } from './request.js';
 import { formatPrice } from '../menu-card.js';
+import { showSkeleton } from '../loading.js';
 const el=id=>document.getElementById(id);
 const transitions={pending:['accepted','rejected'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[]};
 let page=1,revision=0,busy=false,selected=null;
 const node=(tag,text,className)=>{const value=document.createElement(tag);if(text!==undefined)value.textContent=text;if(className)value.className=className;return value;};
 export function clearOrders() {
+  el('orderRows').setAttribute('aria-busy','false');
   revision++;busy=false;selected=null;el('orderRows').replaceChildren();el('orderDetails').replaceChildren();el('orderDialog').close();el('ordersMessage').textContent='';
 }
 export function loadOrders(nextPage=1) {
   const current=++revision;page=nextPage;
+  const finishLoading=showSkeleton(el('orderRows'),3);
   el('ordersMessage').textContent='Loading saved orders…';el('ordersRefresh').disabled=true;
   el('ordersPrev').disabled=el('ordersNext').disabled=true;
   request('/orders?page='+page+'&status='+encodeURIComponent(el('ordersFilter').value),{},(error,data)=>{
     if(current!==revision)return;
+    finishLoading();
     el('ordersRefresh').disabled=false;
     if(error){el('ordersMessage').textContent=error.message;return;}
     el('orderRows').replaceChildren();

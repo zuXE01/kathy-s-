@@ -1,0 +1,26 @@
+/* Mobile-first, transform/opacity-only motion; no artificial loading delays. */
+:root{--hub-spring:cubic-bezier(.22,1,.36,1)}
+.loading-card{min-width:0;padding:22px;border:1px solid #e6ddc6;border-radius:18px;background:#fffdf8;display:flex;flex-direction:column;gap:16px;min-height:260px}
+.skeleton{position:relative;overflow:hidden;display:block;background:#eae3d6;border-radius:9px;height:14px}
+.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,#fffaf0aa,transparent);animation:hub-shimmer 1.6s ease-in-out infinite}
+.skeleton-icon{height:38px;width:38px;border-radius:12px}.skeleton-title{height:22px;width:75%}.skeleton-line{width:100%}.skeleton-line.short{width:55%}.skeleton-control{height:48px;margin-top:auto}
+.checkout-loading{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.checkout-loading[hidden]{display:none!important}
+@keyframes hub-shimmer{to{transform:translateX(100%)}}
+@keyframes hub-reveal{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes hub-sheet{from{opacity:0;transform:translateY(36px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes hub-backdrop{from{opacity:0}to{opacity:1}}
+.catalog-card,.order-card,#checkoutContent:not([hidden]),#confirmation:not([hidden]),[data-panel]:not([hidden]){animation:hub-reveal .28s var(--hub-spring) both}
+.cart-dialog[open],.admin-page dialog[open]{animation:hub-sheet .38s var(--hub-spring) both}
+.cart-dialog[open]::backdrop,.admin-page dialog[open]::backdrop{animation:hub-backdrop .22s ease-out both}
+.cart-dialog::before{content:"";display:block;width:36px;height:5px;border-radius:8px;background:#bfb7ac;margin:-5px auto 18px}
+.cart-add,.cart-launcher,.catalog-more,.menu-filters button,.admin-button,#placeOrder,.cart-dialog button{transition:transform .18s var(--hub-spring),background-color .18s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.cart-add:active,.cart-launcher:active,.catalog-more:active,.menu-filters button:active,.admin-button:active,#placeOrder:active,.cart-dialog button:active{transform:scale(.97)}
+button:disabled:active{transform:none}
+@media(min-width:761px){.checkout-loading{grid-template-columns:1.4fr 1fr}.cart-dialog::before{display:none}}
+@media(prefers-reduced-motion:reduce){
+  .skeleton::after{animation:none;display:none}
+  .catalog-card,.order-card,#checkoutContent:not([hidden]),#confirmation:not([hidden]),[data-panel]:not([hidden]),.cart-dialog[open],.admin-page dialog[open],.cart-dialog[open]::backdrop,.admin-page dialog[open]::backdrop{animation:none}
+  .cart-add,.cart-launcher,.catalog-more,.menu-filters button,.admin-button,#placeOrder,.cart-dialog button{transition:none}
+  .cart-add:active,.cart-launcher:active,.catalog-more:active,.menu-filters button:active,.admin-button:active,#placeOrder:active,.cart-dialog button:active{transform:none}
+}

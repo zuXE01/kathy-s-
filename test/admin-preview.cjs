@@ -30,6 +30,9 @@ const fakeClient = () => ({
   }
 });
 const app = express();
+// Optional visual QA latency. This fixture is never imported by production.
+const previewDelay=Math.min(5000,Math.max(0,Number(process.env.PREVIEW_DELAY_MS)||0));
+app.use('/api',(_req,_res,next)=>setTimeout(next,previewDelay));
 app.get('/vendor/supabase.js', (_req,res) => res.type('js').send(`
 const fixtureUser={id:'${memberId}',email:'demo@example.test',user_metadata:{name:'Demo member'},app_metadata:{hub_role:'admin'}};
 window.supabase={createClient(){let changed;return {auth:{

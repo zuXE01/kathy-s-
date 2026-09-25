@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout — Kathy's Hub</title><link rel="stylesheet" href="/checkout.css"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout — Kathy's Hub</title><link rel="stylesheet" href="/checkout.css"><link rel="stylesheet" href="/motion.css"></head>
 <body><header><a href="/#menu">← Back to menu</a><span>Kathy’s Hub</span></header>
 <main><p class="eyebrow">ONE MORE STEP</p><h1>Checkout</h1><p class="notice">Orders are saved for restaurant admins to review. Payments and delivery booking remain demo-only. Use sample details while testing.</p>
 <p id="checkoutStatus" role="status">Loading your cart…</p>
+<div id="checkoutLoading" class="checkout-loading" hidden></div>
 <div id="checkoutContent" hidden class="checkout-layout">
 <form id="checkoutForm">
 <section><h2>Customer information</h2><label>Full name<input name="name" autocomplete="name" required maxlength="100"></label><label>Email address<input name="email" type="email" autocomplete="email" required maxlength="200"></label><label>Phone number<input name="phone" type="tel" autocomplete="tel" required maxlength="20" placeholder="09XX XXX XXXX"></label></section>

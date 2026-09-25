@@ -1,8 +1,9 @@
 import { createMenuCard } from './menu-card.js';
 import { initCart, addToCart } from './cart.js';
+import { showSkeleton } from './loading.js';
 import { filterMenu, getSections, fillSections } from './menu-filter.js';
 const el = id => document.getElementById(id);
-let items = [], section = 'all', visible = 12;
+let items = [], section = 'all', visible = 12, loading = false;
 function renderSections() {
   fillSections(el('mobileMenuSection'), items);
   el('mobileMenuSection').value = section;
@@ -17,6 +18,7 @@ function renderSections() {
   });
 }
 function render() {
+  if (loading) return;
   const matches = filterMenu(items,{ section, search:el('catalogSearch').value });
   const grid = el('catalogGrid'); grid.replaceChildren();
   matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item,{onAdd:addToCart})));
@@ -26,15 +28,18 @@ function render() {
 }
 function filtersChanged() { visible = 12; render(); }
 function loadMenu() {
+  loading = true;
+  const finishLoading = showSkeleton(el('catalogGrid'),4);
+  el('catalogMore').hidden = el('catalogEmpty').hidden = true;
   el('catalogRetry').hidden = true; el('catalogGrid').setAttribute('aria-busy','true');
   el('menuResult').textContent = 'Loading the menu…';
   fetch('/api/menu').then(function checked(response) {
     if (!response.ok) throw new Error('Menu unavailable'); return response.json();
   }).then(function loaded(data) {
-    items = data.items; renderSections(); render();
+    items = data.items; loading = false; renderSections(); render();
   }).catch(function failed() {
     el('menuResult').textContent = 'We could not load the menu. Please try again.'; el('catalogRetry').hidden = false;
-  }).finally(() => el('catalogGrid').setAttribute('aria-busy','false'));
+  }).finally(() => { loading = false; finishLoading(); });
 }
 export function initMenu() {
   initCart();
