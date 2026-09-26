@@ -131,49 +131,6 @@
   </div>
 </div>
 
-<div class="hub" id="signedInView" hidden>
-  <aside class="hub-sidebar">
-    <a class="hub-brand" href="#overview" aria-label="Kathy's Hub home">
-      <span class="brand-monogram" aria-hidden="true">K.</span>
-      <span><span class="word">Kathy's Hub</span><span class="tagline">Cafe &amp; Restaurant</span></span>
-    </a>
-    <p class="nav-caption">YOUR LITTLE CORNER</p>
-    <nav class="hub-nav" aria-label="Dashboard">
-      <a href="#overview" class="selected" aria-current="page"><span aria-hidden="true">⌂</span> Overview</a>
-      <a href="#menu"><span aria-hidden="true">☕</span> Explore the menu</a>
-      <a href="/account.html"><span aria-hidden="true">○</span> My account</a>
-      <a id="adminLink" href="/admin.html" hidden><span aria-hidden="true">⚙</span> Admin workspace</a>
-    </nav>
-    <div class="sidebar-note"><span class="tiny-label">MADE FOR SLOW MOMENTS</span><p>A good cup.<br>A familiar place.<br>A little time for you.</p><span class="note-flower" aria-hidden="true">✳</span></div>
-    <button class="hub-signout" id="signOutBtn" type="button">Sign out <span aria-hidden="true">↗</span></button>
-    <p id="signOutMessage" role="status" aria-live="polite"></p>
-  </aside>
-  <main class="hub-main" id="overview">
-    <header class="hub-topbar"><span class="breadcrumb">Your Hub <span>/</span> Overview</span><div class="member-chip"><span class="avatar" id="memberInitial" aria-hidden="true">K</span><span id="memberName">Member</span></div></header>
-    <div class="dashboard-content">
-      <div class="welcome-row"><div><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1 id="signedInName" tabindex="-1">Welcome back.</h1><p class="intro-copy">Something delicious. Somewhere to unwind. All right here.</p></div><span class="small-seal">GOOD FOOD<br><b>good company</b></span></div>
-      <section class="hero-panel" aria-labelledby="heroTitle">
-        <div class="hero-copy"><span class="hero-kicker">THE EVERYDAY ESCAPE</span><h2 id="heroTitle">Your next favorite<br>moment starts here.</h2><p>Take a break, find a new favorite, and settle into your kind of day.</p><a class="hub-button" href="#menu">Explore the menu <span aria-hidden="true">↗</span></a><span class="hero-footnote">A little inspiration for your next visit.</span></div>
-        <div class="coffee-art" aria-hidden="true"><div class="art-orbit"></div><span class="art-spark spark-one">✳</span><span class="art-spark spark-two">✧</span><div class="saucer"><div class="cup-handle"></div><div class="coffee-cup"><div class="coffee-surface"><span>♡</span></div></div></div><span class="art-caption">brewed with love</span></div>
-      </section>
-      <div class="dashboard-grid">
-        <section class="menu-section" id="menu" aria-labelledby="menuTitle">
-          <div class="section-heading"><div><p class="eyebrow">KATHY'S DINERS &amp; CAFE</p><h2 id="menuTitle">Find your next favorite.</h2></div><span class="preview-tag">Full menu</span></div>
-          <p class="section-description">Explore our food, drinks, and sweet treats. Prices in PHP. Select a size to see its price. Checkout saves demo orders for admin review. Payments and delivery booking remain simulated.</p>
-          <label class="mobile-section-picker" for="mobileMenuSection">Menu section<select id="mobileMenuSection"><option value="all">All sections</option></select></label>
-          <div class="menu-filters" id="catalogFilters" role="group" aria-label="Menu sections"><button type="button" class="active" data-filter="all" aria-pressed="true">All menu</button></div>
-          <div class="catalog-toolbar"><label>Search the menu<input type="search" id="catalogSearch" placeholder="Try matcha, pasta, cheesecake…"></label></div>
-          <p id="menuResult" class="catalog-feedback" role="status" aria-live="polite">Loading the menu…</p>
-          <div class="catalog-grid" id="catalogGrid" aria-busy="true"></div>
-          <p class="catalog-empty" id="catalogEmpty" hidden>No favorites found. Try another filter.</p>
-          <button class="catalog-retry" id="catalogRetry" type="button" hidden>Try again</button>
-          <button class="catalog-more" id="catalogMore" type="button" hidden>Show more items</button>
-        </section>
-      </div>
-      <footer class="hub-footer"><span class="word">Kathy's Hub</span><span>A little comfort in every visit.</span><a href="#overview">Back to top ↑</a></footer>
-    </div>
-  </main>
-</div>
 <script src="/vendor/supabase.js"></script>
 <script type="module" src="app.js"></script>
 

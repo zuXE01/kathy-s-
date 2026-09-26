@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Account — Kathy's Hub</title><link rel="stylesheet" href="/checkout.css"><link rel="stylesheet" href="/account.css"><link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/customer-theme.css"></head>
 <body><header><a href="/#menu">← Back to menu</a><span>Kathy’s Hub</span></header>
 <main class="account-main"><p class="eyebrow">YOUR LITTLE CORNER</p><h1>My account</h1><p>Keep your contact details and default delivery address ready for your next order.</p>
-<p id="accountStatus" role="status" aria-live="polite">Loading your account…</p><p class="fine"><a href="/signin.html">Sign in or create an account</a> to manage your saved details.</p><div id="accountLoading"></div><button id="accountRetry" type="button" hidden>Try again</button>
+<p id="accountStatus" role="status" aria-live="polite">Loading your account…</p><p class="fine" data-auth-prompt hidden><a data-signin href="/signin.html">Sign in or create an account</a> to manage your saved details.</p><div id="accountLoading"></div><button id="accountRetry" type="button" hidden>Try again</button>
 <div id="accountContent" hidden>
 <section><h2>Account information</h2><dl class="account-facts"><dt>Sign-in email</dt><dd id="accountEmail"></dd><dt>Birthday</dt><dd id="accountBirthday"></dd><dt>Gender</dt><dd id="accountGender"></dd></dl><p>Your sign-in email stays unchanged when you edit your delivery details.</p></section>
 <form id="accountForm">
@@ -12,4 +12,4 @@
 <div class="field-row"><label>City / municipality<input name="city" autocomplete="address-level2" maxlength="100"></label><label>Province<input name="province" autocomplete="address-level1" maxlength="100"></label></div>
 <label>Postal code<input name="postal" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4}" maxlength="4"></label><label>Landmark / delivery notes (optional)<textarea name="notes" rows="3" maxlength="500"></textarea></label></section>
 <p class="fine">Your saved address is private to your account. When you place an order, its delivery details are shared with restaurant admins.</p><p id="accountError" role="alert"></p><div class="account-actions"><button id="accountSave" type="submit">Save details</button></div>
-</form></div></main><script src="/vendor/supabase.js"></script><script type="module" src="/js/account.js"></script></body></html>
+<a id="returnCheckout" class="button" href="/checkout.html" hidden>Continue to checkout</a></form></div></main><script src="/vendor/supabase.js"></script><script type="module" src="/js/account.js"></script><script type="module" src="/js/customer-navigation.js"></script></body></html>

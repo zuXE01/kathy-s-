@@ -3,6 +3,12 @@ import { loadContact, saveContact } from './account-client.js';
 import { prefillContact } from './account-model.js';
 import { showSkeleton } from './loading.js';
 const el = id => document.getElementById(id);
+const fromCheckout = new URLSearchParams(location.search).get('from') === 'checkout';
+if (fromCheckout) {
+  document.querySelector('header a').href='/checkout.html';
+  document.querySelector('header a').textContent='← Back to checkout';
+  el('returnCheckout').hidden=false;
+}
 let userId, revision=0, saving=false, subscription;
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 function clearAccount() {

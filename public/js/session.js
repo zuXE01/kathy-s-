@@ -8,7 +8,7 @@ export function initSession() {
   if (params.has('error')) {
     loginMsg.textContent = 'This email link has expired or is invalid. Request a new link.';
     loginMsg.className = 'msg bad';
-    history.replaceState(null, '', window.location.pathname);
+    history.replaceState(null, '', window.location.pathname + window.location.search);
   }
   getAuthClient().then(function subscribe(client) {
     let revision = 0;
@@ -40,7 +40,6 @@ export function initSession() {
             openRecovery();
           } else {
             goSignedIn(user.email, user.user_metadata?.name || '');
-            document.getElementById('adminLink').hidden = user.app_metadata?.hub_role !== 'admin';
           }
         }).catch(function failed() {
           if (current !== revision) return;
