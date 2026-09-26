@@ -1,6 +1,6 @@
 # Kathy's Hub
 
-A responsive cafe member experience built with HTML, CSS, JavaScript, Express, and Supabase Auth.
+A mobile-first restaurant website built with HTML, CSS, JavaScript, Express, and Supabase Auth.
 
 **Live website:** https://kathy-s.onrender.com
 
@@ -8,7 +8,8 @@ A responsive cafe member experience built with HTML, CSS, JavaScript, Express, a
 
 - Supabase email registration, login, email confirmation, and password recovery
 - Persistent browser sessions with protected account display
-- Responsive member dashboard with 120 photo-transcribed menu products, search, section filters and size/portion prices
+- Public landing page and shared menu with 120 photo-transcribed products, search, section filters and size/portion prices
+- Authentication-only sign-in page with validated return destinations, plus a separate My Account page with saved contact details and checkout address autofill
 - Shared menu cards and admin editing, with database duplicate protection
 - Render-ready Express server with security headers and a health endpoint
 - Mobile-first cart and [saved-order checkout](CHECKOUT.md) with COD, simulated online payment, and delivery address

@@ -1,8 +1,17 @@
 import { orderRequest } from '../order-api.js';
 import { formatPrice } from '../menu-card.js';
 import { showSkeleton } from '../loading.js';
+import { getAuthClient } from '../auth-client.js';
 const el=id=>document.getElementById(id);
-let page=1,total=0,revision=0;
+let page=1,total=0,revision=0,userId=null,finishLoading=()=>{};
+function clearHistory(message) {
+  revision++;finishLoading();userId=null;page=1;total=0;
+  el('orderHistory').replaceChildren();el('orderHistory').setAttribute('aria-busy','false');
+  el('ordersPrevious').disabled=el('ordersNext').disabled=true;
+  el('ordersRetry').hidden=true;el('ordersPage').textContent='';el('ordersStatus').textContent=message;
+}
+window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
+window.addEventListener('pagehide',()=>clearHistory('Sign in to view your orders.'));
 const node=(tag,text,className)=>{const element=document.createElement(tag);if(text!==undefined)element.textContent=text;if(className)element.className=className;return element;};
 function date(value){const parsed=new Date(value);return Number.isNaN(parsed.valueOf())?'Date unavailable':parsed.toLocaleString();}
 function renderOrder(order){
@@ -21,10 +30,12 @@ function renderOrder(order){
   if(order.status==='pending'){
     const cancel=node('button','Cancel order','history-cancel');cancel.type='button';
     cancel.addEventListener('click',async()=>{
+      if(!userId)return;
       if(!window.confirm('Cancel this pending order?'))return;
+      const current=revision;
       cancel.disabled=true;
-      try { await orderRequest('/api/orders/'+encodeURIComponent(order.id)+'/cancel',{method:'POST'}); load(page); }
-      catch(error){ cancel.disabled=false; el('ordersStatus').textContent=error.message; }
+      try { await orderRequest('/api/orders/'+encodeURIComponent(order.id)+'/cancel',{method:'POST'}); if(current===revision)load(page); }
+      catch(error){ if(current===revision){cancel.disabled=false; el('ordersStatus').textContent=error.message;} }
     });
     card.append(cancel);
   }
@@ -41,7 +52,10 @@ function render(data){
   el('ordersNext').disabled=last;
 }
 async function load(nextPage=1){
+  if(!userId)return;
   const current=++revision,finish=showSkeleton(el('ordersLoading'),2);
+  finishLoading=finish;
+  el('orderHistory').replaceChildren();el('orderHistory').setAttribute('aria-busy','true');
   page=nextPage;el('ordersRetry').hidden=true;el('ordersStatus').textContent='Loading your orders…';el('ordersPrevious').disabled=el('ordersNext').disabled=true;
   try {
     const data=await orderRequest('/api/orders?page='+page);
@@ -50,9 +64,19 @@ async function load(nextPage=1){
   } catch(error) {
     if(current!==revision)return;
     el('ordersStatus').textContent=error.message;el('ordersRetry').hidden=false;el('orderHistory').replaceChildren();
-  } finally {finish();}
+  } finally {finish();if(current===revision)el('orderHistory').setAttribute('aria-busy','false');}
 }
 el('ordersRetry').addEventListener('click',()=>load(page));
 el('ordersPrevious').addEventListener('click',()=>load(page-1));
 el('ordersNext').addEventListener('click',()=>load(page+1));
-load();
+getAuthClient().then(client=>{
+  client.auth.onAuthStateChange((event,session)=>{
+    const nextId=event==='SIGNED_OUT'?null:session?.user?.id;
+    if(!nextId){clearHistory('Sign in to view your orders.');return;}
+    if(nextId===userId)return;
+    clearHistory('Loading your orders…');userId=nextId;
+    const current=revision;
+    // Leave the auth callback before making requests through the SDK.
+    setTimeout(()=>{if(current===revision)load(1);},0);
+  });
+}).catch(()=>clearHistory('Unable to connect. Reload to try again.'));
