@@ -1,5 +1,6 @@
 const express = require('express');
 const { createHash } = require('node:crypto');
+const { allowedOrderStatuses } = require('./roles');
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const transitions = {pending:['accepted','rejected','cancelled'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[],cancelled:[]};
 function validateOrder(body) {
@@ -105,17 +106,18 @@ function mountAdminOrders(router) {
       if(status!=='all')query=query.eq('status',status);
       const result=await query.order('created_at',{ascending:false}).order('id').range((page-1)*20,page*20-1);
       if(result.error)return errorResponse(res,result.error);
-      res.json({items:result.data,total:result.count,page});
+      res.json({items:result.data.map(order=>({...order,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[order.status]||[])})),total:result.count,page});
     } catch {res.status(503).json({error:'Unable to load orders.'});}
   });
   router.patch('/orders/:id',async(req,res)=>{
     const {status,version,note=''}=req.body||{};
     if(!uuid.test(req.params.id)||!Object.hasOwn(transitions,status)||!Number.isInteger(version)||version<1||typeof note!=='string'||note.length>500||(status==='rejected'&&!note.trim()))return res.status(400).json({error:'Select a valid status; rejection requires a reason.'});
+    if(!allowedOrderStatuses(req.adminRole,Object.keys(transitions)).includes(status))return res.status(403).json({error:'Your role cannot perform this order action.',code:'ACTION_FORBIDDEN'});
     try {
       const result=await req.adminClient.from('orders').update({status,status_note:note.trim()}).eq('id',req.params.id).eq('version',version).select('*').maybeSingle();
       if(result.error)return errorResponse(res,result.error);
       if(!result.data)return res.status(409).json({error:'Another admin updated this order. Refresh and review its latest status.'});
-      res.json({order:result.data});
+      res.json({order:{...result.data,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[result.data.status]||[])}});
     } catch {res.status(503).json({error:'Unable to update order. Refresh before retrying.'});}
   });
 }

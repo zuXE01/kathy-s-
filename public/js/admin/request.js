@@ -12,13 +12,13 @@ export function request(path, options, callback) {
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + data.session.access_token }
     });
     const result = await response.json();
-    if (!response.ok) throw Object.assign(new Error(result.error || 'Request failed.'), { status: response.status });
+    if (!response.ok) throw Object.assign(new Error(result.error || 'Request failed.'), { status: response.status, code:result.code });
     return result;
   }).then(function received(data) {
     if (current === generation) callback(null, data);
   }, function failed(error) {
     if (current !== generation) return;
-    if (error.status === 401 || error.status === 403) window.dispatchEvent(new CustomEvent('admin-denied', { detail: error.message }));
+    if (error.status === 401 || error.code === 'WORKSPACE_ACCESS_DENIED') window.dispatchEvent(new CustomEvent('admin-denied', { detail: error.message }));
     callback(error);
   });
 }

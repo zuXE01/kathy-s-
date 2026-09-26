@@ -7,7 +7,11 @@ const roleSets = Object.freeze({
 });
 function roleForUser(user) {
   const supplied=user?.app_metadata?.hub_role;
-  return legacyRoles[supplied] || (roleNames.includes(supplied) ? supplied : 'customer');
+  return Object.hasOwn(legacyRoles,supplied) ? legacyRoles[supplied] : (roleNames.includes(supplied) ? supplied : 'customer');
+}
+function allowedOrderStatuses(role, statuses) {
+  if(!roleSets.orders.includes(role))return [];
+  return role==='kitchen_staff'?statuses.filter(status=>['preparing','ready'].includes(status)):[...statuses];
 }
 function canRole(role, allowed) { return allowed.includes(role); }
 function requireRole(...allowed) {
@@ -15,4 +19,4 @@ function requireRole(...allowed) {
     ? next()
     : res.status(403).json({error:'You do not have permission for this action.'});
 }
-module.exports={roleNames,roleSets,roleForUser,requireRole};
+module.exports={roleNames,roleSets,roleForUser,requireRole,allowedOrderStatuses};

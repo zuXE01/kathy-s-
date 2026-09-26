@@ -45,6 +45,10 @@ The application only uses the publishable key in the browser. Never put a Supaba
 
 Assign `app_metadata.hub_role` through a trusted Supabase admin workflow. Supported roles are `owner`, `staff`, `kitchen_staff`, `platform_admin`, and the legacy `admin` value (treated as `owner`). Staff can access order operations, kitchen staff can update preparation/readiness states, and only owners/platform administrators can manage menus and member data. Customers have no staff access.
 
+The server returns the permitted next actions on each order; kitchen staff only see Preparing and Ready when the current order stage permits them. Staff dashboards show order counts instead of restricted member/menu totals. A forbidden action displays an error without closing the workspace; losing workspace access clears private data. Role or account changes recheck permissions.
+
+Database policies must match the server: run the existing `admin-setup.sql` and `orders-setup.sql` setups after their documented prerequisites. The live project was aligned on 2026-09-26 with migration `align_staff_role_access_and_order_transitions`, preserving legacy admin access. No user roles were assigned by this update. After changing a role through a trusted administrator, refresh the user's session (sign out and back in) so JWT-based database rules receive the new role; old JWT claims can remain valid until expiry.
+
 To store registration details in Supabase Table Editor, open the SQL Editor, run [`supabase/schema.sql`](supabase/schema.sql), and then register a new account. This creates `public.profiles` and automatically copies each user's name, birthday, and gender from Auth metadata into that table. The SQL also backfills existing Auth users.
 
 ## Deploy to Render

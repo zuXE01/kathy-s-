@@ -48,8 +48,10 @@ function openOrder(order) {
   const history=node('ol');
   order.history.forEach(event=>history.append(node('li',event.status+' · '+new Date(event.at).toLocaleString()+(event.note?' · '+event.note:''))));
   box.append(history);el('orderNextStatus').replaceChildren();
-  transitions[order.status].forEach(status=>{const option=node('option',status);option.value=status;el('orderNextStatus').append(option);});
-  el('orderUpdateForm').hidden=!transitions[order.status].length;el('orderSave').disabled=false;
+  const allowed=(order.allowed_statuses||[]).filter(status=>(transitions[order.status]||[]).includes(status));
+  allowed.forEach(status=>{const option=node('option',status);option.value=status;el('orderNextStatus').append(option);});
+  el('orderUpdateForm').hidden=!allowed.length;el('orderSave').disabled=false;
+  if(!allowed.length)el('orderUpdateMessage').textContent='No status actions are available for your role at this stage.';
   el('orderDialog').showModal();
 }
 export function initOrders() {

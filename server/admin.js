@@ -19,7 +19,7 @@ function adminRouter(url, key, createClient) {
       const { data, error } = await client.auth.getUser(token);
       if (error || !data.user) return res.status(401).json({ error: 'Please sign in again.' });
       const role=roleForUser(data.user);
-      if (!roleSets.workspace.includes(role)) return res.status(403).json({ error: 'Staff access required.' });
+      if (!roleSets.workspace.includes(role)) return res.status(403).json({ error: 'Staff access required.', code:'WORKSPACE_ACCESS_DENIED' });
       req.adminClient = client;
       req.adminUser = data.user;
       req.adminRole = role;
@@ -31,6 +31,12 @@ function adminRouter(url, key, createClient) {
   router.use(['/menu','/members'], requireRole(...roleSets.management));
   mountAdminOrders(router);
   router.get('/overview', requireRole(...roleSets.workspace), async (req, res) => {
+    if(!roleSets.management.includes(req.adminRole)) {
+      const statuses=['accepted','preparing','ready'];
+      const results=await Promise.all(statuses.map(status=>req.adminClient.from('orders').select('id',{count:'exact',head:true}).eq('status',status)));
+      if(results.some(result=>result.error))return res.status(503).json({error:'Unable to load order counts. Please retry.'});
+      return res.json({email:req.adminUser.email,role:req.adminRole,orderCounts:Object.fromEntries(statuses.map((status,index)=>[status,results[index].count]))});
+    }
     const [members, menu, available] = await Promise.all([
       req.adminClient.from('profiles').select('id', { count: 'exact', head: true }),
       req.adminClient.from('menu_items').select('id', { count: 'exact', head: true }),
