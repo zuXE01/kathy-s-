@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Order history — Kathy's Hub</title><link rel="stylesheet" href="/checkout.css"><link rel="stylesheet" href="/orders.css"><link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/customer-theme.css"></head>
+<body>
+<header><a href="/#menu">← Back to menu</a><span>Kathy’s Hub</span></header>
+<main>
+  <p class="eyebrow">YOUR VISITS</p>
+  <h1>Order history</h1>
+  <p>Review your saved orders and their latest status.</p>
+  <p id="ordersStatus" role="status" aria-live="polite">Loading your orders…</p>
+  <p class="fine" data-auth-prompt hidden><a data-signin href="/signin.html">Sign in or create an account</a> to view your orders.</p>
+  <div id="ordersLoading" class="orders-loading" aria-hidden="true"></div>
+  <div id="orderHistory" class="order-history" aria-busy="true"></div>
+  <button id="ordersRetry" type="button" hidden>Try again</button>
+  <nav class="history-pagination" aria-label="Order history pages">
+    <button id="ordersPrevious" type="button" disabled>Previous</button>
+    <span id="ordersPage">Page 1</span>
+    <button id="ordersNext" type="button" disabled>Next</button>
+  </nav>
+</main>
+<script src="/vendor/supabase.js"></script><script type="module" src="/js/orders.js"></script><script type="module" src="/js/customer-navigation.js"></script>
+</body>
+</html>

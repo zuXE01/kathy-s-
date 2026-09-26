@@ -42,6 +42,20 @@ function ordersRouter(url,key,createClient) {
     } catch {res.status(503).json({error:'Unable to verify your account.'});}
   });
   router.use(express.json({limit:'32kb'}));
+  router.get('/',async(req,res)=>{
+    const page=Number(req.query.page||1);
+    if(!Number.isSafeInteger(page)||page<1||page>10000)return res.status(400).json({error:'Invalid order page.'});
+    try {
+      const result=await req.orderClient.from('orders')
+        .select('id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at',{count:'exact'})
+        .eq('user_id',req.orderUser.id).order('created_at',{ascending:false}).order('id')
+        .range((page-1)*10,page*10-1);
+      if(result.error)return errorResponse(res,result.error);
+      const items=result.data.map(({id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at})=>
+        ({id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at}));
+      res.json({items,total:result.count,page});
+    } catch {res.status(503).json({error:'Unable to load your order history.'});}
+  });
   router.get('/request/:requestId',async(req,res)=>{
     if(!uuid.test(req.params.requestId))return res.status(400).json({error:'Invalid checkout reference.'});
     try {

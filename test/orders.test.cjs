@@ -34,6 +34,17 @@ test('saved order is recovered on retry and isolated from another customer',asyn
   const other=await send('/api/orders/request/'+body.request_id,'other');assert.equal((await other.json()).order,null);
   assert.equal((await send('/api/orders/request/'+body.request_id)).headers.get('cache-control'),'no-store');
 });
+test('customer order history is paginated and excludes private checkout fields',async t=>{
+  const {send}=await setup(t),body=payload();
+  const created=await send('/api/orders','member','POST',body);assert.equal(created.status,201);
+  const history=await send('/api/orders?page=1','member');
+  assert.equal(history.status,200);
+  const result=await history.json();
+  assert.equal(result.total,1);assert.equal(result.page,1);assert.equal(result.items.length,1);
+  assert.equal(result.items[0].id,(await created.clone().json()).order.id);
+  assert.equal(result.items[0].customer,undefined);
+  assert.equal((await send('/api/orders?page=0','member')).status,400);
+});
 test('simultaneous checkout retries create one order and wrong prices fail',async t=>{
   const {send,orders}=await setup(t),body=payload();
   const responses=await Promise.all([send('/api/orders','member','POST',body),send('/api/orders','member','POST',body)]);

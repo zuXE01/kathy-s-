@@ -3,7 +3,7 @@ import { forgetCart } from './cart-storage.js';
 import { signInPath } from './routes.js';
 const destination=location.pathname==='/account.html'
   ? '/account.html'+(new URLSearchParams(location.search).get('from')==='checkout'?'?from=checkout':'')
-  : location.pathname==='/checkout.html'?'/checkout.html':'/#menu';
+  : location.pathname==='/checkout.html'?'/checkout.html':location.pathname==='/orders.html'?'/orders.html':'/#menu';
 function displayUser(user) {
   document.querySelectorAll('[data-signin]').forEach(link=>{link.href=signInPath(destination);link.hidden=!!user;});
   document.querySelectorAll('[data-signout]').forEach(button=>{button.hidden=!user;});
