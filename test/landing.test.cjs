@@ -1,7 +1,7 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const script=fs.readFileSync(path.join(__dirname,'../public/js/landing.js'),'utf8').replace(/^import .*;\r?\n/gm,'');
+const script=fs.readFileSync(path.join(__dirname,'../public/js/pages/landing.js'),'utf8').replace(/^import .*;\r?\n/gm,'');
 test('public landing forwards existing email callback fragments to sign-in without losing them',()=>{
   for(const part of [{hash:'#access_token=sample&type=recovery',search:''},{hash:'#error=expired',search:''},{hash:'',search:'?code=sample'}]){
     let destination;

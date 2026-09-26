@@ -1,7 +1,7 @@
-import { getAuthClient } from './auth-client.js';
-import { loadContact, saveContact } from './account-client.js';
-import { prefillContact } from './account-model.js';
-import { showSkeleton } from './loading.js';
+import { getAuthClient } from '../auth-client.js';
+import { loadContact, saveContact } from '../account-client.js';
+import { prefillContact } from '../account-model.js';
+import { showSkeleton } from '../loading.js';
 const el = id => document.getElementById(id);
 const fromCheckout = new URLSearchParams(location.search).get('from') === 'checkout';
 if (fromCheckout) {

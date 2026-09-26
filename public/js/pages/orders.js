@@ -1,6 +1,6 @@
-import { orderRequest } from './order-api.js';
-import { formatPrice } from './menu-card.js';
-import { showSkeleton } from './loading.js';
+import { orderRequest } from '../order-api.js';
+import { formatPrice } from '../menu-card.js';
+import { showSkeleton } from '../loading.js';
 const el=id=>document.getElementById(id);
 let page=1,total=0,revision=0;
 const node=(tag,text,className)=>{const element=document.createElement(tag);if(text!==undefined)element.textContent=text;if(className)element.className=className;return element;};

@@ -62,13 +62,19 @@ Render supplies the `PORT` value. `NODE_ENV=production` enables production secur
 ## Project structure
 
 ```text
-public/          Browser UI and feature modules
-server/app.js    Express app, security headers, and account verification
-server.js        Production entrypoint
-test/            Node test suite
-supabase/schema.sql  Profiles table and Auth trigger
-render.yaml      Render deployment configuration
+public/              Browser pages, styles, and assets
+public/js/pages/     Page entry points and page-specific orchestration
+public/js/admin/     Admin workspace modules and API adapter
+public/js/*.js       Shared browser/domain modules kept stable for reuse
+server/app.js        Express app, security headers, and route mounting
+server/              Server routes, validation, menu storage, and order logic
+server.js            Production entrypoint
+test/                Node test suite organized by feature
+supabase/             Schema, RLS/triggers, setup, and verification SQL
+render.yaml          Render Blueprint deployment
 ```
+
+Keep public URLs and HTML entry points stable. Add new page behavior under `public/js/pages/`, reusable browser logic in the shared module layer, admin-only behavior under `public/js/admin/`, and server-side data rules in `server/` or Supabase rather than duplicating them in page scripts.
 
 ## Development notes
 

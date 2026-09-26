@@ -1,4 +1,4 @@
-import { initMenu } from './menu.js';
+import { initMenu } from '../menu.js';
 // Preserve previously issued confirmation and recovery links at the public root.
 const hash = new URLSearchParams(location.hash.slice(1));
 const query = new URLSearchParams(location.search);

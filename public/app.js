@@ -1,4 +1,5 @@
-// Entry point: feature modules own their logic and named event callbacks.
+// Compatibility entry point for the sign-in page.
+import './js/pages/auth.js';// Entry point: feature modules own their logic and named event callbacks.
 import { initTabs } from './js/tabs.js';
 import { initLogin } from './js/login.js';
 import { initRegister } from './js/register.js';

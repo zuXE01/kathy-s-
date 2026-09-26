@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const scope={URLSearchParams};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/routes.js'),'utf8').replace(/export /g,''),scope);
 test('return routing preserves approved destinations and rejects external or unknown URLs',()=>{
-  for(const target of ['/checkout.html','/account.html','/account.html?from=checkout','/admin.html','/#menu']) {
+  for(const target of ['/checkout.html','/account.html','/account.html?from=checkout','/orders.html','/admin.html','/#menu']) {
     assert.equal(scope.returnDestination('?next='+encodeURIComponent(target)),target);
     assert.equal(scope.signInPath(target),'/signin.html?next='+encodeURIComponent(target));
   }
