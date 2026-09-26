@@ -52,7 +52,8 @@ function ordersRouter(url,key,createClient) {
         .range((page-1)*10,page*10-1);
       if(result.error)return errorResponse(res,result.error);
       const items=result.data.map(({id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at})=>
-        ({id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at}));
+        ({id,items,total_cents,payment_method,payment_status,status,status_note,
+          history:Array.isArray(history)?history.map(({status,at,note})=>({status,at,note})):[],created_at,updated_at}));
       res.json({items,total:result.count,page});
     } catch {res.status(503).json({error:'Unable to load your order history.'});}
   });

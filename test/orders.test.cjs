@@ -43,6 +43,7 @@ test('customer order history is paginated and excludes private checkout fields',
   assert.equal(result.total,1);assert.equal(result.page,1);assert.equal(result.items.length,1);
   assert.equal(result.items[0].id,(await created.clone().json()).order.id);
   assert.equal(result.items[0].customer,undefined);
+  assert.equal(result.items[0].history[0].actor,undefined);
   assert.equal((await send('/api/orders?page=0','member')).status,400);
 });
 test('customer can cancel only a pending order',async t=>{

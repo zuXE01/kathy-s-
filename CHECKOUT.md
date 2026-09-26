@@ -26,11 +26,11 @@ Code changes are local until committed/pushed and deployed to Render. Keep produ
 - A request UUID and unique user/request constraint prevent duplicates on retries. The same UUID with different checkout details is rejected. A page reload can recover a saved request whose response was lost.
 - Customer details are now saved in the database and shown only to the owner/admin; the page explicitly discloses this before submission. The browser stores the cart and request ID, not the customer's address form.
 - Orders cannot be deleted through this UI/API. Account deletion is restricted by the order foreign key; define a retention/anonymization process before real customer use.
-- No customer contact details are placed in URLs or application logs.
+- No customer contact details or internal actor IDs are placed in URLs or customer history responses.
 
 ## Verification
 
-25 automated tests cover existing functionality plus order validation, authentication, customer isolation, retries, concurrent duplicates, price changes, status filters, rejection reasons, and stale admin updates. `supabase/orders-verification.sql` tests actual database policies, snapshot repricing and transitions inside a rolled-back transaction. It requires two existing users; no sample orders remain after the test.
+37 automated tests cover existing functionality plus order validation, authentication, customer isolation, retries, concurrent duplicates, price changes, status filters, rejection reasons, cancellation, and stale admin updates. `supabase/orders-verification.sql` tests actual database policies, snapshot repricing and transitions inside a rolled-back transaction. It requires two existing users; no sample orders remain after the test.
 
 The loopback-only browser fixture verified checkout → admin queue → Accepted → Preparing → Ready → Completed, including persistence across page reload and 320px/390px screens. Fixture data is in memory and never sent to the real database.
 

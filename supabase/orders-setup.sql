@@ -21,6 +21,9 @@ create table if not exists public.orders (
   updated_at timestamptz not null default now(),
   unique(user_id,request_id)
 );
+-- Keep rerunning this setup safe for databases created before cancellation was added.
+alter table public.orders drop constraint if exists orders_status_check;
+alter table public.orders add constraint orders_status_check check (status in ('pending','accepted','rejected','preparing','ready','completed','cancelled'));
 create index if not exists orders_user_created on public.orders(user_id,created_at desc,id);
 create index if not exists orders_status_created on public.orders(status,created_at desc,id);
 create index if not exists orders_created on public.orders(created_at desc,id);

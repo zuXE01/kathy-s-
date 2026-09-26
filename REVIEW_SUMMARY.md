@@ -1,6 +1,6 @@
 # Kathy's Hub — folder review
 
-Reviewed: 22 September 2026. Scope: current local `kathysProject`, including its two existing uncommitted signup/UI changes. No application code or cloud settings were changed during this review.
+Reviewed: 26 September 2026. Scope: current local `kathysProject`, including account details, saved orders, customer order history, cancellation, and the frontend page-entry refactor.
 
 ## Overall assessment
 
@@ -34,7 +34,7 @@ The logo asset was inventoried, not visually reassessed. Installed third-party s
 
 ## Findings and recommended improvements
 
-1. **Medium — Invalid birthday data can abort signup.** `supabase/schema.sql:31` directly casts user-controlled metadata to a date. Invalid values cause the new-user trigger to fail if installed; the backfill has the same issue at line 52. Validate/normalize data and handle invalid optional values without breaking account creation.
+1. **Resolved — Invalid birthday data can abort signup.** Client validation and the safe `try_profile_date` database helper now reject impossible new birthdays and convert malformed existing metadata to `NULL`.
 
 2. **Medium — Two competing profile stores.** The trigger copies metadata into `public.profiles` only when an account is created, but the dashboard and `/api/me` read Auth metadata. Profile-table edits will not appear there, and metadata edits will not update the table. Choose one authoritative profile source and define synchronization deliberately.
 
@@ -42,7 +42,7 @@ The logo asset was inventoried, not visually reassessed. Installed third-party s
 
 4. **Medium — Recovery state can become stale.** `session.js` clears session storage on `SIGNED_OUT`, but the `recovering` variable in `password-reset.js` is reset only by that module's own completion paths. An external/cross-tab sign-out during recovery can leave automatic session handling suppressed until reload. Reset all recovery state whenever sign-out occurs.
 
-5. **Medium — Display code assumes metadata types.** `dashboard.js` calls `.trim()` on `name`, although Auth metadata can be edited outside the form and need not be a string. A malformed value can break that user's dashboard. Normalize types and length limits before rendering.
+5. **Resolved — Display code assumes metadata types.** Dashboard display names now normalize non-string metadata before trimming.
 
 6. **Security configuration to verify — password length and abuse protection.** The 12-character rule is enforced in browser code, which can be bypassed. Match it in Supabase's server-side password policy. There is no application rate limiter on `/api/me`; review provider limits and add suitable abuse protection before public use. This does not mean Supabase has no built-in limits.
 
@@ -54,7 +54,7 @@ The logo asset was inventoried, not visually reassessed. Installed third-party s
 
 ## Verification results
 
-- Ran `npm test`: **5 tests passed, 0 failed**.
+- Ran `npm test`: **37 tests passed, 0 failed**.
 - Tests cover callback behavior, mocked Supabase login/signup/recovery and HTTP access restrictions.
 - These tests do not demonstrate actual email delivery, real-user recovery, live RLS isolation or production deployment correctness.
 - Dependency versions are pinned and represented in the lockfile. A fresh online vulnerability audit was not run during this review.

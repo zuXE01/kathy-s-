@@ -32,7 +32,7 @@ function createOrderFixture(menu) {
                 });
                 if(total!==payload.total_cents)error={code:'P0001'};
                 if(!error) {
-                  const now=new Date().toISOString(),row={...payload,id:randomUUID(),items,total_cents:total,status:'pending',status_note:'',payment_status:payload.payment_method==='cod'?'unpaid':'simulated',delivery_cents:0,is_demo:true,version:1,created_at:now,updated_at:now,history:[{status:'pending',at:now,note:'Order submitted'}]};
+                  const now=new Date().toISOString(),row={...payload,id:randomUUID(),items,total_cents:total,status:'pending',status_note:'',payment_status:payload.payment_method==='cod'?'unpaid':'simulated',delivery_cents:0,is_demo:true,version:1,created_at:now,updated_at:now,history:[{status:'pending',at:now,actor:user.id,note:'Order submitted'}]};
                   orders.unshift(row);rows=[row];
                 }
               }
@@ -40,7 +40,7 @@ function createOrderFixture(menu) {
             if(action==='update') {
               if(token!=='admin' && payload.status!=='cancelled')error={code:'42501'};
               else if(rows.some(row=>!transitions[row.status].includes(payload.status)))error={code:'P0001'};
-              else rows.forEach(row=>{Object.assign(row,payload);row.version++;row.updated_at=new Date().toISOString();row.history.push({status:row.status,note:row.status_note,at:row.updated_at});});
+              else rows.forEach(row=>{Object.assign(row,payload);row.version++;row.updated_at=new Date().toISOString();row.history.push({status:row.status,note:row.status_note,actor:user.id,at:row.updated_at});});
             }
             return Promise.resolve({data:error?null:single?rows[0]||null:rows.slice(start,end+1),count:rows.length,error}).then(resolve,reject);
           }
