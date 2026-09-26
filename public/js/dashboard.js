@@ -13,8 +13,6 @@ export function goSignedIn(email, name){
     document.getElementById('signedInName').textContent = 'Welcome back, ' + displayName + '.';
     document.getElementById('memberName').textContent = displayName;
     document.getElementById('memberInitial').textContent = Array.from(displayName)[0].toUpperCase();
-    document.getElementById('accountName').textContent = name || 'Hub member';
-    document.getElementById('accountEmail').textContent = email;
     lPass.value = '';
     document.title = "Your Hub — Kathy's Hub";
     statusTag.textContent = 'signed in as ' + email;
@@ -29,7 +27,7 @@ export function goSignedIn(email, name){
     authCard.hidden = false;
     document.body.classList.remove('dashboard-open');
     document.title = "Kathy's Hub — Sign in";
-    ['accountName', 'accountEmail', 'memberName', 'memberInitial', 'signedInName'].forEach(id => {
+    ['memberName', 'memberInitial', 'signedInName'].forEach(id => {
       document.getElementById(id).textContent = '';
     });
     document.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });

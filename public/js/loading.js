@@ -1,6 +1,9 @@
 // Shared visual placeholders. Status text remains in the page's live region.
+const loadingToken = Symbol('loadingToken');
 export function showSkeleton(container, count = 4) {
   const cards = [];
+  const token = Symbol('skeleton');
+  container[loadingToken] = token;
   container.setAttribute('aria-busy','true');
   container.replaceChildren();
   for (let index = 0; index < count; index++) {
@@ -14,6 +17,7 @@ export function showSkeleton(container, count = 4) {
     cards.push(card); container.append(card);
   }
   return function finishLoading() {
+    if (container[loadingToken] !== token) return;
     cards.forEach(card => card.remove());
     container.setAttribute('aria-busy','false');
   };

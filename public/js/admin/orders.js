@@ -15,8 +15,8 @@ export function loadOrders(nextPage=1) {
   el('ordersMessage').textContent='Loading saved orders…';el('ordersRefresh').disabled=true;
   el('ordersPrev').disabled=el('ordersNext').disabled=true;
   request('/orders?page='+page+'&status='+encodeURIComponent(el('ordersFilter').value),{},(error,data)=>{
-    if(current!==revision)return;
     finishLoading();
+    if(current!==revision)return;
     el('ordersRefresh').disabled=false;
     if(error){el('ordersMessage').textContent=error.message;return;}
     el('orderRows').replaceChildren();

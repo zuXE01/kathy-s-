@@ -4,6 +4,8 @@ import { formatPrice } from './menu-card.js';
 import { orderRequest } from './order-api.js';
 import { getAuthClient } from './auth-client.js';
 import { showSkeleton } from './loading.js';
+import { loadContact } from './account-client.js';
+import { prefillContact } from './account-model.js';
 const el=id=>document.getElementById(id), requestKey='kathys-checkout-request';
 let order,saved,submitting=false,requestId,userId,active=true;
 window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
@@ -62,6 +64,17 @@ async function load() {
     el('checkoutForm').elements.name.value=typeof user.name==='string'?user.name:'';
     el('checkoutForm').elements.email.value=user.email||'';
     el('checkoutStatus').textContent='Your order and contact details will be saved and visible to restaurant admins.';
+    try {
+      const contact=await loadContact(userId);
+      if(!active)return;
+      if(contact) {
+        prefillContact(el('checkoutForm'),contact);
+        el('checkoutStatus').textContent='Your saved contact details have been filled in. Review them before ordering. Changes here apply only to this order.';
+      }
+    } catch {
+      if(!active)return;
+      el('checkoutStatus').textContent='Your saved address could not be loaded. Enter your details below, or reload to retry.';
+    }
     el('checkoutContent').hidden=false;
   } catch(error){el('checkoutStatus').textContent=error.message+' Reload to retry, or return to the menu.';}
   finally {finishLoading();loading.hidden=true;}

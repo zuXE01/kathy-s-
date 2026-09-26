@@ -30,15 +30,18 @@ const fakeClient = () => ({
   }
 });
 const app = express();
+let previewContact=null;
+app.get('/fixture/contact',(_req,res)=>res.json({data:previewContact,error:null}));
+app.put('/fixture/contact',express.json(),(req,res)=>{previewContact=req.body;res.json({data:previewContact,error:null});});
 // Optional visual QA latency. This fixture is never imported by production.
 const previewDelay=Math.min(5000,Math.max(0,Number(process.env.PREVIEW_DELAY_MS)||0));
 app.use('/api',(_req,_res,next)=>setTimeout(next,previewDelay));
 app.get('/vendor/supabase.js', (_req,res) => res.type('js').send(`
 const fixtureUser={id:'${memberId}',email:'demo@example.test',user_metadata:{name:'Demo member'},app_metadata:{hub_role:'admin'}};
-window.supabase={createClient(){let changed;return {auth:{
+window.supabase={createClient(){let changed;return {from(){return {select(){return this;},eq(){return this;},maybeSingle:async()=>fetch('/fixture/contact').then(r=>r.json()),upsert:async(value)=>fetch('/fixture/contact',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(value)}).then(r=>r.json())};},auth:{
 getSession:async()=>({data:{session:{access_token:'fixture',user:fixtureUser}}}),
 getUser:async()=>({data:{user:fixtureUser}}),
-onAuthStateChange(callback){changed=callback;setTimeout(()=>callback('INITIAL_SESSION',{user:fixtureUser}),0);},
+onAuthStateChange(callback){changed=callback;setTimeout(()=>callback('INITIAL_SESSION',{user:fixtureUser}),0);return {data:{subscription:{unsubscribe(){changed=null;}}}};},
 signOut:async()=>{if(changed)changed('SIGNED_OUT',null);return {};}
 }}}};`));
 app.use(createApp({SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_fixture'},fakeClient));

@@ -16,3 +16,20 @@ test('skeletons are noninteractive, hidden from assistive tech and clean up with
   container.replaceChildren();const content=new Element();container.append(content);
   finish();assert.equal(container.attributes['aria-busy'],'false');assert.equal(container.children[0],content);
 });
+test('stale cleanup cannot change a newer loading state',()=>{
+  class Element {
+    constructor(){this.children=[];this.attributes={};}
+    setAttribute(key,value){this.attributes[key]=value;}
+    append(child){child.parent=this;this.children.push(child);}
+    replaceChildren(){this.children=[];}
+    remove(){if(this.parent)this.parent.children=this.parent.children.filter(child=>child!==this);}
+  }
+  const context={document:{createElement:()=>new Element()}};
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/loading.js'),'utf8').replace(/export /g,''),context);
+  const container=new Element(),oldFinish=context.showSkeleton(container,2),newFinish=context.showSkeleton(container,1);
+  oldFinish();
+  assert.equal(container.attributes['aria-busy'],'true');
+  assert.equal(container.children.length,1);
+  newFinish();
+  assert.equal(container.attributes['aria-busy'],'false');
+});
