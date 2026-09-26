@@ -9,10 +9,15 @@ test('public landing forwards existing email callback fragments to sign-in witho
     assert.equal(destination,'/signin.html'+part.search+part.hash);
   }
 });
-test('public menu initializes without authentication and retains unique control IDs',()=>{
-  let initialized=false;
-  vm.runInNewContext(script,{URLSearchParams,location:{hash:'#menu',search:''},initMenu:()=>initialized=true,document:{querySelectorAll:()=>[]}});
-  assert.equal(initialized,true);
+test('guests see product ads; only signed-in visitors initialize the full menu once',()=>{
+  let initialized=0,change;
+  const nodes={productShowcase:{},memberCatalog:{},menu:{setAttribute(){}}};
+  vm.runInNewContext(script,{URLSearchParams,location:{hash:'#menu',search:''},initMenu:()=>initialized++,window:{addEventListener:(name,callback)=>change=callback},document:{body:{dataset:{}},getElementById:id=>nodes[id],querySelector:()=>null,querySelectorAll:()=>[]}});
+  assert.equal(initialized,0);assert.equal(nodes.productShowcase.hidden,false);assert.equal(nodes.memberCatalog.hidden,true);
+  change({detail:{signedIn:true}});change({detail:{signedIn:true}});
+  assert.equal(initialized,1);assert.equal(nodes.productShowcase.hidden,true);assert.equal(nodes.memberCatalog.hidden,false);
+  change({detail:{signedIn:false}});
+  assert.equal(nodes.productShowcase.hidden,false);assert.equal(nodes.memberCatalog.hidden,true);
   const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
   const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
   assert.equal(ids.length,new Set(ids).size);

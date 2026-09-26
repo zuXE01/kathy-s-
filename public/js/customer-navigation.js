@@ -5,6 +5,8 @@ const destination=location.pathname==='/account.html'
   ? '/account.html'+(new URLSearchParams(location.search).get('from')==='checkout'?'?from=checkout':'')
   : location.pathname==='/checkout.html'?'/checkout.html':location.pathname==='/orders.html'?'/orders.html':'/#menu';
 function displayUser(user) {
+  document.body.dataset.menuAccess=user?'member':'guest';
+  window.dispatchEvent(new CustomEvent('customer-access-changed',{detail:{signedIn:!!user}}));
   document.querySelectorAll('[data-signin]').forEach(link=>{link.href=signInPath(destination);link.hidden=!!user;});
   document.querySelectorAll('[data-signout]').forEach(button=>{button.hidden=!user;});
   document.querySelectorAll('[data-admin]').forEach(link=>{link.hidden=!['admin','owner','platform_admin','staff','kitchen_staff'].includes(user?.app_metadata?.hub_role);});

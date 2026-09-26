@@ -21,7 +21,7 @@ test('customer navigation follows verified session state and preserves checkout 
   let callback,user=null;
   const client={auth:{onAuthStateChange(fn){callback=fn;},getUser:async()=>({data:{user},error:null})}};
   const source=fs.readFileSync(path.join(__dirname,'../public/js/customer-navigation.js'),'utf8').replace(/^import .*;\r?\n/gm,'');
-  vm.runInNewContext(source,{URLSearchParams,setTimeout,getAuthClient:async()=>client,signInPath:scope.signInPath,location:{pathname:'/account.html',search:'?from=checkout',hash:''},document:{querySelectorAll:selector=>[nodes[selector.slice(1,-1)]]}});
+  vm.runInNewContext(source,{URLSearchParams,setTimeout,window:{dispatchEvent(){}},CustomEvent:class{},getAuthClient:async()=>client,signInPath:scope.signInPath,location:{pathname:'/account.html',search:'?from=checkout',hash:''},document:{body:{dataset:{}},querySelectorAll:selector=>[nodes[selector.slice(1,-1)]]}});
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(nodes['data-signin'].href,'/signin.html?next=%2Faccount.html%3Ffrom%3Dcheckout');
   assert.equal(nodes['data-auth-prompt'].hidden,false);
