@@ -2,6 +2,7 @@ const express = require('express');
 const { validateItem } = require('./menu-validation');
 const { readMenu } = require('./menu-store');
 const { mountAdminOrders } = require('./orders');
+const { roleForUser, roleSets, requireRole } = require('./roles');
 const validId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function adminRouter(url, key, createClient) {
@@ -17,23 +18,26 @@ function adminRouter(url, key, createClient) {
       });
       const { data, error } = await client.auth.getUser(token);
       if (error || !data.user) return res.status(401).json({ error: 'Please sign in again.' });
-      // Admin assignment is trusted app metadata, never a submitted email or user metadata.
-      if (data.user.app_metadata?.hub_role !== 'admin') return res.status(403).json({ error: 'Admin access required.' });
+      const role=roleForUser(data.user);
+      if (!roleSets.workspace.includes(role)) return res.status(403).json({ error: 'Staff access required.' });
       req.adminClient = client;
       req.adminUser = data.user;
+      req.adminRole = role;
       next();
     } catch { res.status(503).json({ error: 'Authentication service unavailable.' }); }
   });
   router.use(express.json({ limit: '8kb' }));
+  router.use('/orders', requireRole(...roleSets.orders));
+  router.use(['/menu','/members'], requireRole(...roleSets.management));
   mountAdminOrders(router);
-  router.get('/overview', async (req, res) => {
+  router.get('/overview', requireRole(...roleSets.workspace), async (req, res) => {
     const [members, menu, available] = await Promise.all([
       req.adminClient.from('profiles').select('id', { count: 'exact', head: true }),
       req.adminClient.from('menu_items').select('id', { count: 'exact', head: true }),
       req.adminClient.from('menu_items').select('id', { count: 'exact', head: true }).eq('available', true)
     ]);
     if (members.error || menu.error || available.error) return res.status(503).json({ error: 'Unable to load overview. Sign out and back in if your admin role was just assigned.' });
-    res.json({ email: req.adminUser.email, members: members.count, menu: menu.count, available: available.count });
+    res.json({ email: req.adminUser.email, role:req.adminRole, members: members.count, menu: menu.count, available: available.count });
   });
   router.get('/members', async (req, res) => {
     const page = Number(req.query.page || 1);

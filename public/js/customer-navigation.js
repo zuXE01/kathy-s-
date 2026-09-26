@@ -7,7 +7,7 @@ const destination=location.pathname==='/account.html'
 function displayUser(user) {
   document.querySelectorAll('[data-signin]').forEach(link=>{link.href=signInPath(destination);link.hidden=!!user;});
   document.querySelectorAll('[data-signout]').forEach(button=>{button.hidden=!user;});
-  document.querySelectorAll('[data-admin]').forEach(link=>{link.hidden=user?.app_metadata?.hub_role!=='admin';});
+  document.querySelectorAll('[data-admin]').forEach(link=>{link.hidden=!['admin','owner','platform_admin','staff','kitchen_staff'].includes(user?.app_metadata?.hub_role);});
   document.querySelectorAll('[data-auth-prompt]').forEach(item=>{item.hidden=!!user;});
 }
 displayUser(null);

@@ -16,6 +16,8 @@ function overview() {
   request('/overview', {}, function loaded(error, data) {
     el('refreshOverview').disabled = false;
     if (error) { if (el('adminShell').hidden) el('gateMessage').textContent = error.message; else el('adminMessage').textContent = error.message; return; }
+    const management=['owner','platform_admin'].includes(data.role);
+    document.querySelectorAll('[data-section="members"],[data-section="menu"],[data-open-menu]').forEach(control=>{control.hidden=!management;});
     el('adminGate').hidden = true; el('adminShell').hidden = false;
     el('memberCount').textContent = data.members; el('menuCount').textContent = data.menu;
     el('availableCount').textContent = data.available; el('adminIdentity').textContent = 'Signed in as ' + data.email;

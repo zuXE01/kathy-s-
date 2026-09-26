@@ -34,14 +34,14 @@ grant insert(user_id,request_id,request_hash,customer,items,total_cents,payment_
 grant update(status,status_note) on public.orders to authenticated;
 drop policy if exists orders_read on public.orders;
 create policy orders_read on public.orders for select to authenticated
-using (user_id=(select auth.uid()) or (select auth.jwt())->'app_metadata'->>'hub_role'='admin');
+using (user_id=(select auth.uid()) or (select auth.jwt())->'app_metadata'->>'hub_role' in ('admin','owner','platform_admin','staff','kitchen_staff'));
 drop policy if exists orders_create on public.orders;
 create policy orders_create on public.orders for insert to authenticated
 with check (user_id=(select auth.uid()) and not coalesce(((select auth.jwt())->>'is_anonymous')::boolean,false));
 drop policy if exists orders_admin_update on public.orders;
 create policy orders_admin_update on public.orders for update to authenticated
-using ((select auth.jwt())->'app_metadata'->>'hub_role'='admin')
-with check ((select auth.jwt())->'app_metadata'->>'hub_role'='admin');
+using ((select auth.jwt())->'app_metadata'->>'hub_role' in ('admin','owner','platform_admin','staff','kitchen_staff'))
+with check ((select auth.jwt())->'app_metadata'->>'hub_role' in ('admin','owner','platform_admin','staff','kitchen_staff'));
 drop policy if exists orders_customer_cancel on public.orders;
 create policy orders_customer_cancel on public.orders for update to authenticated
 using (user_id=(select auth.uid()) and status='pending')
@@ -106,11 +106,13 @@ create trigger orders_prepare before insert on public.orders for each row execut
 
 create or replace function hub_private.transition_order()
 returns trigger language plpgsql security invoker set search_path='' as $$
+declare role text := coalesce(auth.jwt()->'app_metadata'->>'hub_role','');
 begin
   if auth.uid() is null then raise exception 'Sign in required' using errcode='42501'; end if;
-  if coalesce(auth.jwt()->'app_metadata'->>'hub_role','')<>'admin' and not (old.user_id=auth.uid() and old.status='pending' and new.status='cancelled') then
+  if role not in ('admin','owner','platform_admin','staff','kitchen_staff') and not (old.user_id=auth.uid() and old.status='pending' and new.status='cancelled') then
     raise exception 'Admin access required' using errcode='42501';
   end if;
+  if role='kitchen_staff' and new.status not in ('preparing','ready') then raise exception 'Kitchen staff cannot perform this transition' using errcode='42501'; end if;
   if (to_jsonb(new)-array['status','status_note']) is distinct from (to_jsonb(old)-array['status','status_note']) then raise exception 'Order details are immutable' using errcode='22023'; end if;
   if not (
     (old.status='pending' and new.status in ('accepted','rejected')) or

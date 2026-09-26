@@ -65,3 +65,21 @@ test('verified admin can manage menu, view limited profiles, and receives valida
   assert.equal((await send('/menu/bad','DELETE')).status,400);
   assert.equal((await send('/menu','POST',{...item,description:'x'.repeat(9000)})).status,413);
 });
+test('role model keeps management owner-only while staff can enter the workspace', async t => {
+  const app = createApp(config, (_url,_key,options) => {
+    const token=options.global.headers.Authorization.split(' ')[1];
+    return { auth: { getUser: async () => ({data:{user:{email:token+'@example.com',app_metadata:{hub_role:token}}}}) }, from() {
+      const query={then(resolve){return Promise.resolve({data:[],count:0,error:null}).then(resolve);}};
+      for(const method of ['select','order','range','eq']) query[method]=function(){return this;};
+      return query;
+    } };
+  });
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const origin=`http://127.0.0.1:${server.address().port}/api/admin`;
+  const send=(role,path)=>fetch(origin+path,{headers:{Authorization:'Bearer '+role}});
+  assert.equal((await send('staff','/overview')).status,200);
+  assert.equal((await send('staff','/menu')).status,403);
+  assert.equal((await send('kitchen_staff','/members')).status,403);
+  assert.equal((await send('owner','/menu')).status,200);
+});

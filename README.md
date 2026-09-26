@@ -15,6 +15,7 @@ A mobile-first restaurant website built with HTML, CSS, JavaScript, Express, and
 - Mobile-first cart and [saved-order checkout](CHECKOUT.md) with COD, simulated online payment, and delivery address
 - Customer order history with pending-order cancellation
 - Admin Orders queue with customer details, status filters, acceptance/rejection, cancellation, and status history
+- Role-based access for customers, staff, kitchen staff, owners, and future platform administrators
 
 ## Run locally
 
@@ -39,6 +40,10 @@ In Supabase Authentication URL Configuration, set:
 - Redirect URL: the same URL with a trailing `/`
 
 The application only uses the publishable key in the browser. Never put a Supabase `service_role` key in `.env.example`, the frontend, or GitHub.
+
+### Staff roles
+
+Assign `app_metadata.hub_role` through a trusted Supabase admin workflow. Supported roles are `owner`, `staff`, `kitchen_staff`, `platform_admin`, and the legacy `admin` value (treated as `owner`). Staff can access order operations, kitchen staff can update preparation/readiness states, and only owners/platform administrators can manage menus and member data. Customers have no staff access.
 
 To store registration details in Supabase Table Editor, open the SQL Editor, run [`supabase/schema.sql`](supabase/schema.sql), and then register a new account. This creates `public.profiles` and automatically copies each user's name, birthday, and gender from Auth metadata into that table. The SQL also backfills existing Auth users.
 

@@ -17,9 +17,9 @@ create policy hub_available_menu on public.menu_items for select to anon, authen
 using (available = true);
 drop policy if exists hub_admin_menu on public.menu_items;
 create policy hub_admin_menu on public.menu_items for all to authenticated
-using ((select auth.jwt())->'app_metadata'->>'hub_role' = 'admin')
-with check ((select auth.jwt())->'app_metadata'->>'hub_role' = 'admin');
+using ((select auth.jwt())->'app_metadata'->>'hub_role' in ('admin','owner','platform_admin'))
+with check ((select auth.jwt())->'app_metadata'->>'hub_role' in ('admin','owner','platform_admin'));
 grant select on public.profiles to authenticated;
 drop policy if exists hub_admin_profiles on public.profiles;
 create policy hub_admin_profiles on public.profiles for select to authenticated
-using ((select auth.jwt())->'app_metadata'->>'hub_role' = 'admin');
+using ((select auth.jwt())->'app_metadata'->>'hub_role' in ('admin','owner','platform_admin'));
