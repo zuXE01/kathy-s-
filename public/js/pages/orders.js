@@ -18,6 +18,16 @@ function renderOrder(order){
   const history=node('ol',undefined,'history-events');
   order.history.forEach(event=>history.append(node('li',event.status+' · '+date(event.at)+(event.note?' · '+event.note:''))));
   details.append(history);card.append(details);
+  if(order.status==='pending'){
+    const cancel=node('button','Cancel order','history-cancel');cancel.type='button';
+    cancel.addEventListener('click',async()=>{
+      if(!window.confirm('Cancel this pending order?'))return;
+      cancel.disabled=true;
+      try { await orderRequest('/api/orders/'+encodeURIComponent(order.id)+'/cancel',{method:'POST'}); load(page); }
+      catch(error){ cancel.disabled=false; el('ordersStatus').textContent=error.message; }
+    });
+    card.append(cancel);
+  }
   return card;
 }
 function render(data){

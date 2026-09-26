@@ -12,7 +12,7 @@ create table if not exists public.orders (
   delivery_cents integer not null default 0 check (delivery_cents=0),
   payment_method text not null check (payment_method in ('cod','demo-online')),
   payment_status text not null default 'unpaid' check (payment_status in ('unpaid','simulated')),
-  status text not null default 'pending' check (status in ('pending','accepted','rejected','preparing','ready','completed')),
+  status text not null default 'pending' check (status in ('pending','accepted','rejected','preparing','ready','completed','cancelled')),
   status_note text not null default '' check (length(status_note)<=500),
   history jsonb not null default '[]',
   version integer not null default 1,
@@ -39,6 +39,10 @@ drop policy if exists orders_admin_update on public.orders;
 create policy orders_admin_update on public.orders for update to authenticated
 using ((select auth.jwt())->'app_metadata'->>'hub_role'='admin')
 with check ((select auth.jwt())->'app_metadata'->>'hub_role'='admin');
+drop policy if exists orders_customer_cancel on public.orders;
+create policy orders_customer_cancel on public.orders for update to authenticated
+using (user_id=(select auth.uid()) and status='pending')
+with check (user_id=(select auth.uid()) and status='cancelled');
 
 -- Invoker trigger: no elevated privileges or service key. Reprices even direct API inserts.
 create or replace function hub_private.prepare_order()
@@ -100,13 +104,17 @@ create trigger orders_prepare before insert on public.orders for each row execut
 create or replace function hub_private.transition_order()
 returns trigger language plpgsql security invoker set search_path='' as $$
 begin
-  if auth.uid() is null or coalesce(auth.jwt()->'app_metadata'->>'hub_role','')<>'admin' then raise exception 'Admin access required' using errcode='42501'; end if;
+  if auth.uid() is null then raise exception 'Sign in required' using errcode='42501'; end if;
+  if coalesce(auth.jwt()->'app_metadata'->>'hub_role','')<>'admin' and not (old.user_id=auth.uid() and old.status='pending' and new.status='cancelled') then
+    raise exception 'Admin access required' using errcode='42501';
+  end if;
   if (to_jsonb(new)-array['status','status_note']) is distinct from (to_jsonb(old)-array['status','status_note']) then raise exception 'Order details are immutable' using errcode='22023'; end if;
   if not (
     (old.status='pending' and new.status in ('accepted','rejected')) or
     (old.status='accepted' and new.status in ('preparing','rejected')) or
     (old.status='preparing' and new.status in ('ready','rejected')) or
-    (old.status='ready' and new.status='completed')
+    (old.status='ready' and new.status='completed') or
+    (old.status='pending' and new.status='cancelled')
   ) then raise exception 'Invalid status transition' using errcode='P0001'; end if;
   new.status_note:=trim(new.status_note);
   if new.status='rejected' and length(new.status_note)=0 then raise exception 'Give a rejection reason' using errcode='22023'; end if;

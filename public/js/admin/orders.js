@@ -2,7 +2,7 @@ import { request } from './request.js';
 import { formatPrice } from '../menu-card.js';
 import { showSkeleton } from '../loading.js';
 const el=id=>document.getElementById(id);
-const transitions={pending:['accepted','rejected'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[]};
+const transitions={pending:['accepted','rejected','cancelled'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[],cancelled:[]};
 let page=1,revision=0,busy=false,selected=null;
 const node=(tag,text,className)=>{const value=document.createElement(tag);if(text!==undefined)value.textContent=text;if(className)value.className=className;return value;};
 export function clearOrders() {

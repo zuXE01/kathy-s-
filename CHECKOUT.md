@@ -6,9 +6,9 @@ Signed-in customers submit checkout through `POST /api/orders`. Orders are store
 
 Admin: open `/admin.html` → **Orders**. The default filter is Pending. Use **Refresh orders** for new arrivals, select a status filter, and open a card to inspect customer and item details. The list is paginated at 20 orders per page.
 
-Allowed progression: Pending → Accepted → Preparing → Ready → Completed. Pending, Accepted and Preparing can instead be Rejected, with a required reason. Completed and Rejected are terminal. Each update records the actor, time and note. Concurrent edits use a version check, so stale changes fail rather than overwriting newer work.
+Allowed progression: Pending → Accepted → Preparing → Ready → Completed. Pending, Accepted and Preparing can instead be Rejected, with a required reason. Customers can cancel their own order while it is still Pending. Completed, Rejected and Cancelled are terminal. Each update records the actor, time and note. Concurrent edits use a version check, so stale changes fail rather than overwriting newer work.
 
-COD stays unpaid; completing an order does not collect cash. Online payment remains simulated, never marked as real paid money. Delivery fee is ₱0 for the demo. No delivery booking, notifications, customer order-history page, refunds, inventory deduction or payment collection is added in this phase.
+COD stays unpaid; completing an order does not collect cash. Online payment remains simulated, never marked as real paid money. Delivery fee is ₱0 for the demo. No delivery booking, notifications, refunds, inventory deduction or payment collection is added in this phase.
 
 ## Setup and deployment
 

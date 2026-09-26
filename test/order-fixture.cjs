@@ -38,7 +38,7 @@ function createOrderFixture(menu) {
               }
             }
             if(action==='update') {
-              if(token!=='admin')error={code:'42501'};
+              if(token!=='admin' && payload.status!=='cancelled')error={code:'42501'};
               else if(rows.some(row=>!transitions[row.status].includes(payload.status)))error={code:'P0001'};
               else rows.forEach(row=>{Object.assign(row,payload);row.version++;row.updated_at=new Date().toISOString();row.history.push({status:row.status,note:row.status_note,at:row.updated_at});});
             }

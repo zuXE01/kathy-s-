@@ -45,6 +45,14 @@ test('customer order history is paginated and excludes private checkout fields',
   assert.equal(result.items[0].customer,undefined);
   assert.equal((await send('/api/orders?page=0','member')).status,400);
 });
+test('customer can cancel only a pending order',async t=>{
+  const {send}=await setup(t),body=payload();
+  const record=(await (await send('/api/orders','member','POST',body)).json()).order;
+  const cancelled=await send('/api/orders/'+record.id+'/cancel','member','POST');
+  assert.equal(cancelled.status,200);assert.equal((await cancelled.json()).order.status,'cancelled');
+  assert.equal((await send('/api/orders/'+record.id+'/cancel','member','POST')).status,409);
+  const other=await send('/api/orders/'+record.id+'/cancel','other','POST');assert.equal(other.status,409);
+});
 test('simultaneous checkout retries create one order and wrong prices fail',async t=>{
   const {send,orders}=await setup(t),body=payload();
   const responses=await Promise.all([send('/api/orders','member','POST',body),send('/api/orders','member','POST',body)]);

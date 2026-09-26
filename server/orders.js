@@ -1,7 +1,7 @@
 const express = require('express');
 const { createHash } = require('node:crypto');
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const transitions = {pending:['accepted','rejected'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[]};
+const transitions = {pending:['accepted','rejected','cancelled'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[],cancelled:[]};
 function validateOrder(body) {
   if (!body || !uuid.test(body.request_id || '') || !Array.isArray(body.items) || !body.items.length || body.items.length>120 ||
     !Number.isSafeInteger(body.total_cents) || body.total_cents<0 || !['cod','demo-online'].includes(body.payment_method)) return null;
@@ -63,6 +63,16 @@ function ordersRouter(url,key,createClient) {
       if(result.error)return errorResponse(res,result.error);
       res.json({order:result.data});
     } catch {res.status(503).json({error:'Unable to check this checkout. Please retry.'});}
+  });
+  router.post('/:id/cancel',async(req,res)=>{
+    if(!uuid.test(req.params.id))return res.status(400).json({error:'Invalid order reference.'});
+    try {
+      const result=await req.orderClient.from('orders').update({status:'cancelled',status_note:'Cancelled by customer'})
+        .eq('id',req.params.id).eq('user_id',req.orderUser.id).eq('status','pending').select('id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at').maybeSingle();
+      if(result.error)return errorResponse(res,result.error);
+      if(!result.data)return res.status(409).json({error:'This order is already being prepared or has been closed.'});
+      res.json({order:result.data});
+    } catch {res.status(503).json({error:'Unable to cancel this order. Please refresh and try again.'});}
   });
   router.post('/',async(req,res)=>{
     const order=validateOrder(req.body);

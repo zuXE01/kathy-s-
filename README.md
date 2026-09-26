@@ -12,7 +12,8 @@ A responsive cafe member experience built with HTML, CSS, JavaScript, Express, a
 - Shared menu cards and admin editing, with database duplicate protection
 - Render-ready Express server with security headers and a health endpoint
 - Mobile-first cart and [saved-order checkout](CHECKOUT.md) with COD, simulated online payment, and delivery address
-- Admin Orders queue with customer details, status filters, acceptance/rejection, and status history
+- Customer order history with pending-order cancellation
+- Admin Orders queue with customer details, status filters, acceptance/rejection, cancellation, and status history
 
 ## Run locally
 
