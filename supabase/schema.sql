@@ -9,6 +9,18 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
+create or replace function public.try_profile_date(value text)
+returns date
+language plpgsql
+immutable
+as $$
+begin
+  return nullif(value, '')::date;
+exception when others then
+  return null;
+end;
+$$;
+
 create policy "Users can view their own profile"
   on public.profiles for select
   using (auth.uid() = id);
@@ -28,7 +40,7 @@ begin
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'name', ''),
-    nullif(new.raw_user_meta_data ->> 'dob', '')::date,
+    public.try_profile_date(new.raw_user_meta_data ->> 'dob'),
     nullif(new.raw_user_meta_data ->> 'gender', '')
   )
   on conflict (id) do update set
@@ -49,7 +61,7 @@ insert into public.profiles (id, name, dob, gender)
 select
   id,
   coalesce(raw_user_meta_data ->> 'name', ''),
-  nullif(raw_user_meta_data ->> 'dob', '')::date,
+  public.try_profile_date(raw_user_meta_data ->> 'dob'),
   nullif(raw_user_meta_data ->> 'gender', '')
 from auth.users
 on conflict (id) do update set

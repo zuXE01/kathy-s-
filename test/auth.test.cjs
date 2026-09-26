@@ -27,6 +27,8 @@ test('login and registration delegate to Supabase with profile data and safe red
   assert.equal(signup.session, null);
   assert.equal(calls[1][1].options.emailRedirectTo, 'https://hub.example/');
   assert.equal(calls[1][1].options.data.name, 'Member');
+  await assert.rejects(() => run('/api/register', { email: 'bad@example.com', password: 'test-only-password', name: 'Member', dob: '2000-02-30', gender: 'Other' }), /valid birthday/);
+  assert.equal(calls.length, 2);
 });
 
 test('callback adapter reports errors and calls each callback once', async () => {
