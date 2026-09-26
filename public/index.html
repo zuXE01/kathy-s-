@@ -1,162 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kathy's Hub — Sign in</title>
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="/menu-cards.css">
-<link rel="stylesheet" href="/cart.css">
-<link rel="stylesheet" href="/motion.css"></head>
-<body>
-
-<div class="card" id="authCard">
-  <div class="card-header">
-    <div class="mark"><img src="/assets/logo.jpg" alt="Kathy's Hub logo"></div>
-    <div class="word">Kathy's Hub</div>
-    <div class="tagline">Cafe &amp; Restaurant</div>
-    <span class="status-pill" id="statusTag">not signed in</span>
-
-    <div class="tabs">
-      <button id="tabLoginBtn" class="active">Sign in</button>
-      <button id="tabRegisterBtn">Join the Hub</button>
-    </div>
-  </div>
-
-  <div class="card-body">
-
-    <!-- LOGIN FORM -->
-    <div class="form-view active" id="loginView">
-      <div>
-        <p class="lead">Welcome back</p>
-        <p class="sub">Sign in to explore the menu and your member account. Checkout is coming soon.</p>
-      </div>
-
-      <form id="loginForm" novalidate>
-        <div class="field">
-          <label for="lEmail">Email</label>
-          <input id="lEmail" type="text" autocomplete="username" placeholder="you@example.com">
-        </div>
-        <div class="field">
-          <label for="lPass">Password</label>
-          <input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
-        </div>
-        <div class="row-between">
-          <a id="forgotLink" href="#resetPanel">Forgot password?</a>
-          <a id="toRegister" href="#registerView">New here? Join the Hub</a>
-        </div>
-        <button class="submit" type="submit" id="loginSubmit">Sign in</button>
-        <div class="msg" id="loginMsg" role="status" aria-live="polite"></div>
-      </form>
-
-      <div class="subpanel" id="resetPanel">
-        <div class="cap">Reset password</div>
-        <p id="resetHelp" class="sub">We will email a secure recovery link.</p>
-        <div class="field">
-          <label for="resetEmail">Account email</label>
-          <input id="resetEmail" type="text" placeholder="you@example.com">
-        </div>
-        <div class="field" hidden>
-          <label for="newPass">New password</label>
-          <input id="newPass" type="password" autocomplete="new-password" minlength="12" placeholder="at least 12 characters">
-        </div>
-        <div class="field" id="resetConfirmField" hidden>
-          <label for="resetConfirm">Confirm new password</label>
-          <input id="resetConfirm" type="password" autocomplete="new-password" minlength="12">
-        </div>
-        <div class="btn-row">
-          <button class="ghost" id="cancelReset" type="button">Cancel</button>
-          <button class="submit" id="confirmReset" type="button">Send recovery email</button>
-        </div>
-      </div>
-
-      <div class="hint">Sign in with your email and password. Accounts from the old local demo must register again.</div>
-    </div>
-
-    <!-- REGISTER FORM -->
-    <div class="form-view" id="registerView">
-      <div>
-        <p class="lead">Join the Hub</p>
-        <p class="sub">Create your member account to explore the menu.</p>
-      </div>
-
-      <form id="registerForm" novalidate>
-        <div class="field">
-          <label for="rName">Full name</label>
-          <input id="rName" type="text" placeholder="Jordan Blake">
-        </div>
-        <div class="two-col">
-          <div class="field">
-            <label for="rDob">Birthday</label>
-            <input id="rDob" type="date">
-          </div>
-          <div class="field">
-            <label for="rGender">Gender</label>
-            <select id="rGender">
-              <option value="">select…</option>
-              <option>Female</option>
-              <option>Male</option>
-              <option>Other</option>
-              <option>Prefer not to say</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label for="rEmail">Email</label>
-          <input id="rEmail" type="text" placeholder="you@example.com">
-        </div>
-        <div class="field">
-          <label for="rPass">Password</label>
-          <input id="rPass" type="password" autocomplete="new-password" minlength="12" placeholder="at least 12 characters">
-        </div>
-        <div class="field">
-          <label for="rConfirm">Confirm password</label>
-          <input id="rConfirm" type="password" placeholder="••••••••">
-        </div>
-        <button class="submit" type="submit" id="registerSubmit">Create account</button>
-        <div class="msg" id="registerMsg" role="status" aria-live="polite"></div>
-      </form>
-
-      <div class="subpanel" id="continuePanel">
-        <div class="cap">Continue registration?</div>
-        <div class="btn-row">
-          <button class="ghost" id="noContinue" type="button">No, exit</button>
-          <button class="submit" id="yesContinue" type="button">Yes, re-enter password</button>
-        </div>
-      </div>
-
-      <div class="hint">Use a unique password with at least 12 characters and an email address you own. Password recovery requires access to that inbox.</div>
-    </div>
-
-  </div>
-</div>
-
-<div class="hub" id="signedInView" hidden>
-  <aside class="hub-sidebar">
-    <a class="hub-brand" href="#overview" aria-label="Kathy's Hub home">
-      <span class="brand-monogram" aria-hidden="true">K.</span>
-      <span><span class="word">Kathy's Hub</span><span class="tagline">Cafe &amp; Restaurant</span></span>
-    </a>
-    <p class="nav-caption">YOUR LITTLE CORNER</p>
-    <nav class="hub-nav" aria-label="Dashboard">
-      <a href="#overview" class="selected" aria-current="page"><span aria-hidden="true">⌂</span> Overview</a>
-      <a href="#menu"><span aria-hidden="true">☕</span> Explore the menu</a>
-      <a href="/account.html"><span aria-hidden="true">○</span> My account</a>
-      <a id="adminLink" href="/admin.html" hidden><span aria-hidden="true">⚙</span> Admin workspace</a>
-    </nav>
-    <div class="sidebar-note"><span class="tiny-label">MADE FOR SLOW MOMENTS</span><p>A good cup.<br>A familiar place.<br>A little time for you.</p><span class="note-flower" aria-hidden="true">✳</span></div>
-    <button class="hub-signout" id="signOutBtn" type="button">Sign out <span aria-hidden="true">↗</span></button>
-    <p id="signOutMessage" role="status" aria-live="polite"></p>
-  </aside>
-  <main class="hub-main" id="overview">
-    <header class="hub-topbar"><span class="breadcrumb">Your Hub <span>/</span> Overview</span><div class="member-chip"><span class="avatar" id="memberInitial" aria-hidden="true">K</span><span id="memberName">Member</span></div></header>
-    <div class="dashboard-content">
-      <div class="welcome-row"><div><p class="eyebrow">MAKE YOURSELF AT HOME</p><h1 id="signedInName" tabindex="-1">Welcome back.</h1><p class="intro-copy">Something delicious. Somewhere to unwind. All right here.</p></div><span class="small-seal">GOOD FOOD<br><b>good company</b></span></div>
-      <section class="hero-panel" aria-labelledby="heroTitle">
-        <div class="hero-copy"><span class="hero-kicker">THE EVERYDAY ESCAPE</span><h2 id="heroTitle">Your next favorite<br>moment starts here.</h2><p>Take a break, find a new favorite, and settle into your kind of day.</p><a class="hub-button" href="#menu">Explore the menu <span aria-hidden="true">↗</span></a><span class="hero-footnote">A little inspiration for your next visit.</span></div>
-        <div class="coffee-art" aria-hidden="true"><div class="art-orbit"></div><span class="art-spark spark-one">✳</span><span class="art-spark spark-two">✧</span><div class="saucer"><div class="cup-handle"></div><div class="coffee-cup"><div class="coffee-surface"><span>♡</span></div></div></div><span class="art-caption">brewed with love</span></div>
-      </section>
-      <div class="dashboard-grid">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Kathy’s Diners & Cafe: comforting meals, coffee, pizza, pasta and sweet treats."><title>Kathy’s — Good food. Good company.</title><link rel="stylesheet" href="/menu-cards.css"><link rel="stylesheet" href="/cart.css"><link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/restaurant.css"></head>
+<body class="restaurant"><a class="skip-link" href="#menu">Skip to menu</a>
+<div class="announcement">A LITTLE COMFORT IN EVERY VISIT</div>
+<header class="site-header"><a class="brand" href="/" aria-label="Kathy’s home"><img src="/assets/logo.jpg" width="44" height="44" alt=""><span>Kathy’s<small>DINERS & CAFE</small></span></a><nav aria-label="Main navigation"><a href="#menu">Menu</a><a href="#story">Our story</a><a class="nav-account" href="/account.html">My account</a><a href="/signin.html">Sign in</a></nav></header>
+<main id="signedInView">
+<section class="landing-hero" aria-labelledby="hero-title"><div class="hero-words"><p class="kicker">YOUR EVERYDAY HAPPY PLACE</p><h1 id="hero-title">Good food.<br>Great coffee.<br><em>Your kind of place.</em></h1><p>From hearty meals to that last sweet bite, find a little comfort at Kathy’s.</p><div class="hero-links"><a class="primary-link" href="#menu">Find your favorite <span aria-hidden="true">↗</span></a><a href="#story">Meet Kathy’s ↓</a></div><p class="hero-caption">COFFEE · COMFORT FOOD · SOMETHING SWEET</p></div>
+<div class="hero-art" role="img" aria-label="Illustration of a coffee cup and a plate"><span class="art-label">MADE FOR<br><b>good company</b></span><div class="illustrated-plate"><span>✳</span><strong>take a<br>little break.</strong></div><div class="illustrated-coffee"><span>♡</span></div><span class="art-bottom">A CUP. A PLATE. A LITTLE JOY.</span></div></section>
+<div class="checker" aria-hidden="true"></div>
+<section class="discover" aria-labelledby="discover-title"><p class="kicker">WHAT ARE YOU CRAVING?</p><h2 id="discover-title">A favorite for every mood.</h2><div class="category-links"><a href="#menu" data-section-pick="Fire Fighter's Meal"><span aria-hidden="true">🍳</span><strong>Something hearty</strong><small>Fire Fighter’s Meal →</small></a><a href="#menu" data-section-pick="Coffee"><span aria-hidden="true">☕</span><strong>Your coffee moment</strong><small>Explore coffee →</small></a><a href="#menu" data-section-pick="Pizza Thin Crust"><span aria-hidden="true">🍕</span><strong>Better together</strong><small>Thin-crust pizza →</small></a><a href="#menu" data-section-pick="Burnt Basque Cheesecake"><span aria-hidden="true">🍰</span><strong>Save room for sweet</strong><small>Basque cheesecake →</small></a></div></section>
         <section class="menu-section" id="menu" aria-labelledby="menuTitle">
           <div class="section-heading"><div><p class="eyebrow">KATHY'S DINERS &amp; CAFE</p><h2 id="menuTitle">Find your next favorite.</h2></div><span class="preview-tag">Full menu</span></div>
           <p class="section-description">Explore our food, drinks, and sweet treats. Prices in PHP. Select a size to see its price. Checkout saves demo orders for admin review. Payments and delivery booking remain simulated.</p>
@@ -169,13 +20,5 @@
           <button class="catalog-retry" id="catalogRetry" type="button" hidden>Try again</button>
           <button class="catalog-more" id="catalogMore" type="button" hidden>Show more items</button>
         </section>
-      </div>
-      <footer class="hub-footer"><span class="word">Kathy's Hub</span><span>A little comfort in every visit.</span><a href="#overview">Back to top ↑</a></footer>
-    </div>
-  </main>
-</div>
-<script src="/vendor/supabase.js"></script>
-<script type="module" src="app.js"></script>
-
-</body>
-</html>
+<section class="story" id="story" aria-labelledby="story-title"><div class="story-mark" aria-hidden="true">K.<span>GOOD FOOD<br>GOOD COMPANY</span></div><div><p class="kicker">MAKE YOURSELF AT HOME</p><h2 id="story-title">A familiar favorite.<br>A new little ritual.</h2><p>A hearty Fire Fighter’s Meal. Coffee just the way you like it. Pizza to share, and cheesecake worth saving room for.</p><p>That’s the spirit of Kathy’s: something comforting for whatever your day brings.</p><a class="primary-link" href="#menu">Explore the menu ↗</a></div></section>
+</main><footer class="site-footer"><a class="brand" href="/">Kathy’s<small>DINERS & CAFE</small></a><p>A little comfort in every visit.</p><nav aria-label="Footer"><a href="#menu">Menu</a><a href="/account.html">My account</a><a href="/signin.html">Sign in</a><a href="#">Back to top ↑</a></nav><small>Demo website · No real payment or delivery booking</small></footer><script type="module" src="/js/landing.js"></script></body></html>

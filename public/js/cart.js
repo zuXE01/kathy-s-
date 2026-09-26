@@ -20,6 +20,7 @@ function render() {
   if (checkout) checkout.disabled = !state.count;
   try { saveCart(state.items); } catch { /* Checkout reports storage errors explicitly. */ }
   launcher.textContent = 'View cart · ' + state.count + ' · ' + formatPrice(state.total/100);
+  launcher.hidden = document.body.classList.contains('restaurant') && !state.count;
   total.textContent = 'Subtotal: ' + formatPrice(state.total/100);
   if (!state.items.length) list.append(node('p','Your cart is empty. Add a favorite from the menu.'));
   state.items.forEach(line => {
