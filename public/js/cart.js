@@ -48,6 +48,7 @@ export function clearCart() {
   cart.clear();
   forgetCart();
   if (!dialog) return;
+  dialog.setAttribute('data-instant','');
   dialog.close(); render(); status.textContent = '';
 }
 export function initCart() {
@@ -59,13 +60,20 @@ export function initCart() {
       for(let n=0;n<line.quantity;n++) cart.add({id,name:line.name,section:line.section},{label,price:line.cents/100});
     } catch { /* Ignore a corrupt saved line. */ }
   }
-  launcher = button('View cart · 0 · ₱0',()=>dialog.showModal());
+  launcher = button('View cart · 0 · ₱0',event=>{
+    dialog.toggleAttribute('data-instant',event.detail===0);
+    dialog.showModal();
+  });
   launcher.className = 'cart-launcher'; launcher.setAttribute('aria-haspopup','dialog');
   status = node('p',undefined,'cart-status'); status.setAttribute('role','status');
   dialog = node('dialog',undefined,'cart-dialog'); dialog.setAttribute('aria-labelledby','cartTitle');
+  dialog.addEventListener('cancel',()=>dialog.setAttribute('data-instant',''));
   const heading = node('h2','Your cart'); heading.id = 'cartTitle';
   const header = node('div',undefined,'cart-header');
-  header.append(heading,button('Close',()=>dialog.close()));
+  header.append(heading,button('Close',event=>{
+    dialog.toggleAttribute('data-instant',event.detail===0);
+    dialog.close();
+  }));
   list = node('div',undefined,'cart-lines');
   total = node('p',undefined,'cart-total'); total.setAttribute('aria-live','polite');
   checkout = button('Continue to checkout',function openCheckout() {
