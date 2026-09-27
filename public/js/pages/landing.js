@@ -10,18 +10,36 @@ if (hash.has('access_token') || hash.has('error') || query.has('code')) {
     document.getElementById('productShowcase').hidden=signedIn;
     document.getElementById('memberCatalog').hidden=!signedIn;
     document.getElementById('menu').setAttribute('aria-labelledby',signedIn?'menuTitle':'showcaseTitle');
-    if(signedIn&&!initialized){initialized=true;initMenu();}
+    if(signedIn&&!initialized){
+      initialized=true;
+      let selected = 'all';
+      try { selected = sessionStorage.getItem('kathys-menu-section') || 'all'; sessionStorage.removeItem('kathys-menu-section'); } catch {}
+      initMenu(selected);
+    }
     document.querySelectorAll('.cart-launcher,.cart-status').forEach(control=>{control.hidden=!signedIn;});
     if(!signedIn)document.querySelector('.cart-dialog[open]')?.close();
   }
   window.addEventListener('customer-access-changed',event=>displayMenu(event.detail.signedIn));
   displayMenu(document.body.dataset.menuAccess==='member');
-  document.querySelectorAll('[data-section-pick]').forEach(link => {
+  document.querySelectorAll('[data-order-section]').forEach(link => {
     link.addEventListener('click', () => {
+      try { sessionStorage.setItem('kathys-menu-section', link.dataset.orderSection); } catch {}
+    });
+  });
+  document.querySelectorAll('[data-section-pick]').forEach(link => {
+    link.addEventListener('click', event => {
+      try { sessionStorage.setItem('kathys-menu-section', link.dataset.sectionPick); } catch {}
       const select = document.getElementById('mobileMenuSection');
       if ([...select.options].some(option => option.value === link.dataset.sectionPick)) {
         select.value = link.dataset.sectionPick;
         select.dispatchEvent(new Event('change', {bubbles:true}));
+      } else {
+        const promotion = [...document.querySelectorAll('[data-promotion]')].find(item => item.dataset.promotion === link.dataset.sectionPick);
+        if (promotion) {
+          event.preventDefault();
+          promotion.scrollIntoView({block:'start'});
+          promotion.focus({preventScroll:true});
+        }
       }
     });
   });

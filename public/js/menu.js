@@ -36,12 +36,15 @@ function loadMenu() {
   fetch('/api/menu').then(function checked(response) {
     if (!response.ok) throw new Error('Menu unavailable'); return response.json();
   }).then(function loaded(data) {
-    items = data.items; loading = false; renderSections(); render();
+    items = data.items;
+    if (section !== 'all' && !getSections(items).includes(section)) section = 'all';
+    loading = false; renderSections(); render();
   }).catch(function failed() {
     el('menuResult').textContent = 'We could not load the menu. Please try again.'; el('catalogRetry').hidden = false;
   }).finally(() => { loading = false; finishLoading(); });
 }
-export function initMenu() {
+export function initMenu(initialSection = 'all') {
+  section = initialSection;
   initCart();
   el('catalogFilters').addEventListener('click',function filterSection(event) {
     const button = event.target.closest('button[data-filter]');
