@@ -61,8 +61,9 @@ function ordersRouter(url,key,createClient) {
   router.get('/request/:requestId',async(req,res)=>{
     if(!uuid.test(req.params.requestId))return res.status(400).json({error:'Invalid checkout reference.'});
     try {
-      const result=await req.orderClient.from('orders').select('*').eq('user_id',req.orderUser.id).eq('request_id',req.params.requestId).maybeSingle();
+      const result=await req.orderClient.from('orders').select('id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at').eq('user_id',req.orderUser.id).eq('request_id',req.params.requestId).maybeSingle();
       if(result.error)return errorResponse(res,result.error);
+      if(result.data&&Array.isArray(result.data.history))result.data.history=result.data.history.map(({status,at,note})=>({status,at,note}));
       res.json({order:result.data});
     } catch {res.status(503).json({error:'Unable to check this checkout. Please retry.'});}
   });

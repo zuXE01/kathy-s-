@@ -2,7 +2,7 @@ import { getOptions } from './menu-card.js';
 export function filterMenu(items, { search = '', category = 'all', section = 'all', sort = 'name' } = {}) {
   const term = search.trim().toLocaleLowerCase();
   const result = items.filter(item => (category === 'all' || item.category === category) && (section === 'all' || (item.section || 'House Favorites') === section) &&
-    [item.name,item.section,item.description].join(' ').toLocaleLowerCase().includes(term));
+    [item.name,item.section,item.description].filter(Boolean).join(' ').toLocaleLowerCase().includes(term));
   const minimum = item => Math.min(...getOptions(item).map(option => Number(option.price)));
   return result.sort((a,b) => (sort === 'price-low' ? minimum(a)-minimum(b) : sort === 'price-high' ? minimum(b)-minimum(a) : 0) || a.name.localeCompare(b.name) || (a.section || '').localeCompare(b.section || ''));
 }

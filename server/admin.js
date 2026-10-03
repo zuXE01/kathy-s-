@@ -32,10 +32,12 @@ function adminRouter(url, key, createClient) {
   mountAdminOrders(router);
   router.get('/overview', requireRole(...roleSets.workspace), async (req, res) => {
     if(!roleSets.management.includes(req.adminRole)) {
-      const statuses=['accepted','preparing','ready'];
-      const results=await Promise.all(statuses.map(status=>req.adminClient.from('orders').select('id',{count:'exact',head:true}).eq('status',status)));
-      if(results.some(result=>result.error))return res.status(503).json({error:'Unable to load order counts. Please retry.'});
-      return res.json({email:req.adminUser.email,role:req.adminRole,orderCounts:Object.fromEntries(statuses.map((status,index)=>[status,results[index].count]))});
+      try {
+        const statuses=['accepted','preparing','ready'];
+        const results=await Promise.all(statuses.map(status=>req.adminClient.from('orders').select('id',{count:'exact',head:true}).eq('status',status)));
+        if(results.some(result=>result.error))return res.status(503).json({error:'Unable to load order counts. Please retry.'});
+        return res.json({email:req.adminUser.email,role:req.adminRole,orderCounts:Object.fromEntries(statuses.map((status,index)=>[status,results[index].count]))});
+      } catch { return res.status(503).json({error:'Unable to load order counts. Please retry.'}); }
     }
     const [members, menu, available] = await Promise.all([
       req.adminClient.from('profiles').select('id', { count: 'exact', head: true }),
@@ -48,11 +50,13 @@ function adminRouter(url, key, createClient) {
   router.get('/members', async (req, res) => {
     const page = Number(req.query.page || 1);
     if (!Number.isSafeInteger(page) || page < 1 || page > 10000) return res.status(400).json({ error: 'Invalid page.' });
-    const { data, error, count } = await req.adminClient.from('profiles')
-      .select('id,name,created_at', { count: 'exact' }).order('created_at', { ascending: false }).order('id')
-      .range((page - 1) * 20, page * 20 - 1);
-    if (error) return res.status(503).json({ error: 'Unable to load members.' });
-    res.json({ items: data, total: count, page });
+    try {
+      const { data, error, count } = await req.adminClient.from('profiles')
+        .select('id,name,created_at', { count: 'exact' }).order('created_at', { ascending: false }).order('id')
+        .range((page - 1) * 20, page * 20 - 1);
+      if (error) return res.status(503).json({ error: 'Unable to load members.' });
+      res.json({ items: data, total: count, page });
+    } catch { res.status(503).json({ error: 'Unable to load members.' }); }
   });
   router.get('/menu', async (req, res) => {
     try { res.json({ items: await readMenu(req.adminClient) }); }
