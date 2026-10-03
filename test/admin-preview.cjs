@@ -7,6 +7,7 @@ const rows = require('../server/menu-catalog.cjs').items.map(item => ({...item,i
 const {createOrderFixture,memberId}=require('./order-fixture.cjs');
 const orderFixture=createOrderFixture(rows);
 const fakeClient = () => ({
+  rpc: (...args)=>orderFixture.client(null,null,{global:{headers:{Authorization:'Bearer admin'}}}).rpc(...args),
   auth: { getUser: async () => ({ data: { user: { id:memberId, email: 'demo@example.test', user_metadata:{name:'Demo member'}, app_metadata: { hub_role: 'admin' } } } }) },
   from(table) {
     if(table==='orders')return orderFixture.client(null,null,{global:{headers:{Authorization:'Bearer admin'}}}).from(table);

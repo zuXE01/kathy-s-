@@ -18,10 +18,10 @@ test('sign-in is auth-only and checkout/account have a direct round trip',()=>{
 });
 test('customer navigation follows verified session state and preserves checkout return context',async()=>{
   const nodes=Object.fromEntries(['data-signin','data-signout','data-admin','data-auth-prompt'].map(key=>[key,{hidden:false,addEventListener(){}}]));
-  let callback,user=null;
+  let callback,user=null,cleared=0;
   const client={auth:{onAuthStateChange(fn){callback=fn;},getUser:async()=>({data:{user},error:null})}};
   const source=fs.readFileSync(path.join(__dirname,'../public/js/customer-navigation.js'),'utf8').replace(/^import .*;\r?\n/gm,'');
-  vm.runInNewContext(source,{URLSearchParams,setTimeout,window:{dispatchEvent(){}},CustomEvent:class{},getAuthClient:async()=>client,signInPath:scope.signInPath,location:{pathname:'/account.html',search:'?from=checkout',hash:''},document:{body:{dataset:{}},querySelectorAll:selector=>[nodes[selector.slice(1,-1)]]}});
+  vm.runInNewContext(source,{URLSearchParams,setTimeout,clearCart:()=>cleared++,window:{dispatchEvent(){}},CustomEvent:class{},getAuthClient:async()=>client,signInPath:scope.signInPath,location:{pathname:'/account.html',search:'?from=checkout',hash:''},document:{body:{dataset:{}},querySelectorAll:selector=>[nodes[selector.slice(1,-1)]]}});
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(nodes['data-signin'].href,'/signin.html?next=%2Faccount.html%3Ffrom%3Dcheckout');
   assert.equal(nodes['data-auth-prompt'].hidden,false);
@@ -31,4 +31,5 @@ test('customer navigation follows verified session state and preserves checkout 
   user={id:'admin',app_metadata:{hub_role:'admin'}};callback('SIGNED_IN',{user});
   await new Promise(resolve=>setTimeout(resolve,10));assert.equal(nodes['data-admin'].hidden,false);
   callback('SIGNED_OUT',null);assert.equal(nodes['data-signin'].hidden,false);assert.equal(nodes['data-signout'].hidden,true);
+  assert.equal(cleared,2,'account switching and external sign-out both clear the cart');
 });

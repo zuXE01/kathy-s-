@@ -24,7 +24,7 @@ export function loadOrders(nextPage=1) {
     el('ordersPrev').disabled=page<=1;el('ordersNext').disabled=page*20>=data.total;
     data.items.forEach(order=>{
       const card=node('article',undefined,'order-card');
-      card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge'),node('h2',order.customer.name),
+      card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge'),node('h2',order.customer?.name || 'Order '+order.id.slice(0,8)),
         node('p',new Date(order.created_at).toLocaleString()),node('p','Reference: '+order.id),
         node('p',order.items.reduce((sum,item)=>sum+item.quantity,0)+' items · '+formatPrice(order.total_cents/100)),
         node('p',order.payment_method==='cod'?'COD · Unpaid':'Online · Simulated, not paid'));
@@ -38,9 +38,10 @@ function openOrder(order) {
   el('orderNote').required=false;
   el('orderDialogTitle').textContent='Order · '+order.status;
   const box=el('orderDetails'),customer=order.customer;
-  box.append(node('p','Reference: '+order.id),node('h3',customer.name),node('p',customer.email+' · '+customer.phone),
+  box.append(node('p','Reference: '+order.id));
+  if(customer)box.append(node('h3',customer.name),node('p',customer.email+' · '+customer.phone),
     node('p',[customer.address,customer.barangay,customer.city,customer.province,customer.postal].join(', ')));
-  if(customer.notes)box.append(node('p','Customer notes: '+customer.notes));
+  if(customer?.notes)box.append(node('p','Customer notes: '+customer.notes));
   const list=node('ul');
   order.items.forEach(item=>list.append(node('li',item.quantity+' × '+item.name+' · '+item.label+' — '+formatPrice(item.quantity*item.cents/100))));
   box.append(list,node('strong','Total: '+formatPrice(order.total_cents/100)),node('p','Delivery: ₱0 demo · '+(order.payment_method==='cod'?'COD unpaid':'Online payment simulated — no money received')),

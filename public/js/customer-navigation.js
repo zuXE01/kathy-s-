@@ -1,5 +1,6 @@
 import { getAuthClient } from './auth-client.js';
 import { forgetCart } from './cart-storage.js';
+import { clearCart } from './cart.js';
 import { signInPath } from './routes.js';
 const destination=location.pathname==='/account.html'
   ? '/account.html'+(new URLSearchParams(location.search).get('from')==='checkout'?'?from=checkout':'')
@@ -16,9 +17,18 @@ displayUser(null);
 const callbackHash=new URLSearchParams(location.hash.slice(1));
 const isEmailCallback=callbackHash.has('access_token')||callbackHash.has('error')||new URLSearchParams(location.search).has('code');
 if(!isEmailCallback)getAuthClient().then(client=>{
-  let revision=0;
+  let revision=0, identity;
   client.auth.onAuthStateChange((event,session)=>{
     const current=++revision;
+    const nextIdentity=session?.user?.id || null;
+    let storedIdentity;
+    try { storedIdentity=sessionStorage.getItem('kathys-cart-owner'); } catch {}
+    if(!nextIdentity||(identity!==undefined&&identity!==nextIdentity)||(storedIdentity&&storedIdentity!==nextIdentity))clearCart();
+    try {
+      if(nextIdentity)sessionStorage.setItem('kathys-cart-owner',nextIdentity);
+      else sessionStorage.removeItem('kathys-cart-owner');
+    } catch {}
+    identity=nextIdentity;
     if(!session){displayUser(null);return;}
     setTimeout(async()=>{
       try {const {data,error}=await client.auth.getUser();if(current===revision)displayUser(error?null:data.user);}

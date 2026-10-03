@@ -21,10 +21,12 @@ exception when others then
 end;
 $$;
 
+drop policy if exists "Users can view their own profile" on public.profiles;
 create policy "Users can view their own profile"
   on public.profiles for select
   using (auth.uid() = id);
 
+drop policy if exists "Users can update their own profile" on public.profiles;
 create policy "Users can update their own profile"
   on public.profiles for update
   using (auth.uid() = id)
@@ -64,8 +66,4 @@ select
   public.try_profile_date(raw_user_meta_data ->> 'dob'),
   nullif(raw_user_meta_data ->> 'gender', '')
 from auth.users
-on conflict (id) do update set
-  name = excluded.name,
-  dob = excluded.dob,
-  gender = excluded.gender,
-  updated_at = now();
+on conflict (id) do nothing;

@@ -28,8 +28,8 @@ function confirmation(value) {
   const customer=value.customer;
   el('reference').textContent='Order reference: '+value.id;
   el('paymentResult').textContent=value.payment_method==='cod'?'COD · Payment unpaid.':'Demo online · Simulated only; not a real payment.';
-  el('customerResult').textContent=customer.name+' · '+customer.phone+' · '+customer.email;
-  el('addressResult').textContent=[customer.address,customer.barangay,customer.city,customer.province,customer.postal].join(', ');
+  el('customerResult').textContent=customer ? customer.name+' · '+customer.phone+' · '+customer.email : 'Your order is safely saved.';
+  el('addressResult').textContent=customer ? [customer.address,customer.barangay,customer.city,customer.province,customer.postal].join(', ') : 'The restaurant has the contact and delivery details you submitted.';
   el('confirmedTotal').textContent='Saved total: '+formatPrice(value.total_cents/100);
   el('confirmationTitle').textContent='Order saved · '+value.status;
   forgetCart(); sessionStorage.removeItem(requestKey);

@@ -10,10 +10,11 @@ function createOrderFixture(menu) {
     const user={id:token==='other'?otherId:memberId,email:'demo@example.test',user_metadata:{name:'Demo member'},app_metadata:token==='admin'?{hub_role:'admin'}:{}};
     return {
       auth:{getUser:async()=>({data:{user:token==='invalid'?null:user}})},
+      rpc:async(name,{order_ids})=>({data:orders.filter(row=>order_ids.includes(row.id)&&(token==='admin'||row.user_id===user.id)).map(({id,customer})=>({id,customer:structuredClone(customer)})),error:null}),
       from(table) {
-        let filters=[],start=0,end=19,action,payload,single=false;
+        let filters=[],start=0,end=19,action,payload,single=false,columns='*';
         const query={
-          select(){return this;},eq(key,value){filters.push([key,value]);return this;},order(){return this;},
+          select(value='*'){columns=value;return this;},eq(key,value){filters.push([key,value]);return this;},order(){return this;},
           range(a,b){start=a;end=b;return this;},maybeSingle(){single=true;return this;},single(){single=true;return this;},
           insert(value){action='insert';payload=value;return this;},update(value){action='update';payload=value;return this;},
           then(resolve,reject) {
@@ -42,7 +43,8 @@ function createOrderFixture(menu) {
               else if(rows.some(row=>!transitions[row.status].includes(payload.status)))error={code:'P0001'};
               else rows.forEach(row=>{Object.assign(row,payload);row.version++;row.updated_at=new Date().toISOString();row.history.push({status:row.status,note:row.status_note,actor:user.id,at:row.updated_at});});
             }
-            return Promise.resolve({data:error?null:single?rows[0]||null:rows.slice(start,end+1),count:rows.length,error}).then(resolve,reject);
+            const project=row=>structuredClone(columns==='*'?row:Object.fromEntries(columns.split(',').map(key=>[key,row[key]])));
+            return Promise.resolve({data:error?null:single?(rows[0]?project(rows[0]):null):rows.slice(start,end+1).map(project),count:rows.length,error}).then(resolve,reject);
           }
         };return query;
       }

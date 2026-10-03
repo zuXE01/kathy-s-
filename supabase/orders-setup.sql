@@ -29,7 +29,7 @@ create index if not exists orders_status_created on public.orders(status,created
 create index if not exists orders_created on public.orders(created_at desc,id);
 alter table public.orders enable row level security;
 revoke all on public.orders from anon,authenticated;
-grant select on public.orders to authenticated;
+grant select(id,user_id,request_id,request_hash,items,total_cents,delivery_cents,payment_method,payment_status,status,status_note,history,version,is_demo,created_at,updated_at) on public.orders to authenticated;
 grant insert(user_id,request_id,request_hash,customer,items,total_cents,payment_method) on public.orders to authenticated;
 grant update(status,status_note) on public.orders to authenticated;
 drop policy if exists orders_read on public.orders;
@@ -130,4 +130,31 @@ end; $$;
 revoke all on function hub_private.transition_order() from public,anon,authenticated;
 drop trigger if exists orders_transition on public.orders;
 create trigger orders_transition before update on public.orders for each row execute function hub_private.transition_order();
+-- Deliberately elevated ONLY to read the otherwise unselectable customer column.
+-- The explicit authorization below is required because the definer bypasses RLS.
+create or replace function hub_private.read_order_contacts(order_ids uuid[])
+returns table(id uuid, customer jsonb)
+language plpgsql stable security definer set search_path='' as $$
+declare actor uuid := auth.uid();
+  role text := coalesce(auth.jwt()->'app_metadata'->>'hub_role','');
+begin
+  if actor is null or coalesce((auth.jwt()->>'is_anonymous')::boolean,false)
+    or role='kitchen_staff' then raise exception 'Contact access denied' using errcode='42501'; end if;
+  if coalesce(cardinality(order_ids),0) not between 1 and 20 then
+    raise exception 'Request 1 to 20 order contacts' using errcode='22023'; end if;
+  return query select o.id,o.customer from public.orders o
+    where o.id=any(order_ids) and (o.user_id=actor or role in ('admin','owner','platform_admin','staff'));
+end; $$;
+revoke all on function hub_private.read_order_contacts(uuid[]) from public,anon,authenticated;
+grant usage on schema hub_private to authenticated;
+grant execute on function hub_private.read_order_contacts(uuid[]) to authenticated;
+
+create or replace function public.order_contacts(order_ids uuid[])
+returns table(id uuid, customer jsonb)
+language sql stable security invoker set search_path='' as $$
+  select * from hub_private.read_order_contacts(order_ids);
+$$;
+revoke all on function public.order_contacts(uuid[]) from public,anon,authenticated;
+grant execute on function public.order_contacts(uuid[]) to authenticated;
+notify pgrst, 'reload schema';
 commit;

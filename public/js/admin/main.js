@@ -4,7 +4,7 @@ import { initMembers, loadMembers } from './members.js';
 import { initMenuManager, loadMenu, clearMenu } from './menu.js';
 import { initOrders, loadOrders, clearOrders } from './orders.js';
 const el = id => document.getElementById(id);
-let managementAccess=false;
+let managementAccess=false, workspaceRole=null;
 function deny(message) {
   managementAccess=false;
   clearOrders();
@@ -19,6 +19,8 @@ function overview() {
     el('refreshOverview').disabled = false;
     if (error) { if (el('adminShell').hidden) el('gateMessage').textContent = error.message; else el('adminMessage').textContent = error.message; return; }
     const management=['owner','platform_admin'].includes(data.role);
+    if(workspaceRole!==data.role)el('ordersFilter').value=data.role==='kitchen_staff'?'accepted':'pending';
+    workspaceRole=data.role;
     managementAccess=management;
     document.querySelectorAll('[data-section="members"],[data-section="menu"],[data-open-menu]').forEach(control=>{control.hidden=!management;});
     document.querySelector('.admin-feature').hidden=!management;

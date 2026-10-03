@@ -77,4 +77,7 @@ test('password recovery requires a verified recovery event before updating a pas
   assert.equal(signedOut, 1);
   assert.equal(c.isRecovering(), false);
   assert.match(c.loginMsg.textContent, /Password updated/);
+  c.openRecovery();assert.equal(c.isRecovering(),true);
+  c.finishRecovery();assert.equal(c.isRecovering(),false);
+  assert.equal(c.newPass.value,'');
 });

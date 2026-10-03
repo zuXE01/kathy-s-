@@ -31,7 +31,9 @@ function render() {
       cart.change(line.id,delta); render();
       // Restore keyboard focus after replacing the cart rows.
       const rows = [...list.children], index = state.items.findIndex(item=>item.id===line.id);
-      (rows[Math.min(index,rows.length-1)]?.querySelector('button') || dialog.querySelector('button')).focus();
+      const buttons=rows[Math.min(index,rows.length-1)]?.querySelectorAll('button');
+      const target=buttons?.[delta===1?1:0];
+      (target&&!target.disabled?target:buttons?.[0]||dialog.querySelector('button')).focus();
     }
     const plus = button('+',()=>change(1),'Increase quantity of ' + line.name);
     plus.disabled = line.quantity >= 99;

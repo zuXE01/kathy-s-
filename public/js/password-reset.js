@@ -43,7 +43,7 @@ function closeReset() {
   }
   resetPanel.classList.remove('show');
 }
-function finishRecovery() {
+export function finishRecovery() {
   recovering = false;
   sessionStorage.removeItem('hub-recovery');
   newPass.value = '';

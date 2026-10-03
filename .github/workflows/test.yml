@@ -1,0 +1,19 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Install isolated PostgreSQL test runtime
+        run: npm install --prefix "$RUNNER_TEMP/kathys-db-test" --no-save --package-lock=false --ignore-scripts @electric-sql/pglite@0.5.8
+      - name: Verify database permissions and repeatable setup
+        run: node scripts/verify-review-database.cjs "$RUNNER_TEMP/kathys-db-test/node_modules/@electric-sql/pglite"

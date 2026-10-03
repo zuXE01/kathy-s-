@@ -1,5 +1,5 @@
 begin;
-create table public.customer_details (
+create table if not exists public.customer_details (
  user_id uuid primary key references auth.users(id) on delete cascade,
  name text not null check(length(trim(name)) between 1 and 100),
  phone text not null default '' check(phone='' or (phone ~ '^\+?[0-9 ()-]{7,20}$' and length(regexp_replace(phone,'[^0-9]','','g'))>=7)),
@@ -13,6 +13,7 @@ create table public.customer_details (
 alter table public.customer_details enable row level security;
 revoke all on public.customer_details from anon,authenticated;
 grant select,insert,update on public.customer_details to authenticated;
+drop policy if exists customer_details_owner on public.customer_details;
 create policy customer_details_owner on public.customer_details for all to authenticated
 using (user_id=(select auth.uid()) and not coalesce(((select auth.jwt())->>'is_anonymous')::boolean,false))
 with check (user_id=(select auth.uid()) and not coalesce(((select auth.jwt())->>'is_anonymous')::boolean,false));

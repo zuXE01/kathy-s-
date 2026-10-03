@@ -1,6 +1,6 @@
 import { getAuthClient } from './auth-client.js';
 import { goSignedIn, goSignedOut } from './dashboard.js';
-import { openRecovery, isRecovering } from './password-reset.js';
+import { openRecovery, isRecovering, finishRecovery } from './password-reset.js';
 import { loginMsg } from './elements.js';
 
 export function initSession() {
@@ -20,10 +20,11 @@ export function initSession() {
         return;
       }
       if (event === 'SIGNED_OUT') {
-        sessionStorage.removeItem('hub-recovery');
+        finishRecovery();
         goSignedOut();
         return;
       }
+      if (isRecovering() && session?.user?.id !== sessionStorage.getItem('hub-recovery')) finishRecovery();
       if (!session || isRecovering()) return;
       // Defer SDK calls until the state-change callback releases its auth lock.
       setTimeout(function verifySession() {

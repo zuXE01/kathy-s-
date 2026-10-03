@@ -8,7 +8,7 @@ A mobile-first restaurant website built with HTML, CSS, JavaScript, Express, and
 
 - Supabase email registration, login, email confirmation, and password recovery
 - Persistent browser sessions with protected account display
-- Public landing page and shared menu with 120 photo-transcribed products, search, section filters and size/portion prices
+- Public product advertisements and a signed-in menu with 120 photo-transcribed products, search, section filters and size/portion prices
 - Authentication-only sign-in page with validated return destinations, plus a separate My Account page with saved contact details and checkout address autofill
 - Shared menu cards and admin editing, with database duplicate protection
 - Render-ready Express server with security headers and a health endpoint
@@ -33,6 +33,10 @@ npm start
 Open http://localhost:3000. Do not open `public/index.html` directly because the browser must load the app through Express.
 
 ## Supabase setup
+
+For a new database, run these scripts in order: `supabase/schema.sql`, `supabase/admin-setup.sql`, `supabase/menu-catalog-setup.sql`, `supabase/customer-details-setup.sql`, then `supabase/orders-setup.sql`. Import the menu using [MENU_CATALOG.md](MENU_CATALOG.md). Setup scripts are not a substitute for tracked production migration history; validate changes on staging and record each approved deployment.
+
+For the October review fixes, follow [the coordinated database/application deployment checklist](REVIEW_FIXES.md). The staff API now requires the protected `order_contacts` function. Do not deploy only one side of that change.
 
 In Supabase Authentication URL Configuration, set:
 
@@ -69,6 +73,8 @@ Health check path: /health
 ```
 
 Render supplies the `PORT` value. `NODE_ENV=production` enables production security headers.
+
+Set `TRUST_PROXY_HOPS` only after confirming the hosting proxy topology (typically `1` for a verified single ingress); direct local access uses `0`. Do not set unbounded proxy trust. The in-memory limiter is per instance and resets on restart; multi-instance production needs a shared limiter store.
 
 ## Project structure
 

@@ -1,5 +1,7 @@
 # Kathy's Hub — folder review
 
+Historical review: see [REVIEW_FIXES.md](REVIEW_FIXES.md) for the October 2026 fixes, current verification, and coordinated deployment requirements. Findings and test counts below describe the earlier snapshot, not the current release.
+
 Reviewed: 26 September 2026. Scope: current local `kathysProject`, including account details, saved orders, customer order history, cancellation, and the frontend page-entry refactor.
 
 ## Overall assessment

@@ -33,6 +33,9 @@ test('saved order is recovered on retry and isolated from another customer',asyn
   assert.equal((await send('/api/orders','member','POST',{...body,payment_method:'demo-online'})).status,409);
   const other=await send('/api/orders/request/'+body.request_id,'other');assert.equal((await other.json()).order,null);
   assert.equal((await send('/api/orders/request/'+body.request_id)).headers.get('cache-control'),'no-store');
+  const recovered=(await (await send('/api/orders/request/'+body.request_id)).json()).order;
+  assert.equal(recovered.id,record.id);assert.equal(recovered.customer,undefined);
+  assert.equal(recovered.history[0].actor,undefined);
 });
 test('customer order history is paginated and excludes private checkout fields',async t=>{
   const {send}=await setup(t),body=payload();

@@ -14,6 +14,10 @@ function createApp(env = process.env, createAuthClient = createClient) {
     throw new Error('Set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY in .env or Render environment settings.');
   }
   const app = express();
+  // Configure only for a verified proxy topology; direct local requests trust no proxy.
+  const proxyHops = env.TRUST_PROXY_HOPS ?? '0';
+  if (!/^[0-5]$/.test(String(proxyHops))) throw new Error('TRUST_PROXY_HOPS must be an integer from 0 to 5.');
+  app.set('trust proxy', Number(proxyHops));
   app.disable('x-powered-by');
   app.use(helmet({
     contentSecurityPolicy: { directives: {

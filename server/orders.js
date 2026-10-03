@@ -3,6 +3,16 @@ const { createHash } = require('node:crypto');
 const { allowedOrderStatuses } = require('./roles');
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const transitions = {pending:['accepted','rejected','cancelled'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[],cancelled:[]};
+// customer is deliberately not selectable via the Data API. Contact access is an
+// independently authorized database function, not merely a response filter.
+const orderColumns='id,user_id,request_id,request_hash,items,total_cents,delivery_cents,payment_method,payment_status,status,status_note,history,version,is_demo,created_at,updated_at';
+async function attachContacts(client, orders, role) {
+  if(role==='kitchen_staff'||!orders.length)return orders;
+  const result=await client.rpc('order_contacts',{order_ids:orders.map(order=>order.id)});
+  if(result.error)throw result.error;
+  const contacts=new Map(result.data.map(row=>[row.id,row.customer]));
+  return orders.map(order=>({...order,customer:contacts.get(order.id)}));
+}
 function validateOrder(body) {
   if (!body || !uuid.test(body.request_id || '') || !Array.isArray(body.items) || !body.items.length || body.items.length>120 ||
     !Number.isSafeInteger(body.total_cents) || body.total_cents<0 || !['cod','demo-online'].includes(body.payment_method)) return null;
@@ -80,12 +90,12 @@ function ordersRouter(url,key,createClient) {
   router.post('/',async(req,res)=>{
     const order=validateOrder(req.body);
     if(!order)return res.status(400).json({error:'Check the cart, customer details, address and payment method.'});
-    const query=()=>req.orderClient.from('orders').select('*').eq('user_id',req.orderUser.id).eq('request_id',order.request_id).maybeSingle();
+    const query=()=>req.orderClient.from('orders').select(orderColumns).eq('user_id',req.orderUser.id).eq('request_id',order.request_id).maybeSingle();
     try {
       let previous=await query();
       if(previous.error)return errorResponse(res,previous.error);
       if(previous.data)return previous.data.request_hash===order.request_hash?res.json({order:previous.data,reused:true}):res.status(409).json({error:'This checkout was already saved with different details. Return to the menu before starting a new order.'});
-      const result=await req.orderClient.from('orders').insert({...order,user_id:req.orderUser.id}).select('*').single();
+      const result=await req.orderClient.from('orders').insert({...order,user_id:req.orderUser.id}).select(orderColumns).single();
       if(result.error?.code==='23505') {
         previous=await query();
         if(previous.data?.request_hash===order.request_hash)return res.json({order:previous.data,reused:true});
@@ -103,12 +113,13 @@ function mountAdminOrders(router) {
     const page=Number(req.query.page||1),status=req.query.status||'all';
     if(!Number.isSafeInteger(page)||page<1||page>10000||!(status==='all'||Object.hasOwn(transitions,status)))return res.status(400).json({error:'Invalid order filter.'});
     try {
-      let query=req.adminClient.from('orders').select('*',{count:'exact'});
+      let query=req.adminClient.from('orders').select(orderColumns,{count:'exact'});
       if(status!=='all')query=query.eq('status',status);
       const result=await query.order('created_at',{ascending:false}).order('id').range((page-1)*20,page*20-1);
       if(result.error)return errorResponse(res,result.error);
       const strip=req.adminRole==='kitchen_staff';
-      res.json({items:result.data.map(order=>{
+      const orders=await attachContacts(req.adminClient,result.data,req.adminRole);
+      res.json({items:orders.map(order=>{
         const out={...order,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[order.status]||[])};
         if(strip)delete out.customer;
         return out;
@@ -120,10 +131,11 @@ function mountAdminOrders(router) {
     if(!uuid.test(req.params.id)||!Object.hasOwn(transitions,status)||!Number.isInteger(version)||version<1||typeof note!=='string'||note.length>500||(status==='rejected'&&!note.trim()))return res.status(400).json({error:'Select a valid status; rejection requires a reason.'});
     if(!allowedOrderStatuses(req.adminRole,Object.keys(transitions)).includes(status))return res.status(403).json({error:'Your role cannot perform this order action.',code:'ACTION_FORBIDDEN'});
     try {
-      const result=await req.adminClient.from('orders').update({status,status_note:note.trim()}).eq('id',req.params.id).eq('version',version).select('*').maybeSingle();
+      const result=await req.adminClient.from('orders').update({status,status_note:note.trim()}).eq('id',req.params.id).eq('version',version).select(orderColumns).maybeSingle();
       if(result.error)return errorResponse(res,result.error);
       if(!result.data)return res.status(409).json({error:'Another admin updated this order. Refresh and review its latest status.'});
-      const out={...result.data,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[result.data.status]||[])};
+      const [record]=await attachContacts(req.adminClient,[result.data],req.adminRole);
+      const out={...record,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[result.data.status]||[])};
       if(req.adminRole==='kitchen_staff')delete out.customer;
       res.json({order:out});
     } catch {res.status(503).json({error:'Unable to update order. Refresh before retrying.'});}
