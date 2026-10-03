@@ -44,6 +44,17 @@ test('checkout confirmation recovers a saved order without customer projection',
   assert.equal(document.getElementById('confirmation').hidden,false);
   assert.match(document.getElementById('customerResult').textContent,/saved/);
 });
+
+test('staff see an explicit warning when contact enrichment is unavailable',()=>{
+  const document=dom();
+  const order={id:'sample-order',status:'accepted',items:[],total_cents:0,payment_method:'cod',created_at:new Date().toISOString(),history:[],allowed_statuses:['preparing'],contact_status:'unavailable'};
+  const c=load('admin/orders.js',{document,formatPrice:String,showSkeleton:()=>()=>{},request:(_path,_options,callback)=>callback(null,{items:[order],total:1})});
+  c.loadOrders();
+  assert.match(document.getElementById('ordersMessage').textContent,/contact details could not load/);
+  document.getElementById('orderRows').querySelector('button').listeners.click();
+  assert.ok(document.getElementById('orderDetails').children.some(node=>node.textContent.includes('Do not dispatch')));
+  assert.equal(document.getElementById('orderUpdateForm').hidden,false);
+});
 test('cart increment preserves increment focus and session clear removes memory',()=>{
   const document=dom();let cart;
   const state={};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/cart-state.js'),'utf8').replace(/export /g,''),state);

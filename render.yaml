@@ -9,6 +9,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # Standard public ingress: trust the closest proxy, not arbitrary XFF entries.
+      # Revalidate if adding another proxy/CDN or permitting alternate ingress paths.
+      - key: TRUST_PROXY_HOPS
+        value: "1"
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_PUBLISHABLE_KEY

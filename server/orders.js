@@ -8,10 +8,16 @@ const transitions = {pending:['accepted','rejected','cancelled'],accepted:['prep
 const orderColumns='id,user_id,request_id,request_hash,items,total_cents,delivery_cents,payment_method,payment_status,status,status_note,history,version,is_demo,created_at,updated_at';
 async function attachContacts(client, orders, role) {
   if(role==='kitchen_staff'||!orders.length)return orders;
-  const result=await client.rpc('order_contacts',{order_ids:orders.map(order=>order.id)});
-  if(result.error)throw result.error;
-  const contacts=new Map(result.data.map(row=>[row.id,row.customer]));
-  return orders.map(order=>({...order,customer:contacts.get(order.id)}));
+  // Optional enrichment must not take down the queue or turn a committed update
+  // into a reported failure. Never fall back to SELECT customer or SELECT *.
+  try {
+    const result=await client.rpc('order_contacts',{order_ids:orders.map(order=>order.id)});
+    if(result.error)throw result.error;
+    const contacts=new Map(result.data.map(row=>[row.id,row.customer]));
+    return orders.map(order=>({...order,customer:contacts.get(order.id),contact_status:contacts.has(order.id)?'available':'unavailable'}));
+  } catch {
+    return orders.map(order=>({...order,contact_status:'unavailable'}));
+  }
 }
 function validateOrder(body) {
   if (!body || !uuid.test(body.request_id || '') || !Array.isArray(body.items) || !body.items.length || body.items.length>120 ||
@@ -33,8 +39,8 @@ function validateOrder(body) {
   const value={customer,items,total_cents:body.total_cents,payment_method:body.payment_method};
   return {...value,request_id:body.request_id,request_hash:createHash('sha256').update(JSON.stringify(value)).digest('hex')};
 }
-function errorResponse(res,error) {
-  if(error.code==='P0001')return res.status(409).json({error:'The menu or order status changed. Refresh and review before trying again.'});
+function errorResponse(res,error,conflictCode='ORDER_CHANGED') {
+  if(error.code==='P0001')return res.status(409).json({error:'The menu or order status changed. Refresh and review before trying again.',code:conflictCode});
   if(['22023','22P02','23514','23502'].includes(error.code))return res.status(400).json({error:'Check the order details and try again.'});
   if(error.code==='42501')return res.status(403).json({error:'You do not have access to this order.'});
   return res.status(503).json({error:'Order service unavailable. Retry with the same cart; do not start another order.'});
@@ -94,14 +100,14 @@ function ordersRouter(url,key,createClient) {
     try {
       let previous=await query();
       if(previous.error)return errorResponse(res,previous.error);
-      if(previous.data)return previous.data.request_hash===order.request_hash?res.json({order:previous.data,reused:true}):res.status(409).json({error:'This checkout was already saved with different details. Return to the menu before starting a new order.'});
+      if(previous.data)return previous.data.request_hash===order.request_hash?res.json({order:previous.data,reused:true}):res.status(409).json({error:'This checkout was already saved with different details. Recover the saved order before starting another.',code:'CHECKOUT_ALREADY_SAVED'});
       const result=await req.orderClient.from('orders').insert({...order,user_id:req.orderUser.id}).select(orderColumns).single();
       if(result.error?.code==='23505') {
         previous=await query();
         if(previous.data?.request_hash===order.request_hash)return res.json({order:previous.data,reused:true});
-        return res.status(409).json({error:'Checkout already submitted. Please reload and review.'});
+        return res.status(409).json({error:'Checkout already submitted. Please reload and review.',code:'CHECKOUT_ALREADY_SAVED'});
       }
-      if(result.error)return errorResponse(res,result.error);
+      if(result.error)return errorResponse(res,result.error,'MENU_CHANGED');
       res.status(201).json({order:result.data});
     } catch {res.status(503).json({error:'Unable to confirm the save. Retry this checkout to recover the same order.'});}
   });

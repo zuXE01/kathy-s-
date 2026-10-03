@@ -6,6 +6,7 @@ import { getAuthClient } from '../auth-client.js';
 import { showSkeleton } from '../loading.js';
 import { loadContact } from '../account-client.js';
 import { prefillContact } from '../account-model.js';
+import { recoverCheckoutConflict } from '../checkout-recovery.js';
 const el=id=>document.getElementById(id), requestKey='kathys-checkout-request';
 let order,saved,submitting=false,requestId,userId,active=true;
 window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
@@ -96,7 +97,19 @@ el('checkoutForm').addEventListener('submit',async function submitOrder(event) {
     if(!active)return;
     el('checkoutError').textContent=error.message;
     if(error.status===409) {
-      try {order=await currentOrder();drawOrder();} catch(menuError){el('checkoutError').textContent=menuError.message;}
+      try {
+        const recovery=await recoverCheckoutConflict(error,requestId,orderRequest);
+        if(!active)return;
+        if(recovery.kind==='saved'){
+          confirmation(recovery.order);
+          el('customerResult').textContent='Your previously submitted order is saved. Changes made during this retry were not applied.';
+        } else {
+          const refreshed=await currentOrder();
+          if(!active)return;
+          order=refreshed;drawOrder();
+          el('checkoutError').textContent='The menu changed. Review the updated items and total, then submit again. No new order was saved by this attempt.';
+        }
+      } catch(recoveryError){if(active)el('checkoutError').textContent='Unable to reconcile this checkout: '+recoveryError.message+' Keep this checkout and retry or reload.';}
     }
   } finally {submitting=false;el('placeOrder').disabled=false;el('placeOrder').textContent='Place demo order';el('placeOrder').setAttribute('aria-busy','false');}
 });

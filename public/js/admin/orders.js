@@ -21,6 +21,7 @@ export function loadOrders(nextPage=1) {
     if(error){el('ordersMessage').textContent=error.message;return;}
     el('orderRows').replaceChildren();
     el('ordersMessage').textContent=data.total?data.total+' orders · Page '+page:'No orders in this status.';
+    if(data.items.some(order=>order.contact_status==='unavailable'))el('ordersMessage').textContent+=' Customer contact details could not load. Refresh to retry; if this persists, ask the owner to verify database setup.';
     el('ordersPrev').disabled=page<=1;el('ordersNext').disabled=page*20>=data.total;
     data.items.forEach(order=>{
       const card=node('article',undefined,'order-card');
@@ -42,6 +43,7 @@ function openOrder(order) {
   if(customer)box.append(node('h3',customer.name),node('p',customer.email+' · '+customer.phone),
     node('p',[customer.address,customer.barangay,customer.city,customer.province,customer.postal].join(', ')));
   if(customer?.notes)box.append(node('p','Customer notes: '+customer.notes));
+  if(order.contact_status==='unavailable')box.append(node('p','Customer contact and delivery details could not load. Close this order and refresh to retry. Do not dispatch until the delivery details are available.'));
   const list=node('ul');
   order.items.forEach(item=>list.append(node('li',item.quantity+' × '+item.name+' · '+item.label+' — '+formatPrice(item.quantity*item.cents/100))));
   box.append(list,node('strong','Total: '+formatPrice(order.total_cents/100)),node('p','Delivery: ₱0 demo · '+(order.payment_method==='cod'?'COD unpaid':'Online payment simulated — no money received')),

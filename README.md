@@ -36,7 +36,7 @@ Open http://localhost:3000. Do not open `public/index.html` directly because the
 
 For a new database, run these scripts in order: `supabase/schema.sql`, `supabase/admin-setup.sql`, `supabase/menu-catalog-setup.sql`, `supabase/customer-details-setup.sql`, then `supabase/orders-setup.sql`. Import the menu using [MENU_CATALOG.md](MENU_CATALOG.md). Setup scripts are not a substitute for tracked production migration history; validate changes on staging and record each approved deployment.
 
-For the October review fixes, follow [the coordinated database/application deployment checklist](REVIEW_FIXES.md). The staff API now requires the protected `order_contacts` function. Do not deploy only one side of that change.
+For the October review fixes, follow [the app-first deployment checklist](REVIEW_FIXES.md). Deploy the compatibility application before tightening database grants. If `order_contacts` is unavailable, the queue and status updates remain usable with an explicit contact-unavailable warning; contact reads never fall back to unrestricted table access. Apply the database setup to complete contact functionality and privacy protection.
 
 In Supabase Authentication URL Configuration, set:
 
@@ -74,7 +74,7 @@ Health check path: /health
 
 Render supplies the `PORT` value. `NODE_ENV=production` enables production security headers.
 
-Set `TRUST_PROXY_HOPS` only after confirming the hosting proxy topology (typically `1` for a verified single ingress); direct local access uses `0`. Do not set unbounded proxy trust. The in-memory limiter is per instance and resets on restart; multi-instance production needs a shared limiter store.
+The Blueprint sets `TRUST_PROXY_HOPS=1` for the standard single-ingress deployment. For an existing manually configured Render service, set the same environment variable in its Dashboard; editing the Blueprint alone does not change that service. Verify client-IP behavior on the actual deployment, especially with a custom CDN or alternate ingress. Direct local access uses `0`. Do not set unbounded proxy trust. The in-memory limiter is per instance and resets on restart; multi-instance production needs a shared limiter store.
 
 ## Project structure
 
