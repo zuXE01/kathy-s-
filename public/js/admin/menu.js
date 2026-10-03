@@ -67,7 +67,8 @@ function deleteItem() {
 export function initMenuManager() {
   el('addItem').addEventListener('click', () => openEditor());
   function filterChanged() { visible = 12; renderMenu(); }
-  el('menuSearch').addEventListener('input', filterChanged); el('menuCategory').addEventListener('change', filterChanged);
+  let searchTimer;
+  el('menuSearch').addEventListener('input', function() { clearTimeout(searchTimer); searchTimer = setTimeout(filterChanged, 250); }); el('menuCategory').addEventListener('change', filterChanged);
   el('adminSection').addEventListener('change',filterChanged);
   el('adminMenuMore').addEventListener('click',function more() { visible += 12; renderMenu(); });
   el('itemVariants').addEventListener('input',updateBasePrice);

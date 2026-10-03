@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const path = require('node:path');
+const { rateLimit } = require('express-rate-limit');
 const { createClient } = require('@supabase/supabase-js');
 const { adminRouter } = require('./admin');
 const { readMenu } = require('./menu-store');
@@ -26,6 +27,8 @@ function createApp(env = process.env, createAuthClient = createClient) {
     strictTransportSecurity: env.NODE_ENV === 'production'
   }));
   app.get('/health', (_req, res) => res.json({ ok: true }));
+  const apiLimiter = rateLimit({ windowMs: 60_000, max: 60, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many requests. Please wait a moment before trying again.' } });
+  app.use('/api', apiLimiter);
   app.get('/api/config', (_req, res) => {
     res.set('Cache-Control', 'no-store').json({ url, publishableKey: key });
   });

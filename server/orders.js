@@ -107,7 +107,12 @@ function mountAdminOrders(router) {
       if(status!=='all')query=query.eq('status',status);
       const result=await query.order('created_at',{ascending:false}).order('id').range((page-1)*20,page*20-1);
       if(result.error)return errorResponse(res,result.error);
-      res.json({items:result.data.map(order=>({...order,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[order.status]||[])})),total:result.count,page});
+      const strip=req.adminRole==='kitchen_staff';
+      res.json({items:result.data.map(order=>{
+        const out={...order,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[order.status]||[])};
+        if(strip)delete out.customer;
+        return out;
+      }),total:result.count,page});
     } catch {res.status(503).json({error:'Unable to load orders.'});}
   });
   router.patch('/orders/:id',async(req,res)=>{
@@ -118,7 +123,9 @@ function mountAdminOrders(router) {
       const result=await req.adminClient.from('orders').update({status,status_note:note.trim()}).eq('id',req.params.id).eq('version',version).select('*').maybeSingle();
       if(result.error)return errorResponse(res,result.error);
       if(!result.data)return res.status(409).json({error:'Another admin updated this order. Refresh and review its latest status.'});
-      res.json({order:{...result.data,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[result.data.status]||[])}});
+      const out={...result.data,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[result.data.status]||[])};
+      if(req.adminRole==='kitchen_staff')delete out.customer;
+      res.json({order:out});
     } catch {res.status(503).json({error:'Unable to update order. Refresh before retrying.'});}
   });
 }

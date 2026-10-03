@@ -58,7 +58,8 @@ export function initMenu(initialSection = 'all') {
     section = this.value;
     renderSections(); filtersChanged();
   });
-  el('catalogSearch').addEventListener('input',filtersChanged);
+  let searchTimer;
+  el('catalogSearch').addEventListener('input',function() { clearTimeout(searchTimer); searchTimer = setTimeout(filtersChanged, 250); });
   el('catalogMore').addEventListener('click',function more() { visible += 12; render(); });
   el('catalogRetry').addEventListener('click',loadMenu);
   loadMenu();
