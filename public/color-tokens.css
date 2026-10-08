@@ -50,6 +50,12 @@ body.admin-page th{color:var(--content-muted)!important}
 body.admin-page :focus-visible{outline-color:var(--action)}
 body.admin-page .admin-feature .eyebrow{color:#f4dca1!important}
 
+body.restaurant .site-header nav .nav-orders{display:none!important}
+.catalog-access-note{margin:8px 0 0;color:var(--content-muted);font-size:var(--text-meta-size);line-height:var(--text-body-leading)}
+.catalog-access-note a{color:var(--action);font-weight:700;text-underline-offset:3px}
+@media(min-width:720px){body.restaurant .site-header nav .nav-orders{display:inline-flex!important}}
+@media(max-width:719px){body.restaurant .site-header nav{justify-content:space-between;gap:8px}body.restaurant .site-header nav a,body.restaurant .site-header nav button{flex:1 1 0;justify-content:center;min-width:0}}
+
 .card-header{border-top-color:var(--action)!important}
 .word{color:var(--action)!important}
 a:focus-visible,button:focus-visible{outline-color:var(--action)!important}

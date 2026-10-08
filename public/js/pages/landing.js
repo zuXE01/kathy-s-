@@ -1,4 +1,4 @@
-import { initMenu } from '../menu.js';
+import { initMenu, setMenuOrderAccess } from '../menu.js';
 // Preserve previously issued confirmation and recovery links at the public root.
 const hash = new URLSearchParams(location.hash.slice(1));
 const query = new URLSearchParams(location.search);
@@ -8,13 +8,18 @@ if (hash.has('access_token') || hash.has('error') || query.has('code')) {
   let initialized=false;
   function displayMenu(signedIn) {
     document.getElementById('productShowcase').hidden=signedIn;
-    document.getElementById('memberCatalog').hidden=!signedIn;
+    document.getElementById('memberCatalog').hidden=false;
     document.getElementById('menu').setAttribute('aria-labelledby',signedIn?'menuTitle':'showcaseTitle');
     if(signedIn&&!initialized){
       initialized=true;
       let selected = 'all';
       try { selected = sessionStorage.getItem('kathys-menu-section') || 'all'; sessionStorage.removeItem('kathys-menu-section'); } catch {}
-      initMenu(selected);
+      initMenu(selected, {canOrder:true});
+    } else if (!initialized) {
+      initialized=true;
+      initMenu('all', {canOrder:false});
+    } else {
+      setMenuOrderAccess(signedIn);
     }
     document.querySelectorAll('.cart-launcher,.cart-status').forEach(control=>{control.hidden=!signedIn;});
     if(!signedIn)document.querySelector('.cart-dialog[open]')?.close();

@@ -3,7 +3,7 @@ import { initCart, addToCart } from './cart.js';
 import { showSkeleton } from './loading.js';
 import { filterMenu, getSections, fillSections } from './menu-filter.js';
 const el = id => document.getElementById(id);
-let items = [], section = 'all', visible = 12, loading = false;
+let items = [], section = 'all', visible = 12, loading = false, canOrder = true;
 function renderSections() {
   fillSections(el('mobileMenuSection'), items);
   el('mobileMenuSection').value = section;
@@ -21,7 +21,7 @@ function render() {
   if (loading) return;
   const matches = filterMenu(items,{ section, search:el('catalogSearch').value });
   const grid = el('catalogGrid'); grid.replaceChildren();
-  matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item,{onAdd:addToCart})));
+  matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item,{onAdd:canOrder ? addToCart : undefined})));
   el('catalogMore').hidden = matches.length <= visible;
   el('catalogEmpty').hidden = matches.length > 0;
   el('menuResult').textContent = matches.length ? 'Showing ' + Math.min(visible,matches.length) + ' of ' + matches.length + ' items' : 'No matching items. Try a different search or section.';
@@ -43,8 +43,9 @@ function loadMenu() {
     el('menuResult').textContent = 'We could not load the menu. Please try again.'; el('catalogRetry').hidden = false;
   }).finally(() => { loading = false; finishLoading(); });
 }
-export function initMenu(initialSection = 'all') {
+export function initMenu(initialSection = 'all', options = {}) {
   section = initialSection;
+  canOrder = options.canOrder !== false;
   initCart();
   el('catalogFilters').addEventListener('click',function filterSection(event) {
     const button = event.target.closest('button[data-filter]');
@@ -63,4 +64,10 @@ export function initMenu(initialSection = 'all') {
   el('catalogMore').addEventListener('click',function more() { visible += 12; render(); });
   el('catalogRetry').addEventListener('click',loadMenu);
   loadMenu();
+}
+export function setMenuOrderAccess(value) {
+  const nextCanOrder = value === true;
+  if (canOrder === nextCanOrder) return;
+  canOrder = nextCanOrder;
+  render();
 }
