@@ -1,0 +1,79 @@
+:root{
+  --color-cream-50:#fbf7ef;
+  --color-paper-50:#fffdf8;
+  --color-navy-900:#202550;
+  --color-red-700:#8f2b23;
+  --color-red-800:#762219;
+  --color-brown-700:#5f574c;
+  --color-tan-300:#d4c6ad;
+  --color-tan-200:#d9cec0;
+  --surface-page:var(--color-cream-50);
+  --surface-panel:var(--color-paper-50);
+  --content-primary:var(--color-navy-900);
+  --content-muted:var(--color-brown-700);
+  --border-strong:var(--color-tan-300);
+  --action:var(--color-red-700);
+  --action-hover:var(--color-red-800);
+  --focus-ring:var(--color-red-700);
+  --disabled-surface:var(--color-tan-200);
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-ui:Arial,sans-serif;
+  --text-label-size:11px;
+  --text-meta-size:12px;
+  --text-body-leading:1.6;
+  --red:var(--action);
+  --red-dark:var(--action-hover);
+  --muted:var(--content-muted);
+}
+
+button.submit,.hub-button,.catalog-card .cart-add,.admin-button{background:var(--action)!important}
+button.submit:hover,.hub-button:hover,.catalog-card .cart-add:hover,.admin-button:hover{background:var(--action-hover)!important}
+button.submit:disabled{background:var(--disabled-surface)!important}
+.admin-button.secondary{background:var(--surface-panel)!important;color:var(--content-primary)!important}
+
+body.restaurant .brand,
+body.restaurant .kicker,
+body.restaurant .eyebrow,
+body.restaurant h1 em,
+body.restaurant .hero-links>a,
+body.restaurant .product-ad a{color:var(--action)}
+body.restaurant .hero-links>a.primary-link{background:var(--action);color:#fff!important}
+body.restaurant .hero-links>a.primary-link:hover{background:var(--action-hover)}
+body.restaurant :focus-visible{outline-color:var(--action)}
+
+body.admin-page .admin-heading p:last-child,
+body.admin-page .admin-detail p,
+body.admin-page .admin-menu-card p,
+body.admin-page .admin-stats small,
+body.admin-page .admin-menu-card small,
+body.admin-page th{color:var(--content-muted)!important}
+body.admin-page :focus-visible{outline-color:var(--action)}
+body.admin-page .admin-feature .eyebrow{color:#f4dca1!important}
+
+.card-header{border-top-color:var(--action)!important}
+.word{color:var(--action)!important}
+a:focus-visible,button:focus-visible{outline-color:var(--action)!important}
+.field input:focus,.field select:focus{border-color:var(--action)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--action) 18%,transparent)!important}
+
+header{border-top-color:var(--action)!important}
+.eyebrow{color:var(--action)!important}
+input:focus,textarea:focus{border-color:var(--action)!important}
+.payment:has(input:checked){border-color:var(--action)!important}
+.payment input{accent-color:var(--action)!important}
+
+.word,.lead,body.restaurant h1,body.restaurant h2,body.restaurant h3{font-family:var(--font-display)}
+.field label,.status-pill,.tagline{font-size:var(--text-label-size)!important}
+.row-between,.msg,.hint{font-size:var(--text-meta-size)!important}
+.hint,body.restaurant p,body.admin-page p{line-height:var(--text-body-leading)}
+.subpanel .cap,.hint code{font-size:var(--text-label-size)!important}
+body.restaurant .announcement,
+body.restaurant .brand small,
+body.restaurant .art-label,
+body.admin-page small{font-size:var(--text-label-size)!important}
+body.restaurant .kicker,body.restaurant .eyebrow,body.admin-page .eyebrow{letter-spacing:.08em}
+body.admin-page .eyebrow,
+body.admin-page .admin-brand small,
+body.admin-page .admin-badge,
+body.admin-page .nav-caption,
+body.admin-page .admin-stats small,
+body.admin-page .admin-menu-card small{font-size:var(--text-label-size)}

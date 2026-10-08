@@ -3,8 +3,12 @@ export function showTab(which){
     const isLogin = which === 'login';
     tabLoginBtn.classList.toggle('active', isLogin);
     tabRegisterBtn.classList.toggle('active', !isLogin);
+    tabLoginBtn.setAttribute('aria-selected', String(isLogin));
+    tabRegisterBtn.setAttribute('aria-selected', String(!isLogin));
     loginView.classList.toggle('active', isLogin);
     registerView.classList.toggle('active', !isLogin);
+    loginView.setAttribute('aria-hidden', String(!isLogin));
+    registerView.setAttribute('aria-hidden', String(isLogin));
     loginMsg.textContent = ''; loginMsg.className = 'msg';
     registerMsg.textContent = ''; registerMsg.className = 'msg';
   }

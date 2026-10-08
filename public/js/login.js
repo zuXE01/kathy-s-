@@ -12,17 +12,24 @@ function handleLogin(event) {
   loginMsg.textContent = 'checking with the server…';
   loginMsg.className = 'msg pending';
   loginSubmit.disabled = true;
-  lEmail.classList.remove('err');
-  lPass.classList.remove('err');
+  clearFieldErrors();
   api('/api/login', { email: lEmail.value.trim(), password: lPass.value }, handleLoginResult);
+}
+function clearFieldErrors() {
+  [lEmail, lPass].forEach(field => {
+    field.classList.remove('err');
+    field.removeAttribute?.('aria-invalid');
+  });
 }
 function handleLoginResult(error, data) {
   loginSubmit.disabled = false;
   if (error) {
     loginMsg.textContent = error.message;
     loginMsg.className = 'msg bad';
-    lEmail.classList.add('err');
-    lPass.classList.add('err');
+    [lEmail, lPass].forEach(field => {
+      field.classList.add('err');
+      field.setAttribute?.('aria-invalid', 'true');
+    });
     return;
   }
   loginMsg.textContent = 'access granted — welcome back!';

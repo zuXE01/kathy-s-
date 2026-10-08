@@ -2,7 +2,7 @@
 :root{--hub-spring:cubic-bezier(.23,1,.32,1);--hub-drawer:cubic-bezier(.32,.72,0,1)}
 .loading-card{min-width:0;padding:22px;border:1px solid #e6ddc6;border-radius:18px;background:#fffdf8;display:flex;flex-direction:column;gap:16px;min-height:260px}
 .skeleton{position:relative;overflow:hidden;display:block;background:#eae3d6;border-radius:9px;height:14px}
-.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,#fffaf0aa,transparent);animation:hub-shimmer 1.6s ease-in-out infinite}
+.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,#fffaf0aa,transparent);animation:hub-shimmer 1.6s ease-in-out 3}
 .skeleton-icon{height:38px;width:38px;border-radius:12px}.skeleton-title{height:22px;width:75%}.skeleton-line{width:100%}.skeleton-line.short{width:55%}.skeleton-control{height:48px;margin-top:auto}
 .checkout-loading{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .checkout-loading[hidden]{display:none!important}

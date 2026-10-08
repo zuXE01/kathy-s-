@@ -14,7 +14,12 @@ export function initRegister() {
 function clearRegErr() {
   [rName, rEmail, rPass, rConfirm].forEach(function clearFieldError(field) {
     field.classList.remove('err');
+    field.removeAttribute?.('aria-invalid');
   });
+}
+function markRegErr(field) {
+  field.classList.add('err');
+  field.setAttribute?.('aria-invalid', 'true');
 }
 function handleRegister(event) {
   event.preventDefault();
@@ -25,7 +30,7 @@ function handleRegister(event) {
   const fields = [rName, rEmail, rPass, rConfirm];
   const missing = fields.filter(function isMissing(field) { return !field.value; });
   if (missing.length) {
-    missing.forEach(function markMissing(field) { field.classList.add('err'); });
+    missing.forEach(markRegErr);
     registerMsg.textContent = 'please fill out every field first.';
     registerMsg.className = 'msg bad';
     return;
@@ -33,8 +38,8 @@ function handleRegister(event) {
   if (rPass.value !== rConfirm.value) {
     registerMsg.textContent = 'password and confirm password do not match.';
     registerMsg.className = 'msg bad';
-    rPass.classList.add('err');
-    rConfirm.classList.add('err');
+    markRegErr(rPass);
+    markRegErr(rConfirm);
     continuePanel.classList.add('show');
     return;
   }
@@ -57,7 +62,7 @@ function handleRegister(event) {
 function handleRegisterResult(error, data) {
   if (error) {
     registerSubmit.disabled = false;
-    if (/already exists/i.test(error.message)) rEmail.classList.add('err');
+    if (/already exists/i.test(error.message)) markRegErr(rEmail);
     registerMsg.textContent = error.message;
     registerMsg.className = 'msg bad';
     return;

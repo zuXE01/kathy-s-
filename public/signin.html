@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="/menu-cards.css">
 <link rel="stylesheet" href="/cart.css">
-<link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/signin-theme.css"></head>
+<link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/signin-theme.css"><link rel="stylesheet" href="/color-tokens.css"></head>
 <body>
 
 <div class="card" id="authCard">
@@ -17,16 +17,16 @@
     <div class="tagline">DINERS &amp; CAFE</div>
     <span class="status-pill" id="statusTag">not signed in</span>
 
-    <div class="tabs">
-      <button id="tabLoginBtn" class="active">Sign in</button>
-      <button id="tabRegisterBtn">Join the Hub</button>
+    <div class="tabs" role="tablist" aria-label="Account access">
+      <button id="tabLoginBtn" class="active" type="button" role="tab" aria-selected="true" aria-controls="loginView">Sign in</button>
+      <button id="tabRegisterBtn" type="button" role="tab" aria-selected="false" aria-controls="registerView">Join the Hub</button>
     </div>
   </div>
 
   <div class="card-body">
 
     <!-- LOGIN FORM -->
-    <div class="form-view active" id="loginView">
+    <div class="form-view active" id="loginView" role="tabpanel" aria-labelledby="tabLoginBtn" aria-hidden="false">
       <div>
         <p class="lead">Welcome back</p>
         <p class="sub">Sign in to manage your account and order. <a href="/#menu">Preview our favorites.</a></p>
@@ -74,7 +74,7 @@
     </div>
 
     <!-- REGISTER FORM -->
-    <div class="form-view" id="registerView">
+    <div class="form-view" id="registerView" role="tabpanel" aria-labelledby="tabRegisterBtn" aria-hidden="true">
       <div>
         <p class="lead">Join the Hub</p>
         <p class="sub">Create your member account to explore the menu.</p>

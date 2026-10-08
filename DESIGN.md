@@ -9,3 +9,7 @@
 - Check at 320px, 390px and desktop widths; keyboard navigation and reduced-motion settings are supported. Run `npm test` for regressions.
 
 Local frontend changes need committing/pushing and deployment before they appear on Render.
+
+## Shared design tokens
+
+`public/color-tokens.css` is the shared semantic layer loaded after each page stylesheet. Primitive palette values are defined first, then mapped to surface, content, border, action, focus, disabled-state, and typography roles. Page-specific styles may keep layout and component details, but repeated color and type intent should use these semantic roles.
