@@ -45,6 +45,7 @@ function render() {
 export function addToCart(item, option) {
   const added = cart.add(item,option); render();
   status.textContent = added ? item.name + ' · ' + option.label + ' added to cart.' : 'Maximum quantity is 99 per option.';
+  return added;
 }
 export function clearCart() {
   cart.clear();

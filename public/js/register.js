@@ -68,7 +68,7 @@ function handleRegisterResult(error, data) {
     registerForm.reset();
     registerSubmit.disabled = false;
     registerMsg.textContent = '';
-    goSignedIn(data.email, data.name);
+    goSignedIn(data.session.user);
     return;
   }
   // Retain the fallback if confirmation is re-enabled in Supabase later.

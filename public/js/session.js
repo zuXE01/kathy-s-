@@ -40,7 +40,7 @@ export function initSession() {
           if (sessionStorage.getItem('hub-recovery') === user.id) {
             openRecovery();
           } else {
-            goSignedIn(user.email, user.user_metadata?.name || '');
+            goSignedIn(user);
           }
         }).catch(function failed() {
           if (current !== revision) return;

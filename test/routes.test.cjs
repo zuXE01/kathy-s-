@@ -1,6 +1,17 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const scope={URLSearchParams};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/routes.js'),'utf8').replace(/export /g,''),scope);
+test('kitchen sign-in opens the staff overview instead of the customer destination',()=>{
+  const kitchen={app_metadata:{hub_role:'kitchen_staff'}};
+  for(const search of ['', '?next=%2F%23menu', '?next=%2Fcheckout.html', '?next=https://evil.test']) {
+    assert.equal(scope.signedInDestination(search,kitchen),'/admin.html');
+  }
+  for(const role of ['customer','staff','owner','platform_admin']) {
+    assert.equal(scope.signedInDestination('?next=%2Fcheckout.html',{app_metadata:{hub_role:role}}),'/checkout.html');
+  }
+  assert.equal(scope.signedInDestination('',{user_metadata:{hub_role:'kitchen_staff'}}),'/#menu');
+  assert.equal(scope.signedInDestination('',null),'/#menu');
+});
 test('return routing preserves approved destinations and rejects external or unknown URLs',()=>{
   for(const target of ['/checkout.html','/account.html','/account.html?from=checkout','/orders.html','/admin.html','/#menu']) {
     assert.equal(scope.returnDestination('?next='+encodeURIComponent(target)),target);

@@ -25,7 +25,7 @@ export function loadOrders(nextPage=1) {
     el('ordersPrev').disabled=page<=1;el('ordersNext').disabled=page*20>=data.total;
     data.items.forEach(order=>{
       const card=node('article',undefined,'order-card');
-      card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge'),node('h2',order.customer?.name || 'Order '+order.id.slice(0,8)),
+      card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge order-status status-'+order.status),node('h2',order.customer?.name || 'Order '+order.id.slice(0,8)),
         node('p',new Date(order.created_at).toLocaleString()),node('p','Reference: '+order.id),
         node('p',order.items.reduce((sum,item)=>sum+item.quantity,0)+' items · '+formatPrice(order.total_cents/100)),
         node('p',order.payment_method==='cod'?'COD · Unpaid':'Online · Simulated, not paid'));
@@ -39,7 +39,7 @@ function openOrder(order) {
   el('orderNote').required=false;
   el('orderDialogTitle').textContent='Order · '+order.status;
   const box=el('orderDetails'),customer=order.customer;
-  box.append(node('p','Reference: '+order.id));
+  box.append(node('p',order.status.toUpperCase(),'order-status status-'+order.status),node('p','Reference: '+order.id));
   if(customer)box.append(node('h3',customer.name),node('p',customer.email+' · '+customer.phone),
     node('p',[customer.address,customer.barangay,customer.city,customer.province,customer.postal].join(', ')));
   if(customer?.notes)box.append(node('p','Customer notes: '+customer.notes));

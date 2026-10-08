@@ -1,10 +1,10 @@
 import { tabsEl, authCard, lPass, lEmail, statusTag, resetPanel } from './elements.js';
 import { showTab } from './tabs.js';
 import { forgetCart } from './cart-storage.js';
-import { returnDestination } from './routes.js';
-export function goSignedIn() {
+import { signedInDestination } from './routes.js';
+export function goSignedIn(user) {
   lPass.value = '';
-  window.location.replace(returnDestination(window.location.search));
+  window.location.replace(signedInDestination(window.location.search, user));
 }
 export function goSignedOut() {
   forgetCart();

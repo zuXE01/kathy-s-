@@ -27,5 +27,5 @@ function handleLoginResult(error, data) {
   }
   loginMsg.textContent = 'access granted — welcome back!';
   loginMsg.className = 'msg ok';
-  if (data.session) goSignedIn(data.email, data.name);
+  if (data.session) goSignedIn(data.session.user);
 }

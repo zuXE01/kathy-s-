@@ -1,6 +1,17 @@
 .orders-controls{display:flex;flex-direction:column;gap:14px;margin:20px 0}.orders-controls label{display:flex;flex-direction:column;gap:8px}
 .orders-controls select,#orderUpdateForm select,#orderUpdateForm textarea{width:100%;min-height:48px;padding:12px;font:inherit;font-size:16px;border:1px solid #d8ccb6;border-radius:10px;background:#fffdf8;color:#1e2266}
 .order-list{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.order-card{padding:20px;border:1px solid #e6ddc6;background:#fffdf8;border-radius:18px;overflow-wrap:anywhere}
+/* Shared status palette: keep the written label so color is never the only cue. */
+.order-status.status-pending{--status-ink:#765000;--status-surface:#fff3cd}
+.order-status.status-accepted{--status-ink:#174c83;--status-surface:#e5f0ff}
+.order-status.status-preparing{--status-ink:#8a380e;--status-surface:#ffead8}
+.order-status.status-ready{--status-ink:#17623c;--status-surface:#dcf5e6}
+.order-status.status-completed{--status-ink:#37465b;--status-surface:#e9edf3}
+.order-status.status-rejected{--status-ink:#9b242a;--status-surface:#ffe5e7}
+.order-status.status-cancelled{--status-ink:#59534c;--status-surface:#eeebe6}
+.history-card .order-status,.order-card .order-status,#orderDetails .order-status{display:inline-flex;align-items:center;gap:8px;max-width:100%;box-sizing:border-box;padding:6px 12px;border-radius:8px;background:var(--status-surface,#eeebe6);color:var(--status-ink,#59534c);font-size:12px;font-weight:700;line-height:1.5;letter-spacing:.04em;overflow-wrap:anywhere}
+.order-status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0}
+.history-heading{flex-wrap:wrap}
 body:has(#orderDialog[open]){overflow:hidden}
 .order-card h2{font-size:19px}.order-card p{font-size:14px;line-height:1.6}.order-badge{font-weight:700;color:#2a2e86}.order-card button{width:100%;min-height:48px;font-size:16px}
 #orderDialog{box-sizing:border-box;width:calc(100% - 24px);max-width:640px;max-height:90dvh;overflow:auto;padding:20px;overflow-wrap:anywhere}

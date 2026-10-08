@@ -22,6 +22,16 @@ function dom() {
   const document={body:new Element(),createElement:tag=>new Element(tag),getElementById(id){if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);}};
   return document;
 }
+test('add button confirms successful adds, accepts repeat taps and reports limits',()=>{
+  const document=dom(); let timer, calls=0;
+  const c=load('menu-card.js',{document,Intl,clearTimeout(){timer=null;},setTimeout(fn){timer=fn;return 1;}});
+  const card=c.createMenuCard({name:'Coffee',price:100},{onAdd:()=>++calls<3});
+  const button=card.querySelector('button'),caption=button.children[1];
+  button.listeners.click({detail:1}); assert.equal(caption.textContent,'Added!');
+  button.listeners.click({detail:1}); assert.equal(calls,2); assert.equal(caption.textContent,'Added!');
+  button.listeners.click({detail:0}); assert.equal(caption.textContent,'Limit reached');
+  timer(); assert.equal(caption.textContent,'Add to cart');
+});
 test('kitchen cards and details render without customer information',()=>{
   const document=dom();
   const order={id:'sample-order',status:'accepted',version:1,items:[{name:'Coffee',quantity:1,cents:10000,label:'Hot'}],total_cents:10000,payment_method:'cod',created_at:new Date().toISOString(),history:[],allowed_statuses:['preparing']};

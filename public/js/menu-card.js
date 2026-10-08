@@ -26,7 +26,24 @@ export function createMenuCard(item, { onEdit, onRemove, onAdd } = {}) {
   if (onAdd) {
     const add = node('button','cart-add','Add to cart'); add.type = 'button';
     add.setAttribute('aria-label','Add ' + item.name + ' to cart');
-    add.addEventListener('click',()=>onAdd(item,options[selected])); footer.append(add);
+    const check = node('span','cart-add-check','✓'); check.setAttribute('aria-hidden','true');
+    const caption = node('span','cart-add-caption','Add to cart');
+    add.textContent = ''; add.append(check,caption);
+    let resetFeedback;
+    add.addEventListener('click',event=>{
+      const added = onAdd(item,options[selected]);
+      clearTimeout(resetFeedback);
+      // Keyboard activation gets the same confirmation without movement.
+      add.toggleAttribute('data-instant',event.detail === 0);
+      add.toggleAttribute('data-added',added === true);
+      caption.textContent = added === true ? 'Added!' : 'Limit reached';
+      add.setAttribute('aria-label',added === true ? item.name + ' added. Add another to cart' : 'Maximum quantity reached for ' + item.name);
+      resetFeedback = setTimeout(()=>{
+        add.toggleAttribute('data-added',false);
+        caption.textContent = 'Add to cart';
+        add.setAttribute('aria-label','Add ' + item.name + ' to cart');
+      },2200);
+    }); footer.append(add);
   }
   if (onEdit) {
     card.append(node('span','catalog-availability',item.available ? 'Available' : 'Hidden from members'));
