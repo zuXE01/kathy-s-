@@ -1,5 +1,7 @@
 # My Account
 
+Signup now collects only name, email, password, and password confirmation. Birthday and gender are no longer requested or sent by the signup form. Existing stored values and the account page's legacy display are preserved; no database migration is needed for this change.
+
 Open `/account.html` from the menu's My account link. The page displays the sign-in email and existing birthday/gender, and saves a delivery contact name, phone, one default Philippine address, and optional delivery notes. Email, birthday and gender are read-only on this page.
 
 Contact fields may be left incomplete until checkout (name is required). Clearing a field and saving removes its saved value. Checkout loads the saved contact details before showing the form, validates required fields on submission, and allows order-specific changes without overwriting the default. Account edits do not change existing orders. The delivery contact name is separate from the signup/display name.

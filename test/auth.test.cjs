@@ -23,12 +23,28 @@ test('login and registration delegate to Supabase with profile data and safe red
   const run = (p, b) => new Promise((resolve, reject) => c.api(p, b, (e, d) => e ? reject(e) : resolve(d)));
   const login = await run('/api/login', { email: 'member@example.com', password: 'test-only-password' });
   assert.ok(login.session);
-  const signup = await run('/api/register', { email: 'new@example.com', password: 'test-only-password', name: 'Member', dob: '2000-01-01', gender: 'Other' });
+  const signup = await run('/api/register', { email: 'new@example.com', password: 'test-only-password', name: 'Member' });
   assert.equal(signup.session, null);
   assert.equal(calls[1][1].options.emailRedirectTo, 'https://hub.example/');
   assert.equal(calls[1][1].options.data.name, 'Member');
-  await assert.rejects(() => run('/api/register', { email: 'bad@example.com', password: 'test-only-password', name: 'Member', dob: '2000-02-30', gender: 'Other' }), /valid birthday/);
-  assert.equal(calls.length, 2);
+  assert.deepEqual(Object.keys(calls[1][1].options.data), ['name']);
+  await run('/api/register', { email: 'legacy@example.com', password: 'test-only-password', name: 'Member', dob: '2000-02-30', gender: 'Other' });
+  assert.deepEqual(Object.keys(calls[2][1].options.data), ['name']);
+  assert.equal(calls.length, 3);
+});
+
+test('signup markup and handler no longer require birthday or gender', () => {
+  const html=fs.readFileSync(path.join(__dirname,'../public/signin.html'),'utf8');
+  assert.doesNotMatch(html,/rDob|rGender/);
+  let submitted;
+  const context={clearTimeout(){},api:(_path,body)=>submitted=body};
+  for(const name of ['rName','rEmail','rPass','rConfirm','registerSubmit','registerMsg','continuePanel'])context[name]=field();
+  context.rName.value='Demo';context.rEmail.value='demo@example.test';
+  context.rPass.value=context.rConfirm.value='test-only-password';
+  const c=loadFeature('register.js',context);
+  c.handleRegister({preventDefault(){}});
+  assert.equal(submitted.name,'Demo');
+  assert.equal(submitted.dob,undefined);assert.equal(submitted.gender,undefined);
 });
 
 test('callback adapter reports errors and calls each callback once', async () => {

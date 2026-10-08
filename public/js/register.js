@@ -1,4 +1,4 @@
-import { rName, rDob, rGender, rEmail, rPass, rConfirm, registerForm, registerSubmit, registerMsg, continuePanel, yesContinue, noContinue, lEmail, lPass, loginMsg } from './elements.js';
+import { rName, rEmail, rPass, rConfirm, registerForm, registerSubmit, registerMsg, continuePanel, yesContinue, noContinue, lEmail, lPass, loginMsg } from './elements.js';
 import { api } from './api.js';
 import { showTab } from './tabs.js';
 import { goSignedIn } from './dashboard.js';
@@ -12,7 +12,7 @@ export function initRegister() {
   noContinue.addEventListener('click', cancelRegistration);
 }
 function clearRegErr() {
-  [rName, rDob, rGender, rEmail, rPass, rConfirm].forEach(function clearFieldError(field) {
+  [rName, rEmail, rPass, rConfirm].forEach(function clearFieldError(field) {
     field.classList.remove('err');
   });
 }
@@ -22,7 +22,7 @@ function handleRegister(event) {
   clearTimeout(cancelTimer);
   continuePanel.classList.remove('show');
   clearRegErr();
-  const fields = [rName, rDob, rGender, rEmail, rPass, rConfirm];
+  const fields = [rName, rEmail, rPass, rConfirm];
   const missing = fields.filter(function isMissing(field) { return !field.value; });
   if (missing.length) {
     missing.forEach(function markMissing(field) { field.classList.add('err'); });
@@ -51,9 +51,7 @@ function handleRegister(event) {
     email: rEmail.value.trim(),
     password: rPass.value,
     confirm: rConfirm.value,
-    name: rName.value.trim(),
-    dob: rDob.value,
-    gender: rGender.value
+    name: rName.value.trim()
   }, handleRegisterResult);
 }
 function handleRegisterResult(error, data) {
