@@ -117,11 +117,13 @@ function ordersRouter(url,key,createClient) {
 function mountAdminOrders(router) {
   router.get('/orders',async(req,res)=>{
     const page=Number(req.query.page||1),status=req.query.status||'all';
-    if(!Number.isSafeInteger(page)||page<1||page>10000||!(status==='all'||Object.hasOwn(transitions,status)))return res.status(400).json({error:'Invalid order filter.'});
+    if(!Number.isSafeInteger(page)||page<1||page>10000||!(['all','active'].includes(status)||Object.hasOwn(transitions,status)))return res.status(400).json({error:'Invalid order filter.'});
     try {
       let query=req.adminClient.from('orders').select(orderColumns,{count:'exact'});
-      if(status!=='all')query=query.eq('status',status);
-      const result=await query.order('created_at',{ascending:false}).order('id').range((page-1)*20,page*20-1);
+      if(status==='active')query=query.in('status',['pending','accepted','preparing','ready']);
+      else if(status!=='all')query=query.eq('status',status);
+      const oldestFirst=['active','pending','accepted','preparing','ready'].includes(status);
+      const result=await query.order('created_at',{ascending:oldestFirst}).order('id',{ascending:true}).range((page-1)*20,page*20-1);
       if(result.error)return errorResponse(res,result.error);
       const strip=req.adminRole==='kitchen_staff';
       const orders=await attachContacts(req.adminClient,result.data,req.adminRole);

@@ -3,7 +3,7 @@
 .catalog-toolbar input,.catalog-toolbar select,.catalog-option{width:100%;min-width:0;padding:12px;border:1px solid #d8ccb6;border-radius:10px;background:#fffdf8;color:#241f1a;font:inherit}
 .catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:16px}
 .catalog-card{display:flex;flex-direction:column;min-width:0;border:1px solid #e6ddc6;border-radius:18px;padding:22px;background:#fffdf8;transition:box-shadow .18s,border-color .18s}
-.catalog-card:hover{border-color:#b5accd;box-shadow:0 8px 20px #2a2e860b}
+@media(hover:hover) and (pointer:fine){.catalog-card:hover{border-color:#b5accd;box-shadow:0 8px 20px #2a2e860b}}
 .catalog-card-top{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .catalog-symbol{display:grid;place-items:center;flex-shrink:0;width:38px;height:38px;border-radius:12px;background:#f4ecd8;font-size:22px}
 .catalog-section{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#645439;font-weight:700;line-height:1.5}
@@ -21,7 +21,7 @@
 @media(max-width:760px){.catalog-toolbar input,.catalog-toolbar select,.catalog-option{font-size:16px}.catalog-card{padding:20px}}
 @media(prefers-reduced-motion:reduce){.catalog-card{transition:none}}
 .menu-filters#catalogFilters{display:flex;flex-wrap:wrap;gap:8px}
-#catalogFilters button{min-height:40px;padding:10px 14px;line-height:1.4}
+#catalogFilters button{min-height:44px;padding:10px 14px;line-height:1.4}
 #catalogFilters button:focus-visible{outline:3px solid #2a2e86;outline-offset:3px}
 .mobile-section-picker{display:none}
 @media(max-width:760px){

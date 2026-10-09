@@ -23,3 +23,24 @@ body:has(#orderDialog[open]){overflow:hidden}
 @media(min-width:761px){.order-list{grid-template-columns:repeat(2,minmax(0,1fr))}.orders-controls{flex-direction:row;align-items:end}.orders-controls label{flex:1}}
 .order-history{display:grid;gap:16px;min-height:40px}.history-card{background:#fffdf8;border:1px solid #e6ddc6;border-radius:14px;padding:18px;box-shadow:0 6px 22px #43352204}.history-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.order-status{font-size:12px;font-weight:700;letter-spacing:.08em}.status-pending{color:#956100}.status-accepted,.status-preparing{color:#2a2e86}.status-ready,.status-completed{color:#16734b}.status-rejected{color:#a12525}.history-heading time,.history-reference,.history-payment{color:#6c5d48;font-size:13px}.history-reference{margin:12px 0;overflow-wrap:anywhere}.history-items{margin:0;padding:0;list-style:none;border-top:1px solid #e6ddc6}.history-items li{padding:10px 0;border-bottom:1px solid #e6ddc6;line-height:1.5}.history-total{display:block;margin-top:14px}.history-payment{margin:8px 0 0}.history-card details{margin-top:16px;border-top:1px solid #e6ddc6;padding-top:14px}.history-card summary{cursor:pointer;font-weight:700;min-height:32px}.history-events{margin:12px 0 0;padding-left:22px;color:#6c5d48;line-height:1.7}.history-empty{text-align:center;padding:32px 12px;color:#6c5d48}.orders-loading{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin:16px 0}.history-pagination{display:flex;align-items:center;justify-content:center;gap:16px;margin:24px 0;padding-bottom:env(safe-area-inset-bottom)}.history-pagination button{width:auto;min-width:112px;padding:12px}.history-pagination span{min-width:64px;text-align:center;font-weight:700;color:#6c5d48}@media(min-width:761px){main{max-width:760px;padding:36px 24px}}
 .history-cancel{margin-top:16px!important;background:#fff0ed!important;color:#a12525!important;border:1px solid #d99b94!important}
+.queue-items{padding-inline-start:22px;margin:12px 0 20px;line-height:1.6}
+.queue-items li{padding-block:4px}
+.order-card .queue-age{font-weight:700;color:var(--content-primary,#202550)}
+.queue-actions{display:grid;gap:10px;margin-top:auto}
+.order-card{display:flex;flex-direction:column}
+#orderDetails summary{min-height:44px;padding-block:10px;cursor:pointer;font-weight:700}
+@media(min-width:640px){.queue-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Phone first: pagination must fit inside a 320px page, not just the viewport. */
+.history-pagination{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px}
+.history-pagination button{min-width:0;width:100%;overflow-wrap:anywhere}
+.history-pagination span{min-width:0}
+.history-card summary{min-height:44px;display:list-item;padding-block:8px}
+.admin-pagination{flex-wrap:wrap;gap:12px}
+.order-card,.history-card,.orders-controls>*{min-width:0}
+#orderDialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overscroll-behavior:contain;scroll-padding-block:20px}
+#orderDialog .dialog-heading{position:sticky;top:-20px;z-index:1;background:var(--surface-page,#fbf7ef);padding-block:12px}
+@media(min-width:640px){
+  .history-pagination{display:flex;gap:16px}
+  .history-pagination button{width:auto;min-width:112px}
+  .history-pagination span{min-width:64px}
+}

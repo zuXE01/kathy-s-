@@ -16,3 +16,21 @@
 .admin-page dialog{border:1px solid var(--line);border-radius:20px;padding:28px;max-width:480px;width:calc(100% - 32px);color:var(--text);background:var(--bg);max-height:90vh;overflow:auto}.admin-page dialog::backdrop{background:#17163880}.admin-page dialog form{display:grid;gap:18px}.dialog-heading{display:flex;justify-content:space-between;align-items:center;gap:15px}.dialog-heading h2{font-size:20px;margin:0}.dialog-heading button{background:transparent;border:0;font-size:28px;color:var(--blue)}.admin-form-row{display:flex;gap:14px}.admin-form-row>*{flex:1;min-width:0}.admin-page .admin-check{display:flex;align-items:center}.admin-check input{width:18px;height:18px}.admin-page dialog p{font-size:13px;line-height:1.7}#itemError,#deleteError{color:#ac2923;margin:0}
 @media(max-width:1100px){.admin-shell{grid-template-columns:215px minmax(0,1fr)}.admin-content{padding:24px}.admin-menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-cup{font-size:95px;padding:0}.admin-stats article{padding:18px}}
 @media(max-width:760px){.admin-shell{display:block}.admin-sidebar{position:static;height:auto;padding:22px}.admin-sidebar nav{display:flex;overflow:auto;margin-top:20px}.admin-sidebar nav button{white-space:nowrap;gap:15px}.admin-sidebar .nav-caption,.admin-note{display:none}.admin-logout{position:absolute;right:22px;top:22px;border:0;padding:12px}.admin-sidebar>a:last-of-type{margin-bottom:0}.admin-topbar{padding:20px}.admin-content{padding:20px}.admin-stats{grid-template-columns:1fr;gap:12px}.admin-stats article{display:grid;grid-template-columns:1fr auto;align-items:center}.admin-stats strong{grid-column:2;grid-row:1/3;margin:0;font-size:34px}.admin-feature{padding:27px}.admin-cup{display:none}.admin-heading{align-items:flex-start;flex-wrap:wrap}.admin-menu-grid{grid-template-columns:1fr}.admin-toolbar{flex-direction:column}.admin-form-row{flex-wrap:wrap}.admin-pagination{justify-content:center}.admin-page input:not([type=checkbox]),.admin-page select,.admin-page textarea{font-size:16px}.admin-gate{margin:50px 16px}.admin-feature h2{font-size:32px}}
+/* Mobile workspace: navigation wraps instead of concealing sections off-screen. */
+.admin-sidebar{box-sizing:border-box}
+.admin-topbar{flex-wrap:wrap;overflow-wrap:anywhere}
+.admin-button,.admin-sidebar nav button,.admin-logout{min-height:44px}
+.dialog-heading button{min-width:44px;min-height:44px}
+.admin-page dialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overscroll-behavior:contain}
+.admin-form-row{flex-direction:column}
+.admin-stats article,.admin-heading>*{min-width:0;overflow-wrap:anywhere}
+@media(max-width:760px){
+  .admin-sidebar{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;padding:16px}
+  .admin-sidebar nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;margin-top:0}
+  .admin-sidebar nav button{white-space:normal;gap:8px;align-items:center}
+  .admin-logout{position:static;padding:12px;border-top:1px solid var(--line)}
+  .admin-sidebar>a:last-of-type{margin:0;min-height:44px;display:flex;align-items:center}
+  .admin-badge{white-space:normal}
+}
+@media(min-width:640px){.admin-form-row{flex-direction:row}}
+@media(min-width:761px){.admin-sidebar{height:100vh;height:100dvh;overflow-y:auto}.admin-shell{min-height:100dvh}}

@@ -4,6 +4,7 @@ import { showSkeleton } from './loading.js';
 import { filterMenu, getSections, fillSections } from './menu-filter.js';
 const el = id => document.getElementById(id);
 let items = [], section = 'all', visible = 12, loading = false, canOrder = true;
+const selections = new Map();
 function renderSections() {
   fillSections(el('mobileMenuSection'), items);
   el('mobileMenuSection').value = section;
@@ -21,13 +22,18 @@ function render() {
   if (loading) return;
   const matches = filterMenu(items,{ section, search:el('catalogSearch').value });
   const grid = el('catalogGrid'); grid.replaceChildren();
-  matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item,{onAdd:canOrder ? addToCart : undefined})));
+  matches.slice(0,visible).forEach(item => grid.append(createMenuCard(item,{
+    onAdd:canOrder ? addToCart : undefined,
+    selectedLabel:selections.get(item.id),
+    onOptionChange:label=>selections.set(item.id,label)
+  })));
   el('catalogMore').hidden = matches.length <= visible;
   el('catalogEmpty').hidden = matches.length > 0;
   el('menuResult').textContent = matches.length ? 'Showing ' + Math.min(visible,matches.length) + ' of ' + matches.length + ' items' : 'No matching items. Try a different search or section.';
 }
 function filtersChanged() { visible = 12; render(); }
 function loadMenu() {
+  if (loading) return;
   loading = true;
   const finishLoading = showSkeleton(el('catalogGrid'),4);
   el('catalogMore').hidden = el('catalogEmpty').hidden = true;
@@ -36,6 +42,7 @@ function loadMenu() {
   fetch('/api/menu').then(function checked(response) {
     if (!response.ok) throw new Error('Menu unavailable'); return response.json();
   }).then(function loaded(data) {
+    if (!Array.isArray(data.items)) throw new Error('Invalid menu response');
     items = data.items;
     if (section !== 'all' && !getSections(items).includes(section)) section = 'all';
     loading = false; renderSections(); render();

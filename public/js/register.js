@@ -28,15 +28,16 @@ function handleRegister(event) {
   continuePanel.classList.remove('show');
   clearRegErr();
   const fields = [rName, rEmail, rPass, rConfirm];
-  const missing = fields.filter(function isMissing(field) { return !field.value; });
+  const missing = fields.filter(function isMissing(field) { return !field.value.trim(); });
   if (missing.length) {
     missing.forEach(markRegErr);
-    registerMsg.textContent = 'please fill out every field first.';
+    registerMsg.textContent = 'Enter your name, email, password and password confirmation.';
     registerMsg.className = 'msg bad';
+    missing[0].focus();
     return;
   }
   if (rPass.value !== rConfirm.value) {
-    registerMsg.textContent = 'password and confirm password do not match.';
+    registerMsg.textContent = 'The passwords do not match. Correct either field, or choose Re-enter passwords to clear both.';
     registerMsg.className = 'msg bad';
     markRegErr(rPass);
     markRegErr(rConfirm);
@@ -48,9 +49,11 @@ function handleRegister(event) {
     registerSubmit.disabled = false;
     registerMsg.textContent = 'Please use a password with at least 12 characters.';
     registerMsg.className = 'msg bad';
+    markRegErr(rPass);
+    rPass.focus();
     return;
   }
-  registerMsg.textContent = 'creating your account on the server…';
+  registerMsg.textContent = 'Creating your account…';
   registerMsg.className = 'msg pending';
   api('/api/register', {
     email: rEmail.value.trim(),
@@ -98,13 +101,15 @@ function retryPassword() {
   rConfirm.value = '';
   rPass.classList.remove('err');
   rConfirm.classList.remove('err');
-  registerMsg.textContent = 're-enter your password and confirmation, then submit again.';
+  rPass.removeAttribute?.('aria-invalid');
+  rConfirm.removeAttribute?.('aria-invalid');
+  registerMsg.textContent = 'Enter the same password in both fields, then choose Create account.';
   registerMsg.className = 'msg pending';
   rPass.focus();
 }
 function cancelRegistration() {
   continuePanel.classList.remove('show');
-  registerMsg.textContent = 'registration cancelled.';
+  registerMsg.textContent = 'Registration cancelled. Your form will be cleared.';
   registerMsg.className = 'msg bad';
   clearTimeout(cancelTimer);
   cancelTimer = setTimeout(function clearRegistration() {

@@ -16,6 +16,7 @@
   --action-hover:var(--color-red-800);
   --focus-ring:var(--color-red-700);
   --disabled-surface:var(--color-tan-200);
+  --state-success:#236b45;
   --font-display:Georgia,'Times New Roman',serif;
   --font-ui:Arial,sans-serif;
   --text-label-size:11px;
@@ -50,7 +51,7 @@ body.admin-page th{color:var(--content-muted)!important}
 body.admin-page :focus-visible{outline-color:var(--action)}
 body.admin-page .admin-feature .eyebrow{color:#f4dca1!important}
 
-body.restaurant .site-header nav .nav-orders{display:none!important}
+body.restaurant .site-header nav .nav-orders{display:inline-flex}
 .catalog-access-note{margin:8px 0 0;color:var(--content-muted);font-size:var(--text-meta-size);line-height:var(--text-body-leading)}
 .catalog-access-note a{color:var(--action);font-weight:700;text-underline-offset:3px}
 @media(min-width:720px){body.restaurant .site-header nav .nav-orders{display:inline-flex!important}}
@@ -71,6 +72,11 @@ input:focus,textarea:focus{border-color:var(--action)!important}
 .field label,.status-pill,.tagline{font-size:var(--text-label-size)!important}
 .row-between,.msg,.hint{font-size:var(--text-meta-size)!important}
 .hint,body.restaurant p,body.admin-page p{line-height:var(--text-body-leading)}
+/* Preserve readable inputs and resilient wrapping on narrow phone screens. */
+input,select,textarea{font-size:16px}
+.catalog-card,.cart-line,.order-line,.admin-order-card{min-width:0;overflow-wrap:anywhere}
+.catalog-option{max-width:100%;min-width:0}
+.catalog-card .cart-add[data-added]{background:var(--state-success)!important;color:#fff}
 .subpanel .cap,.hint code{font-size:var(--text-label-size)!important}
 body.restaurant .announcement,
 body.restaurant .brand small,

@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/signin-theme.css"><link rel="stylesheet" href="/color-tokens.css"></head>
 <body>
 
-<div class="card" id="authCard">
+<main class="card" id="authCard">
   <div class="card-header">
     <div class="mark"><img src="/assets/logo.jpg" alt="Kathy's Hub logo"></div>
     <div class="word">Kathy’s</div>
@@ -19,7 +19,7 @@
 
     <div class="tabs" role="tablist" aria-label="Account access">
       <button id="tabLoginBtn" class="active" type="button" role="tab" aria-selected="true" aria-controls="loginView">Sign in</button>
-      <button id="tabRegisterBtn" type="button" role="tab" aria-selected="false" aria-controls="registerView">Join the Hub</button>
+      <button id="tabRegisterBtn" type="button" role="tab" tabindex="-1" aria-selected="false" aria-controls="registerView">Join the Hub</button>
     </div>
   </div>
 
@@ -28,18 +28,18 @@
     <!-- LOGIN FORM -->
     <div class="form-view active" id="loginView" role="tabpanel" aria-labelledby="tabLoginBtn" aria-hidden="false">
       <div>
-        <p class="lead">Welcome back</p>
+        <h1 class="lead">Welcome back</h1>
         <p class="sub">Sign in to manage your account and order. <a href="/#menu">Browse the public menu.</a></p>
       </div>
 
       <form id="loginForm" novalidate>
         <div class="field">
           <label for="lEmail">Email</label>
-          <input id="lEmail" type="email" autocomplete="username" placeholder="you@example.com">
+          <input id="lEmail" type="email" autocomplete="username" aria-describedby="loginMsg" placeholder="you@example.com">
         </div>
         <div class="field">
           <label for="lPass">Password</label>
-          <input id="lPass" type="password" autocomplete="current-password" placeholder="••••••••">
+          <input id="lPass" type="password" autocomplete="current-password" aria-describedby="loginMsg" placeholder="••••••••">
         </div>
         <div class="row-between">
           <a id="forgotLink" href="#resetPanel">Forgot password?</a>
@@ -76,36 +76,36 @@
     <!-- REGISTER FORM -->
     <div class="form-view" id="registerView" role="tabpanel" aria-labelledby="tabRegisterBtn" aria-hidden="true">
       <div>
-        <p class="lead">Join the Hub</p>
-        <p class="sub">Create your member account to explore the menu.</p>
+        <h1 class="lead">Join the Hub</h1>
+        <p class="sub">Create an account to add items to your cart and place demo orders. You can browse the menu and prices without signing in.</p>
       </div>
 
       <form id="registerForm" novalidate>
         <div class="field">
           <label for="rName">Full name</label>
-          <input id="rName" type="text" placeholder="Jordan Blake">
+          <input id="rName" type="text" autocomplete="name" maxlength="100" aria-describedby="registerMsg" placeholder="Jordan Blake">
         </div>
         <div class="field">
           <label for="rEmail">Email</label>
-          <input id="rEmail" type="email" placeholder="you@example.com">
+          <input id="rEmail" type="email" autocomplete="email" maxlength="200" aria-describedby="registerMsg" placeholder="you@example.com">
         </div>
         <div class="field">
           <label for="rPass">Password</label>
-          <input id="rPass" type="password" autocomplete="new-password" minlength="12" placeholder="at least 12 characters">
+          <input id="rPass" type="password" autocomplete="new-password" minlength="12" aria-describedby="registerMsg" placeholder="at least 12 characters">
         </div>
         <div class="field">
           <label for="rConfirm">Confirm password</label>
-          <input id="rConfirm" type="password" placeholder="••••••••">
+          <input id="rConfirm" type="password" autocomplete="new-password" aria-describedby="registerMsg" placeholder="••••••••">
         </div>
         <button class="submit" type="submit" id="registerSubmit">Create account</button>
         <div class="msg" id="registerMsg" role="status" aria-live="polite"></div>
       </form>
 
       <div class="subpanel" id="continuePanel">
-        <div class="cap">Continue registration?</div>
+        <div class="cap">Correct your passwords above, or start again</div>
         <div class="btn-row">
-          <button class="ghost" id="noContinue" type="button">No, exit</button>
-          <button class="submit" id="yesContinue" type="button">Yes, re-enter password</button>
+          <button class="ghost" id="noContinue" type="button">Cancel registration</button>
+          <button class="submit" id="yesContinue" type="button">Re-enter passwords</button>
         </div>
       </div>
 
@@ -113,7 +113,7 @@
     </div>
 
   </div>
-</div>
+</main>
 
 <script src="/vendor/supabase.js"></script>
 <script type="module" src="app.js"></script>

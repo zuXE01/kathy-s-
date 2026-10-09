@@ -10,18 +10,18 @@ if (hash.has('access_token') || hash.has('error') || query.has('code')) {
     document.getElementById('productShowcase').hidden=signedIn;
     document.getElementById('memberCatalog').hidden=false;
     document.getElementById('menu').setAttribute('aria-labelledby',signedIn?'menuTitle':'showcaseTitle');
-    if(signedIn&&!initialized){
+    if(!initialized){
       initialized=true;
       let selected = 'all';
       try { selected = sessionStorage.getItem('kathys-menu-section') || 'all'; sessionStorage.removeItem('kathys-menu-section'); } catch {}
-      initMenu(selected, {canOrder:true});
-    } else if (!initialized) {
-      initialized=true;
-      initMenu('all', {canOrder:false});
+      initMenu(selected, {canOrder:signedIn});
     } else {
       setMenuOrderAccess(signedIn);
     }
-    document.querySelectorAll('.cart-launcher,.cart-status').forEach(control=>{control.hidden=!signedIn;});
+    document.querySelectorAll('.cart-launcher,.cart-status').forEach(control=>{
+      control.hidden=!signedIn || (control.classList.contains('cart-launcher')
+        ? control.dataset.empty==='true' : !control.textContent);
+    });
     if(!signedIn)document.querySelector('.cart-dialog[open]')?.close();
   }
   window.addEventListener('customer-access-changed',event=>displayMenu(event.detail.signedIn));

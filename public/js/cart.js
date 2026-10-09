@@ -20,6 +20,7 @@ function render() {
   if (checkout) checkout.disabled = !state.count;
   try { saveCart(state.items); } catch { /* Checkout reports storage errors explicitly. */ }
   launcher.textContent = 'View cart · ' + state.count + ' · ' + formatPrice(state.total/100);
+  launcher.dataset.empty = String(!state.count);
   launcher.hidden = document.body.classList.contains('restaurant') && !state.count;
   total.textContent = 'Subtotal: ' + formatPrice(state.total/100);
   if (!state.items.length) list.append(node('p','Your cart is empty. Add a favorite from the menu.'));
@@ -45,6 +46,7 @@ function render() {
 export function addToCart(item, option) {
   const added = cart.add(item,option); render();
   status.textContent = added ? item.name + ' · ' + option.label + ' added to cart.' : 'Maximum quantity is 99 per option.';
+  status.hidden = false;
   return added;
 }
 export function clearCart() {
@@ -83,7 +85,7 @@ export function initCart() {
     try { saveCart(cart.snapshot().items); window.location.assign('/checkout.html'); }
     catch { status.textContent='Enable browser session storage to continue to checkout.'; }
   });
-  dialog.append(header,list,total,node('p','Checkout saves your order for admin review. Payments and delivery booking remain demo-only.','cart-note'),checkout);
+  dialog.append(header,list,total,node('p','Review your items, then enter your contact and address details at checkout. Your order is saved only when you choose Place demo order. No real payment or delivery is arranged.','cart-note'),checkout);
   document.getElementById('signedInView').append(launcher,status,dialog);
   render();
 }

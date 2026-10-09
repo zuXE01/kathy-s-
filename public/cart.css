@@ -28,3 +28,12 @@ body:has(.cart-dialog[open]){overflow:hidden}
 .cart-total{font-size:22px;font-weight:700}
 .cart-add:focus-visible,.cart-launcher:focus-visible,.cart-dialog button:focus-visible{outline:3px solid #e4362e;outline-offset:3px}
 @media(min-width:761px){.cart-launcher{left:auto;width:320px;right:24px}.cart-status{left:auto;right:24px;max-width:320px}.cart-dialog{inset:0;margin:auto;width:min(560px,90vw);height:fit-content;max-height:85dvh;border-radius:24px}}
+/* Keep the close action reachable while scrolling a long cart or using landscape. */
+.cart-dialog{max-height:90vh;max-height:90dvh;scroll-padding-block:20px}
+.cart-header{position:sticky;top:-20px;z-index:1;background:var(--surface-page,#fbf7ef);padding-block:12px}
+.cart-header h2{min-width:0;overflow-wrap:anywhere}
+.cart-header button{flex-shrink:0}
+.cart-launcher{overflow-wrap:anywhere}
+.cart-status{max-height:22vh;max-height:22dvh;overflow:auto;pointer-events:auto}
+body.restaurant:has(.cart-launcher:not([hidden])){padding-bottom:calc(164px + env(safe-area-inset-bottom))}
+@media(min-width:761px){.cart-dialog{max-height:85vh;max-height:85dvh}}

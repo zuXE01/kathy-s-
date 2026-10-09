@@ -7,8 +7,14 @@ import { showSkeleton } from '../loading.js';
 import { loadContact } from '../account-client.js';
 import { prefillContact } from '../account-model.js';
 import { recoverCheckoutConflict } from '../checkout-recovery.js';
+import { createCheckoutLeaveGuard } from '../checkout-leave-guard.js';
 const el=id=>document.getElementById(id), requestKey='kathys-checkout-request';
 let order,saved,submitting=false,requestId,userId,active=true;
+const leaveGuard=createCheckoutLeaveGuard();
+el('checkoutForm').addEventListener('input',()=>leaveGuard.changed());
+el('checkoutForm').addEventListener('change',()=>leaveGuard.changed());
+window.addEventListener('beforeunload',event=>leaveGuard.beforeUnload(event));
+document.addEventListener('click',event=>leaveGuard.followLink(event,message=>window.confirm(message)));
 window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
 async function currentOrder() {
   const response=await fetch('/api/menu',{cache:'no-store'});
@@ -26,6 +32,7 @@ function drawOrder() {
   el('orderTotal').textContent='Total: '+formatPrice(order.total/100);
 }
 function confirmation(value) {
+  leaveGuard.reset();
   const customer=value.customer;
   el('reference').textContent='Order reference: '+value.id;
   el('paymentResult').textContent=value.payment_method==='cod'?'COD · Payment unpaid.':'Demo online · Simulated only; not a real payment.';
@@ -44,6 +51,7 @@ async function load() {
     const client=await getAuthClient();
     client.auth.onAuthStateChange((event,session)=>{
       if(event==='SIGNED_OUT'||(userId&&session?.user?.id&&session.user.id!==userId)) {
+        leaveGuard.reset();
         active=false; el('checkoutForm').reset();el('checkoutContent').hidden=true;el('confirmation').hidden=true;
         ['customerResult','addressResult','paymentResult','reference','confirmedTotal'].forEach(id=>el(id).textContent='');
         sessionStorage.removeItem(requestKey);el('checkoutStatus').textContent='Your session changed. Return to the menu and sign in.';

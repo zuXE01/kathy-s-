@@ -10,7 +10,7 @@ function load(file,context) {
 function dom() {
   const nodes=new Map();
   class Element {
-    constructor(tag='div'){this.tagName=tag;this.children=[];this.textContent='';this.value='';this.disabled=false;this.listeners={};this.classList={add(){},remove(){},contains(){return false;}};}
+    constructor(tag='div'){this.tagName=tag;this.dataset={};this.children=[];this.textContent='';this.value='';this.disabled=false;this.listeners={};this.classList={add(){},remove(){},contains(){return false;}};}
     append(...children){this.children.push(...children);}
     replaceChildren(...children){this.children=children;}
     setAttribute(){} toggleAttribute(){} close(){this.open=false;} showModal(){this.open=true;} reset(){this.resetCalled=true;}
@@ -47,7 +47,7 @@ test('checkout confirmation recovers a saved order without customer projection',
   let source=fs.readFileSync(path.join(__dirname,'../public/js/pages/checkout.js'),'utf8');
   // Execute the actual confirmation function without bootstrapping an authenticated page.
   source=source.slice(source.indexOf('function confirmation('),source.indexOf('async function load('));
-  const c={el:id=>document.getElementById(id),formatPrice:String,forgetCart:()=>forgotten++,sessionStorage:{removeItem(){}},requestKey:'test'};
+  const c={leaveGuard:{reset(){}},el:id=>document.getElementById(id),formatPrice:String,forgetCart:()=>forgotten++,sessionStorage:{removeItem(){}},requestKey:'test'};
   vm.runInNewContext(source,c);
   c.confirmation({id:'saved',status:'pending',payment_method:'cod',total_cents:10000});
   assert.equal(forgotten,1);

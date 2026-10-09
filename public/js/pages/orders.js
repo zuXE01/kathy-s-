@@ -18,7 +18,8 @@ function renderOrder(order){
   const card=node('article',undefined,'history-card');
   const heading=node('div',undefined,'history-heading');
   heading.append(node('div',order.status.toUpperCase(),'order-status status-'+order.status),node('time',date(order.created_at)));
-  card.append(heading,node('p','Reference: '+order.id,'history-reference'));
+  const explanations={pending:'Awaiting restaurant acceptance. You can cancel while this order is pending.',accepted:'The restaurant has accepted your order. Preparation has not started yet.',preparing:'The kitchen is preparing your order.',ready:'Preparation is complete. No delivery is booked through this demo.',completed:'The restaurant marked this order as completed.',rejected:'The restaurant could not fulfil this order. Check the status history for a reason.',cancelled:'This order was cancelled and will not be prepared.'};
+  card.append(heading,node('p',explanations[order.status]||'Check the status history for updates.'),node('p','Reference: '+order.id,'history-reference'));
   const list=node('ul',undefined,'history-items');
   order.items.forEach(item=>list.append(node('li',item.quantity+' × '+item.name+' · '+item.label+' — '+formatPrice(item.quantity*item.cents/100))));
   card.append(list,node('strong','Total: '+formatPrice(order.total_cents/100),'history-total'),node('p',order.payment_method==='cod'?'Cash on delivery · unpaid':'Online payment · simulated','history-payment'));
@@ -31,7 +32,7 @@ function renderOrder(order){
     const cancel=node('button','Cancel order','history-cancel');cancel.type='button';
     cancel.addEventListener('click',async()=>{
       if(!userId)return;
-      if(!window.confirm('Cancel this pending order?'))return;
+      if(!window.confirm('Cancel this order? It will be removed from the restaurant’s pending queue.'))return;
       const current=revision;
       cancel.disabled=true;
       try { await orderRequest('/api/orders/'+encodeURIComponent(order.id)+'/cancel',{method:'POST'}); if(current===revision)load(page); }
@@ -44,7 +45,10 @@ function renderOrder(order){
 function render(data){
   const history=el('orderHistory');history.replaceChildren();
   total=data.total||0;
-  if(!data.items.length){history.append(node('p','You have no saved orders yet. Explore the menu to place your first demo order.','history-empty'));}
+  if(!data.items.length){
+    history.append(node('p',page===1?'You have no saved orders yet. Choose items from the menu to place a demo order.':'No orders on this page. Go to the previous page to see earlier results.','history-empty'));
+    const browse=node('a','Browse the menu','button');browse.href='/#menu';history.append(browse);
+  }
   else data.items.forEach(order=>history.append(renderOrder(order)));
   const last=page*10>=total;
   el('ordersPage').textContent='Page '+page;

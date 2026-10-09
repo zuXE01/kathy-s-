@@ -23,12 +23,21 @@ test('history clears on logout and ignores an in-flight response',async()=>{
 test('account switching ignores stale results and only clears busy for the active load',async()=>{
   const f=await fixture();f.auth('SIGNED_IN','a');f.tick();f.auth('SIGNED_IN','b');f.tick();
   f.requests[0].resolve(data);await flush();assert.equal(f.el('orderHistory').children.length,0);assert.equal(f.el('orderHistory').attributes['aria-busy'],'true');
-  f.requests[1].resolve(data);await flush();assert.equal(f.el('orderHistory').children.length,1);assert.equal(f.el('orderHistory').attributes['aria-busy'],'false');
+  f.requests[1].resolve(data);await flush();assert.equal(f.el('orderHistory').children.length,2);assert.equal(f.el('orderHistory').attributes['aria-busy'],'false');
+  assert.equal(f.el('orderHistory').children[1].textContent,'Browse the menu');assert.equal(f.el('orderHistory').children[1].href,'/#menu');
   f.auth('SIGNED_OUT');assert.equal(f.el('orderHistory').children.length,0);
 });
 test('failed requests reset busy and allow retry; navigation clears displayed history',async()=>{
   const f=await fixture();f.auth('SIGNED_IN','a');f.tick();f.requests[0].reject(new Error('Offline'));await flush();
   assert.equal(f.el('orderHistory').attributes['aria-busy'],'false');assert.equal(f.el('ordersRetry').hidden,false);
-  f.el('ordersRetry').handlers.click();f.requests[1].resolve(data);await flush();assert.equal(f.el('orderHistory').children.length,1);
+  f.el('ordersRetry').handlers.click();f.requests[1].resolve(data);await flush();assert.equal(f.el('orderHistory').children.length,2);
   f.events.pagehide();assert.equal(f.el('orderHistory').children.length,0);
+});
+test('pending and ready orders explain the next step without promising delivery',async()=>{
+  const f=await fixture();f.auth('SIGNED_IN','a');f.tick();
+  const order={id:'demo',created_at:'2026-10-09',items:[],history:[],payment_method:'cod',total_cents:100};
+  f.requests[0].resolve({total:2,items:[{...order,status:'pending'},{...order,status:'ready'}]});await flush();
+  const cards=f.el('orderHistory').children;
+  assert.ok(cards[0].children.some(child=>/Awaiting restaurant acceptance/.test(child.textContent||'')));
+  assert.ok(cards[1].children.some(child=>/No delivery is booked/.test(child.textContent||'')));
 });

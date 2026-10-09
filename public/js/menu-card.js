@@ -4,7 +4,7 @@ export function getOptions(item) {
   const options = Array.isArray(item.variants) ? item.variants.filter(option => option && typeof option.label === 'string' && Number.isFinite(Number(option.price))) : [];
   return options.length ? options : [{ label: 'Regular', price: Number(item.price) }];
 }
-export function createMenuCard(item, { onEdit, onRemove, onAdd } = {}) {
+export function createMenuCard(item, { onEdit, onRemove, onAdd, selectedLabel, onOptionChange } = {}) {
   const node = (tag, className, text) => { const element = document.createElement(tag); element.className = className; if (text !== undefined) element.textContent = text; return element; };
   const card = node('article', 'catalog-card');
   const top = node('div','catalog-card-top');
@@ -13,13 +13,19 @@ export function createMenuCard(item, { onEdit, onRemove, onAdd } = {}) {
   card.append(top, node('h3','catalog-name',item.name));
   if (item.description) card.append(node('p','catalog-description',item.description));
   const options = getOptions(item), footer = node('div','catalog-card-footer');
-  let selected = 0;
-  const price = node('strong','catalog-price',formatPrice(options[0].price)); price.setAttribute('aria-live','polite');
+  let selected = Math.max(0, options.findIndex(option => option.label === selectedLabel));
+  const price = node('strong','catalog-price',formatPrice(options[selected].price)); price.setAttribute('aria-live','polite');
   const label = node('label','catalog-option-label',options.length > 1 ? 'Choose size / portion' : options[0].label);
   if (options.length > 1) {
     const select = node('select','catalog-option'); select.setAttribute('aria-label','Size or portion for ' + item.name);
     options.forEach((option,index) => { const choice = node('option','',option.label + ' — ' + formatPrice(option.price)); choice.value = index; select.append(choice); });
-    select.addEventListener('change', function changeSize() { selected = Number(select.value); price.textContent = formatPrice(options[selected].price); });
+    select.value = String(selected);
+    select.addEventListener('change', function changeSize() {
+      const next = Number(select.value);
+      if (!Number.isInteger(next) || !options[next]) return;
+      selected = next; price.textContent = formatPrice(options[selected].price);
+      onOptionChange?.(options[selected].label);
+    });
     label.append(select);
   }
   footer.append(label,price); card.append(footer);

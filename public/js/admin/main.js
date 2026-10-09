@@ -2,11 +2,13 @@ import { getAuthClient } from '../auth-client.js';
 import { request, cancelRequests } from './request.js';
 import { initMembers, loadMembers } from './members.js';
 import { initMenuManager, loadMenu, clearMenu } from './menu.js';
-import { initOrders, loadOrders, clearOrders } from './orders.js';
+import { initOrders, loadOrders, clearOrders, setOrdersVisible } from './orders.js';
 const el = id => document.getElementById(id);
 let managementAccess=false, workspaceRole=null;
+window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
 function deny(message) {
   managementAccess=false;
+  workspaceRole=null;
   clearOrders();
   cancelRequests(); el('adminShell').hidden = true; el('adminGate').hidden = false;
   el('gateMessage').textContent = message; el('memberRows').replaceChildren(); clearMenu();
@@ -19,7 +21,8 @@ function overview() {
     el('refreshOverview').disabled = false;
     if (error) { if (el('adminShell').hidden) el('gateMessage').textContent = error.message; else el('adminMessage').textContent = error.message; return; }
     const management=['owner','platform_admin'].includes(data.role);
-    if(workspaceRole!==data.role)el('ordersFilter').value=data.role==='kitchen_staff'?'accepted':'pending';
+    const changedRole=workspaceRole!==data.role;
+    if(changedRole)el('ordersFilter').value='active';
     workspaceRole=data.role;
     managementAccess=management;
     document.querySelectorAll('[data-section="members"],[data-section="menu"],[data-open-menu]').forEach(control=>{control.hidden=!management;});
@@ -34,10 +37,12 @@ function overview() {
     el('adminGate').hidden = true; el('adminShell').hidden = false;
     document.querySelector('.admin-badge').textContent=data.role.replaceAll('_',' ').toUpperCase();
     el('adminIdentity').textContent = 'Signed in as ' + data.email + ' · ' + data.role.replaceAll('_',' ');
+    if(changedRole&&data.role==='kitchen_staff')navigate('orders');
   });
 }
 function navigate(section) {
   if(['members','menu'].includes(section)&&!managementAccess)return;
+  setOrdersVisible(section==='orders');
   document.querySelectorAll('[data-panel]').forEach(panel => { panel.hidden = panel.dataset.panel !== section; });
   document.querySelectorAll('[data-section]').forEach(button => {
     const selected = button.dataset.section === section; button.classList.toggle('selected', selected);

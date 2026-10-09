@@ -12,13 +12,15 @@ function createOrderFixture(menu) {
       auth:{getUser:async()=>({data:{user:token==='invalid'?null:user}})},
       rpc:async(name,{order_ids})=>({data:orders.filter(row=>order_ids.includes(row.id)&&(token==='admin'||row.user_id===user.id)).map(({id,customer})=>({id,customer:structuredClone(customer)})),error:null}),
       from(table) {
-        let filters=[],start=0,end=19,action,payload,single=false,columns='*';
+        let filters=[],start=0,end=19,action,payload,single=false,columns='*',sorts=[];
         const query={
-          select(value='*'){columns=value;return this;},eq(key,value){filters.push([key,value]);return this;},order(){return this;},
+          select(value='*'){columns=value;return this;},eq(key,value){filters.push([key,value]);return this;},
+          in(key,values){filters.push([key,values]);return this;},order(key,{ascending=true}={}){sorts.push([key,ascending]);return this;},
           range(a,b){start=a;end=b;return this;},maybeSingle(){single=true;return this;},single(){single=true;return this;},
           insert(value){action='insert';payload=value;return this;},update(value){action='update';payload=value;return this;},
           then(resolve,reject) {
-            let error=null,rows=orders.filter(row=>(token==='admin'||row.user_id===user.id)&&filters.every(([key,value])=>row[key]===value));
+            let error=null,rows=orders.filter(row=>(token==='admin'||row.user_id===user.id)&&filters.every(([key,value])=>Array.isArray(value)?value.includes(row[key]):row[key]===value));
+            rows.sort((a,b)=>{for(const [key,ascending] of sorts){if(a[key]!==b[key])return (a[key]<b[key]?-1:1)*(ascending?1:-1);}return 0;});
             if(table!=='orders')return Promise.reject(new Error('Unknown fixture table')).then(resolve,reject);
             if(action==='insert') {
               if(orders.some(row=>row.user_id===payload.user_id&&row.request_id===payload.request_id))error={code:'23505'};
