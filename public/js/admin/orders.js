@@ -48,7 +48,7 @@ export function loadOrders(nextPage=1,background=false) {
       card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge order-status status-'+order.status),node('h2',order.customer?.name || 'Order '+order.id.slice(0,8)),
         node('p',new Date(order.created_at).toLocaleString()),node('p','Reference: '+order.id),
         node('p',order.items.reduce((sum,item)=>sum+item.quantity,0)+' items · '+formatPrice(order.total_cents/100)),
-        node('p',order.payment_method==='cod'?'COD · Unpaid':'Online · Simulated, not paid'));
+        node('p',order.payment_method==='maya-sandbox'?'Maya sandbox · '+order.payment_status+' · no real money':order.payment_method==='cod'?'COD · Unpaid':'Online · Simulated, not paid'));
       const elapsed=Math.max(0,Math.floor((Date.now()-new Date(order.created_at).getTime())/60000));
       if(Number.isFinite(elapsed)&&['pending','accepted','preparing','ready'].includes(order.status))card.append(node('p',elapsed===0?'Received less than a minute ago':'Received '+elapsed+' min ago','queue-age'));
       const items=node('ul',undefined,'queue-items');
@@ -91,7 +91,7 @@ function openOrder(order) {
   if(order.contact_status==='unavailable')box.append(node('p','Customer contact and delivery details could not load. Close this order and refresh to retry. Do not dispatch until the delivery details are available.'));
   const list=node('ul');
   order.items.forEach(item=>list.append(node('li',item.quantity+' × '+item.name+' · '+item.label+' — '+formatPrice(item.quantity*item.cents/100))));
-  box.append(list,node('strong','Total: '+formatPrice(order.total_cents/100)),node('p','Delivery: ₱0 demo · '+(order.payment_method==='cod'?'COD unpaid':'Online payment simulated — no money received')),
+  box.append(list,node('strong','Total: '+formatPrice(order.total_cents/100)),node('p','Delivery: ₱0 demo · '+(order.payment_method==='maya-sandbox'?'Maya sandbox: '+order.payment_status+' — no real money':order.payment_method==='cod'?'COD unpaid':'Online payment simulated — no money received')),
     node('h3','Status history'));
   const history=node('ol');
   order.history.forEach(event=>history.append(node('li',event.status+' · '+new Date(event.at).toLocaleString()+(event.note?' · '+event.note:''))));

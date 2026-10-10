@@ -33,6 +33,10 @@ function drawOrder() {
 }
 function confirmation(value) {
   leaveGuard.reset();
+  if(value.payment_method==='maya-sandbox') {
+    forgetCart();sessionStorage.removeItem(requestKey);
+    location.assign('/payment.html?order='+encodeURIComponent(value.id));return;
+  }
   const customer=value.customer;
   el('reference').textContent='Order reference: '+value.id;
   el('paymentResult').textContent=value.payment_method==='cod'?'COD · Payment unpaid.':'Demo online · Simulated only; not a real payment.';
@@ -84,7 +88,11 @@ async function load() {
       if(!active)return;
       el('checkoutStatus').textContent='Your saved address could not be loaded. Enter your details below, or reload to retry.';
     }
-    el('checkoutContent').hidden=false;
+    try {
+      const response=await fetch('/api/payments/maya/config',{cache:'no-store'});
+      if(response.ok&&active)el('mayaSandboxOption').hidden=!(await response.json()).enabled;
+    }catch{} // COD and simulated payment remain available when sandbox is offline.
+    if(active)el('checkoutContent').hidden=false;
   } catch(error){el('checkoutStatus').textContent=error.message+' Reload to retry, or return to the menu.';}
   finally {finishLoading();loading.hidden=true;}
 }

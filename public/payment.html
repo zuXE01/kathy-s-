@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test payment — Kathy's Hub</title><link rel="stylesheet" href="/checkout.css"><link rel="stylesheet" href="/customer-theme.css"><link rel="stylesheet" href="/color-tokens.css"><link rel="stylesheet" href="/payment.css"></head>
+<body><header><a href="/orders.html">← My orders</a><span>Kathy’s Diners &amp; Cafe</span></header>
+<main class="payment-page"><p class="eyebrow">MAYA CHECKOUT · SANDBOX ONLY</p><h1>Complete your test payment</h1>
+<p class="notice">No real money is collected. Use only Maya’s published test wallet or card credentials. We send a sample buyer name and email, not your saved contact details, to this sandbox.</p>
+<section aria-labelledby="paymentHeading"><h2 id="paymentHeading">Order payment</h2><p id="paymentReference"></p><p id="paymentStatus" role="status" aria-live="polite">Checking your account and payment…</p><p id="paymentError" role="alert"></p>
+<div class="payment-actions"><button id="paymentStart" type="button" hidden>Open Maya test checkout</button><a id="paymentResume" class="button" hidden>Return to Maya test checkout</a><button id="paymentCheck" type="button" hidden>Check payment status</button></div>
+<p><a id="paymentSignin" hidden>Sign in to continue</a></p></section>
+<p class="fine">Your order is already saved. Do not place it again while payment is uncertain. A return from Maya does not itself confirm payment; this page checks with Maya. A successful test still requires restaurant acceptance.</p>
+<p><a href="https://developers.maya.ph/reference/sandbox-credentials-and-cards" target="_blank" rel="noopener noreferrer">View Maya’s official test credentials</a></p>
+<p><a href="/orders.html">View my orders</a> · <a href="/#menu">Back to menu</a></p></main>
+<script src="/vendor/supabase.js"></script><script type="module" src="/js/pages/payment.js"></script></body></html>

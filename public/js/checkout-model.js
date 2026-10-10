@@ -23,6 +23,6 @@ export function customerDetails(form) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) throw new Error('Enter a valid email address.');
   if (!/^\+?[\d ()-]{7,20}$/.test(customer.phone) || customer.phone.replace(/\D/g,'').length<7) throw new Error('Enter a valid phone number.');
   if (!/^\d{4}$/.test(customer.postal)) throw new Error('Enter a four-digit Philippine postal code.');
-  if (!['cod','demo-online'].includes(customer.payment) || customer.notes.length>500) throw new Error('Check the payment method and order notes.');
+  if (!['cod','demo-online','maya-sandbox'].includes(customer.payment) || customer.notes.length>500) throw new Error('Check the payment method and order notes.');
   return customer;
 }

@@ -101,4 +101,7 @@ Run the tests with:
 
 ```sh
 npm test
+npm run test:database
 ```
+
+Optional Maya Checkout sandbox setup is documented in [MAYA_SANDBOX.md](MAYA_SANDBOX.md). It is disabled by default and requires the additive SQL setup and a server-only Supabase secret. This is not real-money payment support.

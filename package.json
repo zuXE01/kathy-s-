@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
-    "test": "node --test test/*.test.cjs"
+    "test": "node --test test/*.test.cjs",
+    "test:database": "node scripts/verify-review-database.cjs"
   },
   "engines": {
     "node": "22.x"
@@ -15,5 +16,8 @@
     "express": "5.2.1",
     "express-rate-limit": "^7.5.0",
     "helmet": "8.3.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
   }
 }

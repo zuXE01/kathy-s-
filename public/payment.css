@@ -1,0 +1,1 @@
+.payment-page{max-width:660px}.payment-actions{display:grid;gap:12px}.payment-actions button,.payment-actions a{min-height:48px;white-space:normal}.payment-page #paymentError{color:var(--content-error,#a12525)}.payment-page #paymentReference{overflow-wrap:anywhere}.payment-page header{flex-wrap:wrap}

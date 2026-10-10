@@ -6,6 +6,8 @@ const { createClient } = require('@supabase/supabase-js');
 const { adminRouter } = require('./admin');
 const { readMenu } = require('./menu-store');
 const { ordersRouter } = require('./orders');
+const { mayaConfig } = require('./maya-client.cjs');
+const { mayaRouter } = require('./maya-payments.cjs');
 
 function createApp(env = process.env, createAuthClient = createClient) {
   const url = env.SUPABASE_URL;
@@ -50,7 +52,9 @@ function createApp(env = process.env, createAuthClient = createClient) {
     }
   });
   app.use('/api/admin', adminRouter(url, key, createAuthClient));
-  app.use('/api/orders', ordersRouter(url,key,createAuthClient));
+  const sandbox=mayaConfig(env);
+  app.use('/api/payments/maya',mayaRouter({config:sandbox,url,key,secret:env.SUPABASE_SECRET_KEY,createClient:createAuthClient}));
+  app.use('/api/orders', ordersRouter(url,key,createAuthClient,{mayaEnabled:!!sandbox}));
   app.get('/api/menu', async (_req, res) => {
     res.set('Cache-Control', 'no-store');
     try {

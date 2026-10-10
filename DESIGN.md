@@ -10,6 +10,10 @@
 
 Local frontend changes need committing/pushing and deployment before they appear on Render.
 
+## Maya sandbox payment page
+
+`/payment.html?order=<uuid>` continues a saved Maya test order with a single-column, mobile-first layout using the existing cream/navy/burgundy theme. Its controls distinguish opening the hosted test checkout from verifying the result. Sign-in preserves only the validated local order link; return query parameters never imply success. The option is hidden until server configuration enables it. All states disclose sandbox-only money, and staff actions wait for server/database verification. See `MAYA_SANDBOX.md` for activation and test limitations. This addition does not deploy or enable live payments.
+
 ## Responsive adaptation — 2026-10-09
 
 ### Kitchen queue workflow

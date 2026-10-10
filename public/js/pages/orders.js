@@ -22,7 +22,8 @@ function renderOrder(order){
   card.append(heading,node('p',explanations[order.status]||'Check the status history for updates.'),node('p','Reference: '+order.id,'history-reference'));
   const list=node('ul',undefined,'history-items');
   order.items.forEach(item=>list.append(node('li',item.quantity+' × '+item.name+' · '+item.label+' — '+formatPrice(item.quantity*item.cents/100))));
-  card.append(list,node('strong','Total: '+formatPrice(order.total_cents/100),'history-total'),node('p',order.payment_method==='cod'?'Cash on delivery · unpaid':'Online payment · simulated','history-payment'));
+  card.append(list,node('strong','Total: '+formatPrice(order.total_cents/100),'history-total'),node('p',order.payment_method==='maya-sandbox'?'Maya sandbox · '+order.payment_status+' · no real money':order.payment_method==='cod'?'Cash on delivery · unpaid':'Online payment · simulated','history-payment'));
+  if(order.payment_method==='maya-sandbox'){const payment=node('a','View test payment','button');payment.href='/payment.html?order='+encodeURIComponent(order.id);card.append(payment);}
   const details=document.createElement('details');
   details.append(node('summary','Status history'));
   const history=node('ol',undefined,'history-events');

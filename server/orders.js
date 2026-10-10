@@ -6,6 +6,17 @@ const transitions = {pending:['accepted','rejected','cancelled'],accepted:['prep
 // customer is deliberately not selectable via the Data API. Contact access is an
 // independently authorized database function, not merely a response filter.
 const orderColumns='id,user_id,request_id,request_hash,items,total_cents,delivery_cents,payment_method,payment_status,status,status_note,history,version,is_demo,created_at,updated_at';
+async function attachPayments(client,orders) {
+  const ids=orders.filter(order=>order.payment_method==='maya-sandbox').map(order=>order.id);
+  if(!ids.length)return orders;
+  let rows=[];
+  try {const result=await client.from('maya_sandbox_payments').select('order_id,status').in('order_id',ids);if(result.error)throw result.error;rows=result.data;}catch{}
+  return orders.map(order=>order.payment_method==='maya-sandbox'?{...order,payment_status:rows.find(row=>row.order_id===order.id)?.status||'unverified'}:order);
+}
+function permittedStatuses(role,order) {
+  const statuses=allowedOrderStatuses(role,transitions[order.status]||[]);
+  return order.payment_method==='maya-sandbox'&&order.payment_status!=='sandbox-paid'?statuses.filter(status=>['rejected','cancelled'].includes(status)):statuses;
+}
 async function attachContacts(client, orders, role) {
   if(role==='kitchen_staff'||!orders.length)return orders;
   // Optional enrichment must not take down the queue or turn a committed update
@@ -21,7 +32,7 @@ async function attachContacts(client, orders, role) {
 }
 function validateOrder(body) {
   if (!body || !uuid.test(body.request_id || '') || !Array.isArray(body.items) || !body.items.length || body.items.length>120 ||
-    !Number.isSafeInteger(body.total_cents) || body.total_cents<0 || !['cod','demo-online'].includes(body.payment_method)) return null;
+    !Number.isSafeInteger(body.total_cents) || body.total_cents<0 || !['cod','demo-online','maya-sandbox'].includes(body.payment_method)) return null;
   const customer={}, seen=new Set(), items=[];
   for(const field of ['name','email','phone','address','barangay','city','province','postal','notes']) {
     const value=body.customer?.[field];
@@ -45,7 +56,7 @@ function errorResponse(res,error,conflictCode='ORDER_CHANGED') {
   if(error.code==='42501')return res.status(403).json({error:'You do not have access to this order.'});
   return res.status(503).json({error:'Order service unavailable. Retry with the same cart; do not start another order.'});
 }
-function ordersRouter(url,key,createClient) {
+function ordersRouter(url,key,createClient,{mayaEnabled=false}={}) {
   const router=express.Router();
   router.use(async(req,res,next)=>{
     res.set('Cache-Control','no-store');
@@ -71,7 +82,7 @@ function ordersRouter(url,key,createClient) {
       const items=result.data.map(({id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at})=>
         ({id,items,total_cents,payment_method,payment_status,status,status_note,
           history:Array.isArray(history)?history.map(({status,at,note})=>({status,at,note})):[],created_at,updated_at}));
-      res.json({items,total:result.count,page});
+      res.json({items:await attachPayments(req.orderClient,items),total:result.count,page});
     } catch {res.status(503).json({error:'Unable to load your order history.'});}
   });
   router.get('/request/:requestId',async(req,res)=>{
@@ -96,6 +107,7 @@ function ordersRouter(url,key,createClient) {
   router.post('/',async(req,res)=>{
     const order=validateOrder(req.body);
     if(!order)return res.status(400).json({error:'Check the cart, customer details, address and payment method.'});
+    if(order.payment_method==='maya-sandbox'&&(!mayaEnabled||order.total_cents<=0))return res.status(503).json({error:'Maya sandbox is unavailable or the total is zero. Choose another demo payment method.'});
     const query=()=>req.orderClient.from('orders').select(orderColumns).eq('user_id',req.orderUser.id).eq('request_id',order.request_id).maybeSingle();
     try {
       let previous=await query();
@@ -126,9 +138,9 @@ function mountAdminOrders(router) {
       const result=await query.order('created_at',{ascending:oldestFirst}).order('id',{ascending:true}).range((page-1)*20,page*20-1);
       if(result.error)return errorResponse(res,result.error);
       const strip=req.adminRole==='kitchen_staff';
-      const orders=await attachContacts(req.adminClient,result.data,req.adminRole);
+      const orders=await attachPayments(req.adminClient,await attachContacts(req.adminClient,result.data,req.adminRole));
       res.json({items:orders.map(order=>{
-        const out={...order,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[order.status]||[])};
+        const out={...order,allowed_statuses:permittedStatuses(req.adminRole,order)};
         if(strip)delete out.customer;
         return out;
       }),total:result.count,page});
@@ -142,8 +154,8 @@ function mountAdminOrders(router) {
       const result=await req.adminClient.from('orders').update({status,status_note:note.trim()}).eq('id',req.params.id).eq('version',version).select(orderColumns).maybeSingle();
       if(result.error)return errorResponse(res,result.error);
       if(!result.data)return res.status(409).json({error:'Another admin updated this order. Refresh and review its latest status.'});
-      const [record]=await attachContacts(req.adminClient,[result.data],req.adminRole);
-      const out={...record,allowed_statuses:allowedOrderStatuses(req.adminRole,transitions[result.data.status]||[])};
+      const [record]=await attachPayments(req.adminClient,await attachContacts(req.adminClient,[result.data],req.adminRole));
+      const out={...record,allowed_statuses:permittedStatuses(req.adminRole,record)};
       if(req.adminRole==='kitchen_staff')delete out.customer;
       res.json({order:out});
     } catch {res.status(503).json({error:'Unable to update order. Refresh before retrying.'});}
