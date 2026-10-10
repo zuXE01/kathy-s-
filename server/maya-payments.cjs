@@ -48,7 +48,7 @@ function createPaymentService(db,maya) {
       if(row)return row;
       const claimed=await claim(order,'creating');row=claimed.row;
       if(!claimed.created)return row;
-      try {const created=await maya.create(row);return await save(row,{...created,status:'pending'},'creating');}
+      try {const created=await maya.create(row,order);return await save(row,{...created,status:'pending'},'creating');}
       catch { // The request may have reached Maya. Never blindly create a second session.
         throw new Error('The payment session could not be confirmed. Open Check payment status to recover it. Do not start another payment.');
       }
@@ -87,7 +87,7 @@ function mayaRouter({config,url,key,secret,createClient,maya,paymentService}) {
   });
   async function ownedOrder(req,res){
     if(!uuid.test(req.params.id)) {res.status(400).json({error:'Invalid order reference.'});return;}
-    const {data,error}=await req.paymentClient.from('orders').select('id,user_id,total_cents,payment_method,status').eq('id',req.params.id).eq('user_id',req.paymentUser.id).maybeSingle();
+    const {data,error}=await req.paymentClient.from('orders').select('id,user_id,items,delivery_cents,total_cents,payment_method,status').eq('id',req.params.id).eq('user_id',req.paymentUser.id).maybeSingle();
     if(error)throw new Error('Unable to read this order. Try again.');
     if(!data||data.payment_method!=='maya-sandbox'){res.status(404).json({error:'Maya sandbox order not found.'});return;}
     return data;

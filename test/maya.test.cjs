@@ -34,11 +34,24 @@ test('checkout calls only sandbox, uses repriced amount, and sends no customer d
   let sent;const id=randomUUID();
   const client=createMayaClient(config(),async(url,options)=>{sent={url,options};return {ok:true,json:async()=>({checkoutId:id,redirectUrl:'https://payments-web-sandbox.maya.ph/test'})};});
   const payment={id:randomUUID(),order_id:randomUUID(),amount_cents:12345,customer:{email:'private@example.test'}};
-  const result=await client.create(payment),body=JSON.parse(sent.options.body);
+  const saved={items:[{name:'Latte',label:'Cold 16oz',quantity:2,cents:6000}],delivery_cents:345};
+  const result=await client.create(payment,saved),body=JSON.parse(sent.options.body);
   assert.match(sent.url,/^https:\/\/pg-sandbox\.paymaya\.com\//);assert.equal(body.totalAmount.value,'123.45');
   assert.equal(body.requestReferenceNumber,payment.id);assert.equal(body.buyer.contact.email,'sandbox@example.com');
   assert.ok(!sent.options.body.includes('private@example.test'));assert.equal(result.checkout_id,id);
+  assert.deepEqual(body.items,[{name:'Latte',description:'Cold 16oz',quantity:'2',amount:{value:'60.00'},totalAmount:{value:'120.00'}},{name:'Delivery fee',quantity:'1',amount:{value:'3.45'},totalAmount:{value:'3.45'}}]);
   assert.equal(sent.options.redirect,'error');assert.ok(sent.options.signal);
+});
+test('checkout refuses missing, malformed or mismatched saved items before calling Maya',async()=>{
+  let calls=0;const client=createMayaClient(config(),async()=>{calls++;throw new Error('unexpected network call')});
+  const payment={id:randomUUID(),order_id:randomUUID(),amount_cents:10000};
+  for(const saved of [undefined,{items:[]},{items:[{name:'Coffee',label:'Hot',quantity:1,cents:1}]},{items:[{name:'Coffee',label:'Hot',quantity:-1,cents:10000}]}])await assert.rejects(client.create(payment,saved),/Saved order/);
+  assert.equal(calls,0);
+});
+test('checkout service passes the saved order snapshot to Maya without persisting contact details',async()=>{
+  const f=fixture();f.record.items=[{name:'Coffee',label:'Hot',quantity:1,cents:10000}];f.record.delivery_cents=0;
+  let received;const create=f.maya.create;f.maya.create=async(payment,saved)=>{received=saved;return create(payment)};
+  await createPaymentService(f.db,f.maya).start(f.record);assert.equal(received,f.record);assert.equal(f.rows[0].items,undefined);
 });
 test('payment verification binds amount, currency, provider ID and unique reference, not redirects',()=>{
   const p={id:randomUUID(),checkout_id:randomUUID(),amount_cents:10000};

@@ -25,6 +25,7 @@ The callback checks Maya's documented sandbox source IPs and then retrieves auth
 ## What the code protects
 
 - The saved, database-repriced order determines PHP amount. Browser totals, redirect query parameters and webhook status claims are not payment proof.
+- New hosted checkouts include saved product names, portion labels, quantities, unit prices and line totals using Maya's `items` schema. Nonzero delivery fees appear separately; item totals must match the saved payment amount. Contact details and customer notes are excluded. Existing provider sessions are not recreated to add item details.
 - Payment access requires a verified non-anonymous account that owns the order. Customer contact/address information is not sent to the shared merchant; buyer details are synthetic.
 - One payment attempt per saved order is claimed through a unique database constraint before contacting Maya. Concurrent taps cannot intentionally create multiple sessions. An uncertain network result is reconciled by the unique request reference, not blindly recreated.
 - Verification matches payment ID, reference, exact amount and PHP currency. Success requires Maya's successful state and `isPaid=true`. Unknown states stay under review.

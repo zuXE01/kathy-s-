@@ -21,6 +21,21 @@ function sandboxRedirect(value) {
   if(url.protocol!=='https:'||!CHECKOUT_HOSTS.has(url.hostname)||url.port||url.username||url.password)throw new Error('Unexpected Maya checkout destination.');
   return url.href;
 }
+function checkoutItems(order,amountCents) {
+  if(!Array.isArray(order?.items)||!order.items.length||order.items.length>120)throw new Error('Saved order items are unavailable.');
+  let total=0;
+  const items=order.items.map(item=>{
+    if(typeof item.name!=='string'||!item.name.trim()||typeof item.label!=='string'||!item.label.trim()||
+      !Number.isSafeInteger(item.quantity)||item.quantity<1||!Number.isSafeInteger(item.cents)||item.cents<0||
+      !Number.isSafeInteger(item.cents*item.quantity))throw new Error('Saved order items are invalid.');
+    total+=item.cents*item.quantity;
+    return {name:item.name,description:item.label,quantity:String(item.quantity),amount:{value:(item.cents/100).toFixed(2)},totalAmount:{value:(item.cents*item.quantity/100).toFixed(2)}};
+  });
+  const delivery=order.delivery_cents??0;
+  if(!Number.isSafeInteger(delivery)||delivery<0||!Number.isSafeInteger(total+delivery)||total+delivery!==amountCents)throw new Error('Saved order items do not match the payment total.');
+  if(delivery)items.push({name:'Delivery fee',quantity:'1',amount:{value:(delivery/100).toFixed(2)},totalAmount:{value:(delivery/100).toFixed(2)}});
+  return items;
+}
 function createMayaClient(config,fetcher=fetch) {
   async function call(path,key,body,method=body?'POST':'GET') {
     const response=await fetcher(API+path,{method,redirect:'error',
@@ -30,10 +45,11 @@ function createMayaClient(config,fetcher=fetch) {
     return response.json();
   }
   return {
-    async create(payment) {
+    async create(payment,order) {
       const returnUrl=config.origin+'/payment.html?order='+encodeURIComponent(payment.order_id);
       const result=await call('/checkout/v1/checkouts',config.publicKey,{
         totalAmount:{value:(payment.amount_cents/100).toFixed(2),currency:'PHP'},
+        items:checkoutItems(order,payment.amount_cents),
         // Never send saved contact details or addresses to a shared sandbox merchant.
         buyer:{firstName:'Sandbox',lastName:'Customer',contact:{email:'sandbox@example.com'}},
         requestReferenceNumber:payment.id,
