@@ -11,7 +11,11 @@ async function attachPayments(client,orders) {
   if(!ids.length)return orders;
   let rows=[];
   try {const result=await client.from('maya_sandbox_payments').select('order_id,status').in('order_id',ids);if(result.error)throw result.error;rows=result.data;}catch{}
-  return orders.map(order=>order.payment_method==='maya-sandbox'?{...order,payment_status:rows.find(row=>row.order_id===order.id)?.status||'unverified'}:order);
+  return orders.map(order=>{
+    if(order.payment_method!=='maya-sandbox')return order;
+    const status=rows.find(row=>row.order_id===order.id)?.status||'unverified';
+    return {...order,payment_status:status,payment_review_required:status==='sandbox-paid'&&['cancelled','rejected'].includes(order.status)};
+  });
 }
 function permittedStatuses(role,order) {
   const statuses=allowedOrderStatuses(role,transitions[order.status]||[]);
@@ -51,12 +55,18 @@ function validateOrder(body) {
   return {...value,request_id:body.request_id,request_hash:createHash('sha256').update(JSON.stringify(value)).digest('hex')};
 }
 function errorResponse(res,error,conflictCode='ORDER_CHANGED') {
+  if(error.code==='PAYMENT_REVIEW_REQUIRED'||error.code==='PAYMENT_CANCELLATION_UNCONFIRMED')return res.status(error.status).json({error:error.message,code:error.code});
   if(error.code==='P0001')return res.status(409).json({error:'The menu or order status changed. Refresh and review before trying again.',code:conflictCode});
   if(['22023','22P02','23514','23502'].includes(error.code))return res.status(400).json({error:'Check the order details and try again.'});
   if(error.code==='42501')return res.status(403).json({error:'You do not have access to this order.'});
   return res.status(503).json({error:'Order service unavailable. Retry with the same cart; do not start another order.'});
 }
-function ordersRouter(url,key,createClient,{mayaEnabled=false}={}) {
+async function beforeClose(paymentService,order,status) {
+  if(order.payment_method!=='maya-sandbox')return;
+  if(!paymentService)throw Object.assign(new Error('Maya payment verification is unavailable. The order stays open. Ask the restaurant to check payment setup.'),{status:503,code:'PAYMENT_CANCELLATION_UNCONFIRMED'});
+  await paymentService.beforeClose(order,status);
+}
+function ordersRouter(url,key,createClient,{mayaEnabled=false,paymentService=null}={}) {
   const router=express.Router();
   router.use(async(req,res,next)=>{
     res.set('Cache-Control','no-store');
@@ -97,12 +107,16 @@ function ordersRouter(url,key,createClient,{mayaEnabled=false}={}) {
   router.post('/:id/cancel',async(req,res)=>{
     if(!uuid.test(req.params.id))return res.status(400).json({error:'Invalid order reference.'});
     try {
+      const current=await req.orderClient.from('orders').select('id,user_id,total_cents,payment_method,status,version').eq('id',req.params.id).eq('user_id',req.orderUser.id).eq('status','pending').maybeSingle();
+      if(current.error)return errorResponse(res,current.error);
+      if(!current.data)return res.status(409).json({error:'This order is already being prepared or has been closed.'});
+      await beforeClose(paymentService,current.data,'cancelled');
       const result=await req.orderClient.from('orders').update({status:'cancelled',status_note:'Cancelled by customer'})
-        .eq('id',req.params.id).eq('user_id',req.orderUser.id).eq('status','pending').select('id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at').maybeSingle();
+        .eq('id',req.params.id).eq('user_id',req.orderUser.id).eq('status','pending').eq('version',current.data.version).select('id,items,total_cents,payment_method,payment_status,status,status_note,history,created_at,updated_at').maybeSingle();
       if(result.error)return errorResponse(res,result.error);
       if(!result.data)return res.status(409).json({error:'This order is already being prepared or has been closed.'});
       res.json({order:result.data});
-    } catch {res.status(503).json({error:'Unable to cancel this order. Please refresh and try again.'});}
+    } catch(error) {errorResponse(res,error);}
   });
   router.post('/',async(req,res)=>{
     const order=validateOrder(req.body);
@@ -126,14 +140,14 @@ function ordersRouter(url,key,createClient,{mayaEnabled=false}={}) {
   router.use((error,_req,res,_next)=>res.status(error.status===413?413:400).json({error:'Invalid order request.'}));
   return router;
 }
-function mountAdminOrders(router) {
+function mountAdminOrders(router,paymentService=null) {
   router.get('/orders',async(req,res)=>{
     const page=Number(req.query.page||1),status=req.query.status||'all';
-    if(!Number.isSafeInteger(page)||page<1||page>10000||!(['all','active'].includes(status)||Object.hasOwn(transitions,status)))return res.status(400).json({error:'Invalid order filter.'});
+    if(!Number.isSafeInteger(page)||page<1||page>10000||!(['all','active','payment-review'].includes(status)||Object.hasOwn(transitions,status)))return res.status(400).json({error:'Invalid order filter.'});
     try {
-      let query=req.adminClient.from('orders').select(orderColumns,{count:'exact'});
+      let query=req.adminClient.from(status==='payment-review'?'maya_payment_exceptions':'orders').select(orderColumns,{count:'exact'});
       if(status==='active')query=query.in('status',['pending','accepted','preparing','ready']);
-      else if(status!=='all')query=query.eq('status',status);
+      else if(!['all','payment-review'].includes(status))query=query.eq('status',status);
       const oldestFirst=['active','pending','accepted','preparing','ready'].includes(status);
       const result=await query.order('created_at',{ascending:oldestFirst}).order('id',{ascending:true}).range((page-1)*20,page*20-1);
       if(result.error)return errorResponse(res,result.error);
@@ -151,6 +165,12 @@ function mountAdminOrders(router) {
     if(!uuid.test(req.params.id)||!Object.hasOwn(transitions,status)||!Number.isInteger(version)||version<1||typeof note!=='string'||note.length>500||(status==='rejected'&&!note.trim()))return res.status(400).json({error:'Select a valid status; rejection requires a reason.'});
     if(!allowedOrderStatuses(req.adminRole,Object.keys(transitions)).includes(status))return res.status(403).json({error:'Your role cannot perform this order action.',code:'ACTION_FORBIDDEN'});
     try {
+      if(['rejected','cancelled'].includes(status)) {
+        const current=await req.adminClient.from('orders').select('id,user_id,total_cents,payment_method,status,version').eq('id',req.params.id).eq('version',version).maybeSingle();
+        if(current.error)return errorResponse(res,current.error);
+        if(!current.data||!(transitions[current.data.status]||[]).includes(status))return res.status(409).json({error:'The order changed. Refresh before retrying.'});
+        await beforeClose(paymentService,current.data,status);
+      }
       const result=await req.adminClient.from('orders').update({status,status_note:note.trim()}).eq('id',req.params.id).eq('version',version).select(orderColumns).maybeSingle();
       if(result.error)return errorResponse(res,result.error);
       if(!result.data)return res.status(409).json({error:'Another admin updated this order. Refresh and review its latest status.'});
@@ -158,7 +178,7 @@ function mountAdminOrders(router) {
       const out={...record,allowed_statuses:permittedStatuses(req.adminRole,record)};
       if(req.adminRole==='kitchen_staff')delete out.customer;
       res.json({order:out});
-    } catch {res.status(503).json({error:'Unable to update order. Refresh before retrying.'});}
+    } catch(error) {errorResponse(res,error);}
   });
 }
 module.exports={ordersRouter,mountAdminOrders,validateOrder,transitions};

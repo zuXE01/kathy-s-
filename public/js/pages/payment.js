@@ -23,6 +23,7 @@ function render(result){
   el('paymentStatus').textContent=messages[status]||messages.review;
   const closed=result.orderStatus&&result.orderStatus!=='pending';
   if(closed)el('paymentStatus').textContent+=' Order status: '+result.orderStatus+'. Do not start another payment for this order.';
+  if(['cancelled','rejected'].includes(result.orderStatus)&&status==='sandbox-paid')el('paymentStatus').textContent+=' Payment review required. Contact the restaurant; no refund has been issued.';
   el('paymentCheck').hidden=false;
   el('paymentStart').hidden=status!=='not-started'||closed;
   if(status==='pending'&&result.redirectUrl&&!closed){

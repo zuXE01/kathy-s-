@@ -4,6 +4,7 @@ const {mayaConfig,createMayaClient,sandboxRedirect,verifiedResult}=require('../s
 const {mayaRouter,createPaymentService}=require('../server/maya-payments.cjs');
 const {createApp}=require('../server/app');
 const {createOrderFixture}=require('./order-fixture.cjs');
+const {ordersRouter,mountAdminOrders}=require('../server/orders');
 const cfg={SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test'};
 const config=()=>mayaConfig({MAYA_SANDBOX_ENABLED:'true',MAYA_SANDBOX_PUBLIC_DEMO:'true',SUPABASE_SECRET_KEY:'sb_secret_test'});
 const order=()=>({id:randomUUID(),user_id:randomUUID(),total_cents:10000,payment_method:'maya-sandbox',status:'pending'});
@@ -18,7 +19,7 @@ function fixture(record=order()){
         return Promise.resolve({data:error?null:structuredClone(single?values[0]||null:values),error}).then(resolve,reject);
       }};return q;}};
   let creates=0,providerStatus='PAYMENT_SUCCESS';
-  const maya={create:async()=>{creates++;return {checkout_id:randomUUID(),redirect_url:'https://payments-web-sandbox.maya.ph/test'};},retrieve:async row=>({id:row.checkout_id||randomUUID(),requestReferenceNumber:row.id,amount:'100.00',currency:'PHP',status:providerStatus,isPaid:providerStatus==='PAYMENT_SUCCESS'})};
+  const maya={create:async()=>{creates++;return {checkout_id:randomUUID(),redirect_url:'https://payments-web-sandbox.maya.ph/test'};},cancel:async()=>{providerStatus='PAYMENT_CANCELLED';return {};},retrieve:async row=>({id:row.checkout_id||randomUUID(),requestReferenceNumber:row.id,amount:'100.00',currency:'PHP',status:providerStatus,isPaid:providerStatus==='PAYMENT_SUCCESS'})};
   return {db,rows,maya,record,get creates(){return creates},set providerStatus(v){providerStatus=v}};
 }
 async function server(t,app){const s=app.listen(0,'127.0.0.1');await new Promise(r=>s.once('listening',r));t.after(()=>new Promise(r=>s.close(r)));return 'http://127.0.0.1:'+s.address().port;}
@@ -96,4 +97,74 @@ test('disabled sandbox exposes no secrets and cannot create Maya orders',async t
   assert.equal((await fetch(base+'/api/payments/maya/'+randomUUID()+'/start',{method:'POST'})).status,503);
   const body={request_id:randomUUID(),items:[{product_id:randomUUID(),label:'Hot',quantity:1}],total_cents:10000,payment_method:'maya-sandbox',customer:{name:'Test',email:'test@example.test',phone:'09123456789',address:'Test',barangay:'Test',city:'Test',province:'Test',postal:'1000',notes:''}};
   assert.equal((await fetch(base+'/api/orders',{method:'POST',headers:{Authorization:'Bearer member','Content-Type':'application/json'},body:JSON.stringify(body)})).status,503);
+});
+test('cancellation before checkout claims the order once and prevents checkout creation',async()=>{
+  const f=fixture(),service=createPaymentService(f.db,f.maya);
+  await Promise.all([service.beforeClose(f.record,'cancelled'),service.beforeClose(f.record,'cancelled')]);
+  assert.equal(f.rows.length,1);assert.equal(f.rows[0].status,'cancelled');
+  await service.start(f.record);assert.equal(f.creates,0);
+  assert.equal((await service.verify(f.rows[0])).status,'cancelled');
+});
+test('pending checkout is cancelled at Maya and retrieved before order closure',async()=>{
+  const f=fixture();f.providerStatus='PENDING_TOKEN';const service=createPaymentService(f.db,f.maya);
+  await service.start(f.record);let calls=0;
+  const cancel=f.maya.cancel;f.maya.cancel=async row=>{calls++;return cancel(row)};
+  await service.beforeClose(f.record,'cancelled');assert.equal(calls,1);assert.equal(f.rows[0].status,'cancelled');
+  await service.beforeClose(f.record,'cancelled');assert.equal(calls,1);
+});
+test('a paid order cannot be cancelled but can be rejected into payment review',async()=>{
+  const f=fixture(),service=createPaymentService(f.db,f.maya);await service.start(f.record);
+  await assert.rejects(service.beforeClose(f.record,'cancelled'),e=>e.status===409&&e.code==='PAYMENT_REVIEW_REQUIRED');
+  assert.equal(f.rows[0].status,'sandbox-paid');await service.beforeClose(f.record,'rejected');
+});
+test('provider timeout, ambiguous result and payment during cancellation leave the order open',async()=>{
+  for(const outcome of ['timeout','still-pending','paid']) {
+    const f=fixture();f.providerStatus='PENDING_TOKEN';const service=createPaymentService(f.db,f.maya);await service.start(f.record);
+    if(outcome==='timeout')f.maya.retrieve=async()=>{throw new Error('timeout')};
+    else f.maya.cancel=async()=>{if(outcome==='paid')f.providerStatus='PAYMENT_SUCCESS';throw new Error('uncertain')};
+    await assert.rejects(service.beforeClose(f.record,'cancelled'),e=>[409,503].includes(e.status));
+    assert.equal(f.record.status,'pending');
+    if(outcome==='paid')assert.equal(f.rows[0].status,'sandbox-paid');
+  }
+});
+test('first checkout racing with cancellation cannot create a second session',async()=>{
+  const f=fixture();f.providerStatus='PENDING_TOKEN';const service=createPaymentService(f.db,f.maya);
+  const results=await Promise.allSettled([service.start(f.record),service.beforeClose(f.record,'cancelled')]);
+  assert.equal(f.rows.length,1);assert.ok(f.creates<=1);assert.equal(results[1].status,'fulfilled');
+  assert.equal(f.rows[0].status,'cancelled');await service.start(f.record);assert.ok(f.creates<=1);
+});
+test('late checkout creation and stale pending results cannot erase confirmed cancellation',async()=>{
+  const f=fixture();f.providerStatus='PENDING_TOKEN';let release,entered;
+  const waiting=new Promise(resolve=>{entered=resolve}),create=f.maya.create;
+  f.maya.create=async row=>{const result=await create(row);entered();await new Promise(resolve=>{release=resolve});return result};
+  const service=createPaymentService(f.db,f.maya),starting=service.start(f.record);await waiting;
+  await service.beforeClose(f.record,'cancelled');release();assert.equal((await starting).status,'cancelled');
+  f.providerStatus='PENDING_TOKEN';assert.equal((await service.verify(f.rows[0])).status,'cancelled');
+  f.providerStatus='PAYMENT_SUCCESS';assert.equal((await service.verify(f.rows[0])).status,'sandbox-paid');
+});
+
+test('Maya cancel uses secret authentication and a POST to the sandbox payment ID',async()=>{
+  let sent;const client=createMayaClient(config(),async(url,options)=>{sent={url,options};return {ok:true,json:async()=>({})}}),id=randomUUID();
+  await client.cancel({checkout_id:id});assert.equal(sent.url,'https://pg-sandbox.paymaya.com/payments/v1/payments/'+id+'/cancel');assert.equal(sent.options.method,'POST');
+  assert.equal(Buffer.from(sent.options.headers.Authorization.slice(6),'base64').toString(),config().secretKey+':');
+  assert.throws(()=>client.cancel({checkout_id:'bad'}),/identity/);
+});
+test('customer cancellation API keeps failed payment cancellations open and enforces ownership',async t=>{
+  const f=createOrderFixture([]),record={...order(),user_id:'00000000-0000-4000-8000-000000000010',version:1,items:[],history:[]};f.orders.push(record);
+  let closes=0,fail=true;
+  const service={beforeClose:async()=>{closes++;if(fail)throw Object.assign(new Error('Payment requires review'),{status:409,code:'PAYMENT_REVIEW_REQUIRED'})}};
+  const app=express();app.use('/orders',ordersRouter('x','key',f.client,{paymentService:service}));const base=await server(t,app);
+  const send=token=>fetch(base+'/orders/'+record.id+'/cancel',{method:'POST',headers:{Authorization:'Bearer '+token}});
+  assert.equal((await send('other')).status,409);assert.equal(closes,0);
+  assert.equal((await send('member')).status,409);assert.equal(record.status,'pending');
+  fail=false;assert.equal((await send('member')).status,200);assert.equal(record.status,'cancelled');
+});
+test('staff cancellation checks version before touching Maya and paid rejection exposes review flag',async t=>{
+  const f=createOrderFixture([]),record={...order(),user_id:'00000000-0000-4000-8000-000000000010',version:1,items:[],history:[]};f.orders.push(record);
+  const raw=f.client('x','k',{global:{headers:{Authorization:'Bearer admin'}}}),client={...raw,from:table=>table==='maya_sandbox_payments'?{select(){return this},in(){return Promise.resolve({data:[{order_id:record.id,status:'sandbox-paid'}]})}}:raw.from(table)};
+  let closes=0;const app=express(),router=express.Router();router.use(express.json());router.use((req,_res,next)=>{req.adminClient=client;req.adminRole='owner';next()});
+  mountAdminOrders(router,{beforeClose:async(_order,status)=>{closes++;assert.equal(status,'rejected')}});app.use('/admin',router);const base=await server(t,app);
+  const send=version=>fetch(base+'/admin/orders/'+record.id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'rejected',version,note:'Unavailable'})});
+  assert.equal((await send(2)).status,409);assert.equal(closes,0);
+  const result=await send(1);assert.equal(result.status,200);assert.equal((await result.json()).order.payment_review_required,true);assert.equal(closes,1);
 });

@@ -17,7 +17,7 @@ async function main() {
       insert into auth.users(id) values ('00000000-0000-4000-8000-000000000010'),('00000000-0000-4000-8000-000000000011');
     `);
     for(let run=0;run<2;run++) {
-      for(const file of ['schema.sql','admin-setup.sql','menu-catalog-setup.sql','customer-details-setup.sql','orders-setup.sql','maya-sandbox-setup.sql']) {
+      for(const file of ['schema.sql','admin-setup.sql','menu-catalog-setup.sql','customer-details-setup.sql','orders-setup.sql','maya-sandbox-setup.sql','maya-cancellation-setup.sql']) {
         await db.exec(fs.readFileSync(path.join(__dirname,'../supabase',file),'utf8'));
       }
       if(run===0)await db.exec("update public.profiles set name='Preserve this edited name';");
@@ -27,6 +27,7 @@ async function main() {
     await db.exec(`insert into public.menu_items(name,category,price,section,variants) values ('Test coffee','coffee',100,'Coffee','[{"label":"Hot","price":100}]');`);
     await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/orders-verification.sql'),'utf8'));
     await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/maya-sandbox-verification.sql'),'utf8'));
+    await db.exec(fs.readFileSync(path.join(__dirname,'../supabase/maya-cancellation-verification.sql'),'utf8'));
     console.log('PASS: repeated setup, profile preservation, repricing, order transitions, row isolation, contact privacy, role checks, Maya write protection, verified status immutability and unpaid kitchen guard.');
   } finally {await db.close();}
 }

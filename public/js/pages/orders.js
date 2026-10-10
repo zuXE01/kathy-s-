@@ -24,6 +24,7 @@ function renderOrder(order){
   order.items.forEach(item=>list.append(node('li',item.quantity+' × '+item.name+' · '+item.label+' — '+formatPrice(item.quantity*item.cents/100))));
   card.append(list,node('strong','Total: '+formatPrice(order.total_cents/100),'history-total'),node('p',order.payment_method==='maya-sandbox'?'Maya sandbox · '+order.payment_status+' · no real money':order.payment_method==='cod'?'Cash on delivery · unpaid':'Online payment · simulated','history-payment'));
   if(order.payment_method==='maya-sandbox'){const payment=node('a','View test payment','button');payment.href='/payment.html?order='+encodeURIComponent(order.id);card.append(payment);}
+  if(order.payment_review_required)card.append(node('p','Your test payment was received, but this order is closed. Contact the restaurant for review. No refund has been issued.','payment-review-notice'));
   const details=document.createElement('details');
   details.append(node('summary','Status history'));
   const history=node('ol',undefined,'history-events');
@@ -33,7 +34,7 @@ function renderOrder(order){
     const cancel=node('button','Cancel order','history-cancel');cancel.type='button';
     cancel.addEventListener('click',async()=>{
       if(!userId)return;
-      if(!window.confirm('Cancel this order? It will be removed from the restaurant’s pending queue.'))return;
+      if(!window.confirm(order.payment_method==='maya-sandbox'?'Cancel this order? We must first confirm that Maya has closed the unpaid test checkout. A confirmed payment requires restaurant review.':'Cancel this order? It will be removed from the restaurant’s pending queue.'))return;
       const current=revision;
       cancel.disabled=true;
       try { await orderRequest('/api/orders/'+encodeURIComponent(order.id)+'/cancel',{method:'POST'}); if(current===revision)load(page); }

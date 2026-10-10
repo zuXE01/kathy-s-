@@ -22,8 +22,8 @@ function sandboxRedirect(value) {
   return url.href;
 }
 function createMayaClient(config,fetcher=fetch) {
-  async function call(path,key,body) {
-    const response=await fetcher(API+path,{method:body?'POST':'GET',redirect:'error',
+  async function call(path,key,body,method=body?'POST':'GET') {
+    const response=await fetcher(API+path,{method,redirect:'error',
       headers:{Authorization:'Basic '+Buffer.from(key+':').toString('base64'),'Content-Type':'application/json'},
       body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(4000)});
     if(!response.ok)throw Object.assign(new Error('Maya sandbox is unavailable. Check payment status before retrying.'),{providerStatus:response.status});
@@ -42,7 +42,11 @@ function createMayaClient(config,fetcher=fetch) {
       if(!uuid.test(result.checkoutId||''))throw new Error('Maya returned an invalid checkout reference.');
       return {checkout_id:result.checkoutId,redirect_url:sandboxRedirect(result.redirectUrl)};
     },
-    retrieve:payment=>call(payment.checkout_id?'/payments/v1/payments/'+encodeURIComponent(payment.checkout_id):'/payments/v1/payment-rrns/'+encodeURIComponent(payment.id),config.secretKey)
+    retrieve:payment=>call(payment.checkout_id?'/payments/v1/payments/'+encodeURIComponent(payment.checkout_id):'/payments/v1/payment-rrns/'+encodeURIComponent(payment.id),config.secretKey),
+    cancel:payment=>{
+      if(!uuid.test(payment.checkout_id||''))throw new Error('Payment identity must be verified before cancellation.');
+      return call('/payments/v1/payments/'+encodeURIComponent(payment.checkout_id)+'/cancel',config.secretKey,undefined,'POST');
+    }
   };
 }
 function verifiedResult(result,payment) {

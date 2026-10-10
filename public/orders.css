@@ -35,6 +35,7 @@ body:has(#orderDialog[open]){overflow:hidden}
 .history-pagination button{min-width:0;width:100%;overflow-wrap:anywhere}
 .history-pagination span{min-width:0}
 .history-card summary{min-height:44px;display:list-item;padding-block:8px}
+.payment-review-notice{padding:12px;border:2px solid var(--content-error,#a12525);border-radius:10px;color:var(--content-error,#a12525);font-weight:600;line-height:1.5;overflow-wrap:anywhere}
 .admin-pagination{flex-wrap:wrap;gap:12px}
 .order-card,.history-card,.orders-controls>*{min-width:0}
 #orderDialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overscroll-behavior:contain;scroll-padding-block:20px}

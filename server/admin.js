@@ -5,7 +5,7 @@ const { mountAdminOrders } = require('./orders');
 const { roleForUser, roleSets, requireRole } = require('./roles');
 const validId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function adminRouter(url, key, createClient) {
+function adminRouter(url, key, createClient, paymentService=null) {
   const router = express.Router();
   router.use(async (req, res, next) => {
     res.set('Cache-Control', 'no-store');
@@ -29,7 +29,7 @@ function adminRouter(url, key, createClient) {
   router.use(express.json({ limit: '8kb' }));
   router.use('/orders', requireRole(...roleSets.orders));
   router.use(['/menu','/members'], requireRole(...roleSets.management));
-  mountAdminOrders(router);
+  mountAdminOrders(router,paymentService);
   router.get('/overview', requireRole(...roleSets.workspace), async (req, res) => {
     if(!roleSets.management.includes(req.adminRole)) {
       try {

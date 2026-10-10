@@ -45,6 +45,7 @@ export function loadOrders(nextPage=1,background=false) {
     el('ordersPrev').disabled=page<=1;el('ordersNext').disabled=page*20>=data.total;
     data.items.forEach(order=>{
       const card=node('article',undefined,'order-card');
+      if(order.payment_review_required)card.append(node('p','Payment review required: test payment received for a closed order. No refund has been issued.','payment-review-notice'));
       card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge order-status status-'+order.status),node('h2',order.customer?.name || 'Order '+order.id.slice(0,8)),
         node('p',new Date(order.created_at).toLocaleString()),node('p','Reference: '+order.id),
         node('p',order.items.reduce((sum,item)=>sum+item.quantity,0)+' items · '+formatPrice(order.total_cents/100)),
@@ -84,6 +85,7 @@ function openOrder(order) {
   el('orderNote').required=false;
   el('orderDialogTitle').textContent='Order · '+order.status;
   const box=el('orderDetails'),customer=order.customer;
+  if(order.payment_review_required)box.append(node('p','Test payment received for a '+order.status+' order. Ask the owner to review the payment. Closing an order does not issue a refund.','payment-review-notice'));
   box.append(node('p',order.status.toUpperCase(),'order-status status-'+order.status),node('p','Reference: '+order.id));
   if(customer)box.append(node('h3',customer.name),node('p',customer.email+' · '+customer.phone),
     node('p',[customer.address,customer.barangay,customer.city,customer.province,customer.postal].join(', ')));
@@ -118,6 +120,7 @@ export function initOrders() {
     event.preventDefault();if(busy||!selected)return;
     const status=el('orderNextStatus').value,note=el('orderNote').value.trim();
     if(status==='rejected'&&!note){el('orderUpdateMessage').textContent='Enter a reason for rejecting this order. The customer can see it in their status history.';return;}
+    if(status==='rejected'&&selected.payment_method==='maya-sandbox'&&selected.payment_status==='sandbox-paid'&&!window.confirm('Reject this paid test order? It will appear in Payment review. No refund will be issued automatically.'))return;
     busy=true;el('orderSave').disabled=true;el('orderUpdateMessage').textContent='Updating order status…';
     const current=revision;
     request('/orders/'+selected.id,{method:'PATCH',body:JSON.stringify({status,note,version:selected.version})},(error,data)=>{

@@ -6,8 +6,8 @@ const { createClient } = require('@supabase/supabase-js');
 const { adminRouter } = require('./admin');
 const { readMenu } = require('./menu-store');
 const { ordersRouter } = require('./orders');
-const { mayaConfig } = require('./maya-client.cjs');
-const { mayaRouter } = require('./maya-payments.cjs');
+const { mayaConfig,createMayaClient } = require('./maya-client.cjs');
+const { mayaRouter,createPaymentService } = require('./maya-payments.cjs');
 
 function createApp(env = process.env, createAuthClient = createClient) {
   const url = env.SUPABASE_URL;
@@ -51,10 +51,11 @@ function createApp(env = process.env, createAuthClient = createClient) {
       res.status(503).json({ error: 'Account service temporarily unavailable.' });
     }
   });
-  app.use('/api/admin', adminRouter(url, key, createAuthClient));
   const sandbox=mayaConfig(env);
-  app.use('/api/payments/maya',mayaRouter({config:sandbox,url,key,secret:env.SUPABASE_SECRET_KEY,createClient:createAuthClient}));
-  app.use('/api/orders', ordersRouter(url,key,createAuthClient,{mayaEnabled:!!sandbox}));
+  const paymentService=sandbox?createPaymentService(createAuthClient(url,env.SUPABASE_SECRET_KEY,{auth:{persistSession:false,autoRefreshToken:false}}),createMayaClient(sandbox)):null;
+  app.use('/api/admin', adminRouter(url, key, createAuthClient,paymentService));
+  app.use('/api/payments/maya',mayaRouter({config:sandbox,url,key,secret:env.SUPABASE_SECRET_KEY,createClient:createAuthClient,paymentService}));
+  app.use('/api/orders', ordersRouter(url,key,createAuthClient,{mayaEnabled:!!sandbox,paymentService}));
   app.get('/api/menu', async (_req, res) => {
     res.set('Cache-Control', 'no-store');
     try {

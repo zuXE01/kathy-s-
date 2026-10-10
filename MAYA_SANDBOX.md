@@ -1,11 +1,11 @@
 # Maya Checkout sandbox
 
-Local integration prepared; not activated on Render or Supabase. This is a demo-only payment flow, not production payment support. Existing COD and simulated-online options remain unchanged.
+This is a demo-only payment flow, not production payment support. Existing COD and simulated-online options remain unchanged. The cancellation hardening requires the additional SQL below and an application deployment; local edits do not update the live website.
 
 ## Enable later, in this order
 
 1. In the same Supabase project used by this app, run `supabase/maya-sandbox-setup.sql` in the SQL editor **after** the existing order setup. Back up your project first. This adds a payment table, restricts its writes to the server role, and blocks kitchen progression until a test payment is verified. It does not remove existing orders or change assigned roles. Do not run the verification SQL on your live project.
-2. Add `SUPABASE_SECRET_KEY` to the local `.env` using your project's server-only secret API key. Do not paste it into chat, HTML, browser code, Git, or the publishable-key setting. The server client needs it to write verified results. Keep `.env` ignored by Git.
+2. Run `supabase/maya-cancellation-setup.sql` after the sandbox setup, including for existing installations. It adds coordinated cancellation guards and a caller-RLS payment-exception view without deleting orders. Add `SUPABASE_SECRET_KEY` to the local `.env` using your project's server-only secret API key. Do not paste it into chat, HTML, browser code, Git, or the publishable-key setting. Keep `.env` ignored by Git.
 3. Set `APP_BASE_URL=http://localhost:3000` for local testing (use your actual port). For Render, use your exact HTTPS website origin, without a path. The return URL is built from this setting, never from untrusted request headers.
 4. Set `MAYA_SANDBOX_PUBLIC_DEMO=true` and `MAYA_SANDBOX_ENABLED=true`. No private Maya key is needed in this mode: the server uses Maya's published shared test pair. Until setup is complete, leave `MAYA_SANDBOX_ENABLED=false`; enabling with missing credentials intentionally stops startup with an explanatory error.
 5. Restart with `npm start`. Sign in as a customer, add items, and select **Maya Checkout — SANDBOX**. Place the demo order and use **Open Maya test checkout** on the separate payment page.
@@ -38,7 +38,8 @@ The callback checks Maya's documented sandbox source IPs and then retrieves auth
 
 - Failed, cancelled or expired sessions cannot be restarted on the same order. Cancel the pending demo order in **My orders**, then create a new demo order.
 - If session creation times out, use **Check payment status**. If Maya has a record but the redirect URL was never saved, verification can recover the result but may not recover a checkout link. Do not blindly pay again; wait for expiry or have the restaurant review/cancel the test order.
-- Cancelling an order does not void/refund a provider session. A checkout already open in another tab can still complete a sandbox payment. The cancelled order stays cancelled. This is acceptable only for test money; production needs coordinated cancellation/refund handling.
+- Cancelling an unpaid Maya order first cancels its provider session and retrieves authoritative confirmation. If Maya is unreachable or the result is uncertain, the order stays open. A durable cancellation claim prevents a simultaneous first checkout from starting. Database guards also block direct order closure without confirmation.
+- Verified paid orders cannot be cancelled. Staff may reject a paid order with a warning; closed paid orders appear in the staff **Payment review** filter and show customer-facing review notices. A late verified success remains visible rather than being discarded. No refund is issued automatically; production still requires void/refund handling and reconciliation.
 - Public sandbox keys are shared by unrelated developers. Use only sample order/contact details throughout this demo. This is not a private merchant environment or a production trust boundary.
 - No real deliveries, refunds, reconciliation scheduler or production payment processing have been added. Keep sandbox orders away from real restaurant fulfilment.
 
@@ -46,6 +47,6 @@ The callback checks Maya's documented sandbox source IPs and then retrieves auth
 
 Run `npm test` and `npm run test:database` after `npm install` (including development dependencies). The database command uses isolated PGlite and never connects to Supabase. It checks repeatable setup, role isolation, blocked forged payments, immutable verified status, and blocked unverified kitchen transitions alongside existing order safeguards.
 
-The sandbox API was contacted with synthetic data on 2026-10-09: session creation and lookup by both ID and request reference responded. Maya returned `payments-web-sandbox.maya.ph` and `status: PENDING_TOKEN`; these are handled along with the older sandbox domain. No test payment was completed. Full customer checkout, live Supabase/Render permissions, webhook delivery and real-phone layout still need verification after you configure the secret and database.
+The sandbox API was contacted with synthetic data on 2026-10-09: session creation and lookup by both ID and request reference responded. A further synthetic create/cancel/retrieve check on 2026-10-10 confirmed `PAYMENT_CANCELLED`. No real payment or customer order was used. Full customer checkout, live cancellation SQL/Render rollout, webhook delivery and real-phone layout still need verification.
 
 References: [Create Checkout](https://developers.maya.ph/reference/createv1checkout), [retrieve by ID](https://developers.maya.ph/reference/getpaymentviapaymentid-1), [payment states](https://developers.maya.ph/reference/payment-statuses).
