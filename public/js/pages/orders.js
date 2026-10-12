@@ -22,7 +22,8 @@ function renderOrder(order){
   card.append(heading,node('p',explanations[order.status]||'Check the status history for updates.'),node('p','Reference: '+order.id,'history-reference'));
   const list=node('ul',undefined,'history-items');
   order.items.forEach(item=>list.append(node('li',item.quantity+' × '+item.name+' · '+item.label+' — '+formatPrice(item.quantity*item.cents/100))));
-  card.append(list,node('strong','Total: '+formatPrice(order.total_cents/100),'history-total'),node('p',order.payment_method==='maya-sandbox'?'Maya sandbox · '+order.payment_status+' · no real money':order.payment_method==='cod'?'Cash on delivery · unpaid':'Online payment · simulated','history-payment'));
+  const paymentLabels={'not-started':'not started',creating:'confirming checkout',pending:'awaiting payment','sandbox-paid':'test payment verified',failed:'test payment failed',cancelled:'test payment cancelled',expired:'test checkout expired',review:'payment needs review'};
+  card.append(list,node('strong','Total: '+formatPrice(order.total_cents/100),'history-total'),node('p',order.payment_method==='maya-sandbox'?'Maya sandbox · '+(paymentLabels[order.payment_status]||'check payment status')+' · no real money':order.payment_method==='cod'?'Cash on delivery · unpaid':'Online payment · simulated','history-payment'));
   if(order.payment_method==='maya-sandbox'){const payment=node('a','View test payment','button');payment.href='/payment.html?order='+encodeURIComponent(order.id);card.append(payment);}
   if(order.payment_review_required)card.append(node('p','Your test payment was received, but this order is closed. Contact the restaurant for review. No refund has been issued.','payment-review-notice'));
   const details=document.createElement('details');

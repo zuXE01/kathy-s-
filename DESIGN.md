@@ -41,3 +41,19 @@ The visible staff queue checks for updates every 15 seconds without overlapping 
 - Staff actions use verbs such as **Accept order**, **Start preparing**, and **Mark ready**. Status notes are customer-visible in order history.
 
 `public/color-tokens.css` is the shared semantic layer loaded after each page stylesheet. Primitive palette values are defined first, then mapped to surface, content, border, action, focus, disabled-state, and typography roles. Page-specific styles may keep layout and component details, but repeated color and type intent should use these semantic roles.
+
+## Payment hardening — 2026-10-12
+
+Payment checks preserve visible controls and saved status during requests. Native buttons are disabled temporarily; the hosted-checkout link is guarded with an announced disabled state. Focus returns only when it has not moved elsewhere. Confirmed payment promotes Track my order, distinct from restaurant acceptance. Visible pending/creating/review pages check at most eight times, 15 seconds apart; hidden pages pause and sign-out/page exit stop checks. Rate limiting ends automatic checks. No new payment is started automatically.
+
+Missing checkout links show explicit saved-order management/cancellation guidance, not a guessed URL or blind retry. This does not restore a lost provider link or introduce session-only cancellation. Colors, typography and single-column layout remain unchanged. Browser inspection of the updated local fixture timed out; source and automated behavior verification are not real-device approval. No deployment or live database changes.
+
+## Payment language — 2026-10-12
+
+Impeccable clarify preserves payment behavior and sandbox disclosures. Maya selection changes the checkout action to **Save order & continue to test payment**, not Pay now. **Resume Maya test checkout** resumes an existing checkout; **Try payment again** requests a safe retry for the same saved order. Payment cancellation is not restaurant-order cancellation. **Test payment verified** is not real money received or restaurant acceptance. Customer history uses readable payment labels rather than internal status identifiers. The payment page keeps the no-real-money warning visible and puts published test credential/privacy guidance in a native disclosure. No live deployment.
+
+## Direct Maya handoff — 2026-10-12
+
+Implements the approved shape brief in the existing customer visual system (Operate). A fresh Maya checkout follows Checkout → Save order → Maya → Payment confirmation → Track my order. The action is **Save order & continue to Maya**. Saved items/total remain reviewable before submission; after saving, the form is hidden and a focused, announced **Order saved. Opening Maya test checkout…** state replaces it. There is no intermediate continue-button tap.
+
+Only a pending server response with an allowlisted HTTPS sandbox destination can redirect externally. Missing/invalid destinations, already-paid states and errors fall back to the owned payment page. Reload and duplicate-order recovery never start payment automatically. The handoff issues at most one start request per saved order per page, never retries an uncertain POST, and suppresses late navigation after sign-out or page exit. The request recovery identifier stays until navigation; only the random identifier/owner are retained, never customer or payment details. Existing server idempotency and payment safeguards remain authoritative. COD/simulated flows are unchanged. This is local work, not deployment or real-money activation.

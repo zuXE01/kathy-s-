@@ -182,6 +182,13 @@ Do not increase this score merely because tasks are marked complete. Reassess th
 
 ## Completion record
 
+### 2026-10-12 — Direct Maya handoff (approved shape brief)
+
+- Fresh saved Maya orders now request the existing start endpoint once and proceed directly to an approved sandbox URL. Pending handoff is announced and focused; reload/conflict recovery goes to payment confirmation without automatic start.
+- Missing, malformed, unapproved or non-pending results and uncertain network responses use the existing payment recovery page. No blind retry, return-query success assumption, new database policy or provider credential change.
+- Updated checkout wording/label; COD and simulated confirmation behavior stays unchanged. Added `public/js/maya-handoff.js` and regression coverage for concurrent triggers, fallback, recovered/closed orders, approved hosts and account changes.
+- Verification: 124 tests pass, including existing saved-order recovery and payment protections. Browser preview of local checkout timed out; phone/desktop visual and real merchant end-to-end checks remain unverified. Local only, not committed/pushed/deployed. This does not complete the broader UX-01/UX-03 backlog or certify production payments.
+
 ### 2026-10-09 — Kitchen/staff queue implementation
 
 - Implemented the approved shape brief in `public/js/admin/orders.js`, `public/js/admin/main.js`, `public/admin.html`, `public/orders.css`, and `server/orders.js`.

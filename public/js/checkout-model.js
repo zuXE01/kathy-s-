@@ -1,4 +1,7 @@
 // Use current catalog prices, never the saved cart's price or product name.
+export function checkoutActionLabel(payment) {
+  return payment==='maya-sandbox'?'Save order & continue to Maya':'Place demo order';
+}
 export function resolveCheckout(saved, catalog) {
   const lines = [], seen = new Set();
   for (const entry of saved) {

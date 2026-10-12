@@ -1,5 +1,5 @@
 import { readCart, forgetCart } from '../cart-storage.js';
-import { resolveCheckout, customerDetails } from '../checkout-model.js';
+import { resolveCheckout, customerDetails, checkoutActionLabel } from '../checkout-model.js';
 import { formatPrice } from '../menu-card.js';
 import { orderRequest } from '../order-api.js';
 import { getAuthClient } from '../auth-client.js';
@@ -8,14 +8,20 @@ import { loadContact } from '../account-client.js';
 import { prefillContact } from '../account-model.js';
 import { recoverCheckoutConflict } from '../checkout-recovery.js';
 import { createCheckoutLeaveGuard } from '../checkout-leave-guard.js';
+import { createMayaHandoff } from '../maya-handoff.js';
 const el=id=>document.getElementById(id), requestKey='kathys-checkout-request';
 let order,saved,submitting=false,requestId,userId,active=true;
+const handoffToMaya=createMayaHandoff(orderRequest,destination=>{
+  sessionStorage.removeItem(requestKey);
+  location.assign(destination);
+},()=>active);
 const leaveGuard=createCheckoutLeaveGuard();
 el('checkoutForm').addEventListener('input',()=>leaveGuard.changed());
-el('checkoutForm').addEventListener('change',()=>leaveGuard.changed());
+el('checkoutForm').addEventListener('change',()=>{leaveGuard.changed();if(!submitting)el('placeOrder').textContent=checkoutActionLabel(el('checkoutForm').elements.payment?.value);});
 window.addEventListener('beforeunload',event=>leaveGuard.beforeUnload(event));
 document.addEventListener('click',event=>leaveGuard.followLink(event,message=>window.confirm(message)));
 window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
+window.addEventListener('pagehide',()=>{active=false;});
 async function currentOrder() {
   const response=await fetch('/api/menu',{cache:'no-store'});
   if(!response.ok)throw new Error('Unable to verify menu prices. Please try again.');
@@ -31,11 +37,14 @@ function drawOrder() {
   });
   el('orderTotal').textContent='Total: '+formatPrice(order.total/100);
 }
-function confirmation(value) {
+function confirmation(value,startPayment=false) {
   leaveGuard.reset();
   if(value.payment_method==='maya-sandbox') {
-    forgetCart();sessionStorage.removeItem(requestKey);
-    location.assign('/payment.html?order='+encodeURIComponent(value.id));return;
+    forgetCart();
+    el('checkoutContent').hidden=true;
+    el('checkoutStatus').textContent=startPayment?'Order saved. Opening Maya test checkout…':'Order saved. Checking your existing test payment…';
+    el('checkoutStatus').focus();
+    return handoffToMaya(value,{start:startPayment});
   }
   const customer=value.customer;
   el('reference').textContent='Order reference: '+value.id;
@@ -69,7 +78,7 @@ async function load() {
       requestId=previous.id;
       const result=await orderRequest('/api/orders/request/'+encodeURIComponent(requestId));
       if(!active)return;
-      if(result.order){confirmation(result.order);return;}
+      if(result.order){await confirmation(result.order);return;}
     } else sessionStorage.removeItem(requestKey);
     saved=readCart();
     if(!saved.length){el('checkoutStatus').textContent='Your cart is empty. Return to the menu to add items.';return;}
@@ -92,7 +101,7 @@ async function load() {
       const response=await fetch('/api/payments/maya/config',{cache:'no-store'});
       if(response.ok&&active)el('mayaSandboxOption').hidden=!(await response.json()).enabled;
     }catch{} // COD and simulated payment remain available when sandbox is offline.
-    if(active)el('checkoutContent').hidden=false;
+    if(active){el('checkoutContent').hidden=false;el('placeOrder').textContent=checkoutActionLabel(el('checkoutForm').elements.payment?.value);}
   } catch(error){el('checkoutStatus').textContent=error.message+' Reload to retry, or return to the menu.';}
   finally {finishLoading();loading.hidden=true;}
 }
@@ -108,7 +117,7 @@ el('checkoutForm').addEventListener('submit',async function submitOrder(event) {
     sessionStorage.setItem(requestKey,JSON.stringify({id:requestId,userId}));
     const items=order.lines.map(line=>({product_id:JSON.parse(line.id)[0],label:line.label,quantity:line.quantity}));
     const result=await orderRequest('/api/orders',{method:'POST',body:JSON.stringify({request_id:requestId,customer,items,total_cents:order.total,payment_method:customer.payment})});
-    if(active)confirmation(result.order);
+    if(active)await confirmation(result.order,true);
   } catch(error) {
     if(!active)return;
     el('checkoutError').textContent=error.message;
@@ -117,7 +126,7 @@ el('checkoutForm').addEventListener('submit',async function submitOrder(event) {
         const recovery=await recoverCheckoutConflict(error,requestId,orderRequest);
         if(!active)return;
         if(recovery.kind==='saved'){
-          confirmation(recovery.order);
+          await confirmation(recovery.order);
           el('customerResult').textContent='Your previously submitted order is saved. Changes made during this retry were not applied.';
         } else {
           const refreshed=await currentOrder();
@@ -127,6 +136,6 @@ el('checkoutForm').addEventListener('submit',async function submitOrder(event) {
         }
       } catch(recoveryError){if(active)el('checkoutError').textContent='Unable to reconcile this checkout: '+recoveryError.message+' Keep this checkout and retry or reload.';}
     }
-  } finally {submitting=false;el('placeOrder').disabled=false;el('placeOrder').textContent='Place demo order';el('placeOrder').setAttribute('aria-busy','false');}
+  } finally {submitting=false;el('placeOrder').disabled=false;el('placeOrder').textContent=checkoutActionLabel(el('checkoutForm').elements.payment?.value);el('placeOrder').setAttribute('aria-busy','false');}
 });
 load();

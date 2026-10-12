@@ -5,6 +5,11 @@ const context={};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/checkout-model.js'),'utf8').replace(/export /g,''),context);
 const catalog=[{id:'a',name:'Coffee',price:100,variants:[{label:'Cold',price:135}],available:true}];
 const saved=[{id:JSON.stringify(['a','Cold']),quantity:2,cents:1,name:'Forged name'}];
+
+test('checkout action copy names the Maya handoff without implying payment is completed',()=>{
+  assert.equal(context.checkoutActionLabel('maya-sandbox'),'Save order & continue to Maya');
+  for(const method of ['cod','demo-online',undefined])assert.equal(context.checkoutActionLabel(method),'Place demo order');
+});
 test('checkout resolves current prices and names, rejecting missing options and invalid quantities',()=>{
   const result=context.resolveCheckout(saved,catalog);
   assert.equal(result.total,27000); assert.equal(result.lines[0].name,'Coffee');

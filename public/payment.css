@@ -1,2 +1,7 @@
 .payment-page{max-width:660px}.payment-actions{display:grid;gap:12px}.payment-actions button,.payment-actions a{min-height:48px;white-space:normal}.payment-page #paymentError{color:var(--content-error,#a12525)}.payment-page #paymentReference{overflow-wrap:anywhere}.payment-page header{flex-wrap:wrap}
 #paymentRetry{min-height:48px;width:100%;margin-top:12px;white-space:normal}
+#paymentTrack{margin-block-start:12px;min-height:48px;white-space:normal}
+.payment-actions [aria-disabled="true"]{opacity:.6;cursor:wait}
+.payment-page #paymentStatus{font-size:16px;color:var(--content-primary);overflow-wrap:anywhere}
+.payment-page #paymentRecovery{font-size:16px;overflow-wrap:anywhere}
+.payment-page summary{min-height:44px;display:list-item;padding-block:12px;cursor:pointer;overflow-wrap:anywhere}

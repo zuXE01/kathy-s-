@@ -65,6 +65,20 @@ test('sandbox reliability database and service preserve attempts, recover paymen
  await t.test('cancellation before first start prevents creating a session',async()=>{
    const order=await f.order(),before=f.creates;await service.beforeClose(order,'cancelled');assert.equal((await service.start(order)).status,'cancelled');assert.equal(f.creates,before);
  });
+ await t.test('saved paid aggregate survives failure of a newer attempt lookup',async()=>{
+   const order=await f.order(),old=await service.start(order);f.provider.get(old.current_attempt_id).status='PAYMENT_FAILED';await service.verify(old);
+   const fresh=await service.retry(order,old.current_attempt_id);
+   // Model an older verified success arriving before the newer session is cleaned up.
+   await f.client.rpc('hub_maya_record',{p_attempt:old.current_attempt_id,p_values:{status:'sandbox-paid',provider_status:'PAYMENT_SUCCESS'},p_event:'verified'});
+   f.provider.delete(fresh.current_attempt_id);
+   assert.equal((await service.verify(fresh)).status,'sandbox-paid');
+   await assert.rejects(service.retry(order,fresh.current_attempt_id),/already/);
+ });
+ await t.test('a concurrent verified success wins over a failing customer lookup',async()=>{
+   const order=await f.order(),row=await service.start(order),retrieve=f.maya.retrieve;
+   f.maya.retrieve=async()=>{await f.client.rpc('hub_maya_record',{p_attempt:row.current_attempt_id,p_values:{status:'sandbox-paid',provider_status:'PAYMENT_SUCCESS'},p_event:'verified'});throw Error('provider offline');};
+   try {assert.equal((await service.verify(row)).status,'sandbox-paid');}finally{f.maya.retrieve=retrieve;}
+ });
  await t.test('a provider-confirmed failed checkout can close without an open session',async()=>{
    const order=await f.order(),row=await service.start(order);f.provider.get(row.current_attempt_id).status='PAYMENT_FAILED';
    await service.beforeClose(order,'cancelled');assert.equal((await service.find(order.id)).status,'cancelled');

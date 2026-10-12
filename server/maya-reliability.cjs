@@ -31,9 +31,18 @@ function createReliablePaymentService(db,maya) {
     return attempt(row.id);
   }
   async function verify(snapshot){
+    // A confirmed aggregate is authoritative. Cleanup of another attempt belongs
+    // to the durable worker, not the customer's success screen.
+    const saved=await find(snapshot.order_id);
+    if(saved?.status==='sandbox-paid')return saved;
     const current=await attempt(snapshot.current_attempt_id||snapshot.id);
     if(!current)throw new Error('Payment attempt is unavailable.');
-    await verifyAttempt(current);return find(snapshot.order_id);
+    try {await verifyAttempt(current);}catch(error){
+      const latest=await find(snapshot.order_id);
+      if(latest?.status==='sandbox-paid')return latest;
+      throw error;
+    }
+    return find(snapshot.order_id);
   }
   async function create(order,expected=null,cancel=false){
     if(!cancel)checkoutItems(order,order.total_cents); // Reject local invalid data before claiming/contacting Maya.

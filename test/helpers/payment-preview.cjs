@@ -2,6 +2,8 @@
 const express=require('express'),path=require('node:path'),app=express();
 const session={access_token:'synthetic',user:{id:'demo',app_metadata:{hub_role:'owner'}}};
 app.get('/api/config',(_req,res)=>res.json({url:'https://example.supabase.co',publishableKey:'demo'}));
+app.get('/api/me',(_req,res)=>res.json({id:'demo'}));
+app.post('/api/payments/maya/:id/check',(req,res)=>res.json({payment:{status:req.params.id.endsWith('2')?'sandbox-paid':'pending'},orderStatus:'pending'}));
 app.get('/vendor/supabase.js',(_req,res)=>res.type('js').send(`window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:${JSON.stringify(session)}}}),onAuthStateChange:fn=>setTimeout(()=>fn('SIGNED_IN',${JSON.stringify(session)}),0),signOut:async()=>({})}})};`));
 app.get('/api/admin/overview',(_req,res)=>res.json({email:'synthetic@example.test',role:'owner',members:2,menu:120,available:120}));
 app.get('/api/admin/payments',(_req,res)=>res.json({page:1,total:2,items:[
