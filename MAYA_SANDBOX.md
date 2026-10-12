@@ -1,5 +1,7 @@
 # Maya Checkout sandbox
 
+See [PAYMENT_RELIABILITY.md](PAYMENT_RELIABILITY.md) for the opt-in attempt ledger, durable webhook queue, recovery worker, investigation screen and coordinated activation instructions. The limitations below describe the legacy writer unless reliability mode is enabled.
+
 This is a demo-only payment flow, not production payment support. Existing COD and simulated-online options remain unchanged. The cancellation hardening requires the additional SQL below and an application deployment; local edits do not update the live website.
 
 ## Enable later, in this order

@@ -41,7 +41,7 @@ function createMayaClient(config,fetcher=fetch) {
     const response=await fetcher(API+path,{method,redirect:'error',
       headers:{Authorization:'Basic '+Buffer.from(key+':').toString('base64'),'Content-Type':'application/json'},
       body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(4000)});
-    if(!response.ok)throw Object.assign(new Error('Maya sandbox is unavailable. Check payment status before retrying.'),{providerStatus:response.status});
+    if(!response.ok)throw Object.assign(new Error('Maya sandbox is unavailable. Check payment status before retrying.'),{providerStatus:response.status,creationRejected:path==='/checkout/v1/checkouts'&&[400,422].includes(response.status)});
     return response.json();
   }
   return {
@@ -79,4 +79,4 @@ function verifiedResult(result,payment) {
   const status=providerStatus==='PAYMENT_SUCCESS'&&value.isPaid!==true?'review':statuses[providerStatus]||'review';
   return {checkout_id:value.id,status,provider_status:String(providerStatus||'UNKNOWN').slice(0,80)};
 }
-module.exports={mayaConfig,createMayaClient,sandboxRedirect,verifiedResult};
+module.exports={mayaConfig,createMayaClient,sandboxRedirect,verifiedResult,checkoutItems};

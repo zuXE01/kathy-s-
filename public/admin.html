@@ -8,6 +8,7 @@
     <a class="admin-brand" href="/"><span class="brand-monogram">K.</span><span><span class="word">Kathy's Hub</span><small>THE ADMIN WORKSPACE</small></span></a>
     <p class="nav-caption">KEEP THE HUB RUNNING</p>
     <nav aria-label="Admin sections"><button data-section="overview" class="selected" aria-current="page">Overview <span>01</span></button><button data-section="members">Members <span>02</span></button><button data-section="menu">Menu manager <span>03</span></button><button data-section="orders">Orders <span>04</span></button></nav>
+    <nav aria-label="Payment investigations"><button data-section="payments" hidden>Payments</button></nav>
     <div class="admin-note"><span class="eyebrow">A LITTLE CARE, EVERY DAY</span><p>Good food.<br>Happy people.<br>Your little Hub.</p></div>
     <a href="/">↗ View member site</a><button id="adminLogout" class="admin-logout">Sign out</button>
   </aside>
@@ -26,6 +27,12 @@
         <div class="orders-controls"><label>Order status<select id="ordersFilter"><option value="active">Active queue · oldest first</option><option value="payment-review">Payment review · closed paid orders</option><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="preparing">Preparing</option><option value="ready">Ready</option><option value="completed">Completed history</option><option value="rejected">Rejected history</option><option value="cancelled">Cancelled history</option><option value="all">All orders · newest first</option></select></label><button id="ordersRefresh" class="admin-button">Refresh orders</button></div>
         <p id="ordersMessage" role="status"></p><div id="orderRows" class="order-list"></div>
         <div class="admin-pagination"><button id="ordersPrev" class="admin-button secondary">Previous</button><button id="ordersNext" class="admin-button secondary">Next</button></div>
+      </section>
+      <section data-panel="payments" hidden>
+        <div class="admin-heading"><div><h1>Payment investigations</h1><p>Review sandbox payments, recovery failures and closed paid orders. This screen cannot manually mark an order paid or issue refunds.</p></div><button id="paymentsRefresh" class="admin-button secondary">Refresh payments</button></div>
+        <label>Payment view<select id="paymentsFilter"><option value="attention">Needs attention · oldest first</option><option value="all">All payment history · newest first</option></select></label>
+        <p id="paymentsMessage" role="status" aria-live="polite"></p><div id="paymentRows" class="order-list"></div>
+        <div class="admin-pagination"><button id="paymentsPrev" class="admin-button secondary">Previous payments</button><button id="paymentsNext" class="admin-button secondary">Next payments</button></div>
       </section>
       <section data-panel="members" hidden>
         <div class="admin-heading"><div><p class="eyebrow">THE PEOPLE BEHIND THE VISITS</p><h1>Hub members</h1><p>Registered member profiles. Personal birthdays and gender are not shown here.</p></div></div>

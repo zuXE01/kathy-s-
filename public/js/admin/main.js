@@ -3,6 +3,7 @@ import { request, cancelRequests } from './request.js';
 import { initMembers, loadMembers } from './members.js';
 import { initMenuManager, loadMenu, clearMenu } from './menu.js';
 import { initOrders, loadOrders, clearOrders, setOrdersVisible } from './orders.js';
+import {initPayments,loadPayments,clearPayments} from './payments.js';
 const el = id => document.getElementById(id);
 let managementAccess=false, workspaceRole=null;
 window.addEventListener('pageshow',event=>{if(event.persisted)window.location.reload();});
@@ -10,6 +11,7 @@ function deny(message) {
   managementAccess=false;
   workspaceRole=null;
   clearOrders();
+  clearPayments();
   cancelRequests(); el('adminShell').hidden = true; el('adminGate').hidden = false;
   el('gateMessage').textContent = message; el('memberRows').replaceChildren(); clearMenu();
   document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
@@ -25,6 +27,7 @@ function overview() {
     if(changedRole)el('ordersFilter').value='active';
     workspaceRole=data.role;
     managementAccess=management;
+    document.querySelector('[data-section="payments"]').hidden=!['owner','platform_admin','staff'].includes(data.role);
     document.querySelectorAll('[data-section="members"],[data-section="menu"],[data-open-menu]').forEach(control=>{control.hidden=!management;});
     document.querySelector('.admin-feature').hidden=!management;
     const metrics=management
@@ -41,6 +44,7 @@ function overview() {
   });
 }
 function navigate(section) {
+  if(section==='payments'&&!['owner','platform_admin','staff'].includes(workspaceRole))return;
   if(['members','menu'].includes(section)&&!managementAccess)return;
   setOrdersVisible(section==='orders');
   document.querySelectorAll('[data-panel]').forEach(panel => { panel.hidden = panel.dataset.panel !== section; });
@@ -54,8 +58,9 @@ function navigate(section) {
   if (section === 'members') loadMembers();
   if (section === 'menu') loadMenu();
   if (section === 'orders') loadOrders();
+  if (section === 'payments') loadPayments();
 }
-initMembers(); initMenuManager(); initOrders();
+initMembers(); initMenuManager(); initOrders(); initPayments();
 document.querySelectorAll('[data-section]').forEach(button => button.addEventListener('click', () => navigate(button.dataset.section)));
 document.querySelector('[data-open-menu]').addEventListener('click', () => navigate('menu'));
 el('refreshOverview').addEventListener('click', overview);

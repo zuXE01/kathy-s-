@@ -8,6 +8,7 @@ const { readMenu } = require('./menu-store');
 const { ordersRouter } = require('./orders');
 const { mayaConfig,createMayaClient } = require('./maya-client.cjs');
 const { mayaRouter,createPaymentService } = require('./maya-payments.cjs');
+const {createReliablePaymentService,startPaymentWorker}=require('./maya-reliability.cjs');
 
 function createApp(env = process.env, createAuthClient = createClient) {
   const url = env.SUPABASE_URL;
@@ -33,7 +34,9 @@ function createApp(env = process.env, createAuthClient = createClient) {
     strictTransportSecurity: env.NODE_ENV === 'production'
   }));
   app.get('/health', (_req, res) => res.json({ ok: true }));
-  const apiLimiter = rateLimit({ windowMs: 60_000, max: 60, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many requests. Please wait a moment before trying again.' } });
+  const webhookPath='/api/payments/maya/webhook';
+  app.use(webhookPath,rateLimit({windowMs:60000,max:180,standardHeaders:true,legacyHeaders:false,message:{error:'Webhook rate limit exceeded. Retry later.'}}));
+  const apiLimiter = rateLimit({ windowMs: 60_000, max: 60, skip:req=>req.originalUrl.split('?')[0]===webhookPath, standardHeaders: true, legacyHeaders: false, message: { error: 'Too many requests. Please wait a moment before trying again.' } });
   app.use('/api', apiLimiter);
   app.get('/api/config', (_req, res) => {
     res.set('Cache-Control', 'no-store').json({ url, publishableKey: key });
@@ -52,7 +55,9 @@ function createApp(env = process.env, createAuthClient = createClient) {
     }
   });
   const sandbox=mayaConfig(env);
-  const paymentService=sandbox?createPaymentService(createAuthClient(url,env.SUPABASE_SECRET_KEY,{auth:{persistSession:false,autoRefreshToken:false}}),createMayaClient(sandbox)):null;
+  const reliable=env.MAYA_RELIABILITY_ENABLED==='true';
+  const paymentService=sandbox?(reliable?createReliablePaymentService:createPaymentService)(createAuthClient(url,env.SUPABASE_SECRET_KEY,{auth:{persistSession:false,autoRefreshToken:false}}),createMayaClient(sandbox)):null;
+  app.locals.startPaymentWorker=()=>paymentService&&reliable?startPaymentWorker(paymentService,{onError:code=>console.error(code)}):()=>{};
   app.use('/api/admin', adminRouter(url, key, createAuthClient,paymentService));
   app.use('/api/payments/maya',mayaRouter({config:sandbox,url,key,secret:env.SUPABASE_SECRET_KEY,createClient:createAuthClient,paymentService}));
   app.use('/api/orders', ordersRouter(url,key,createAuthClient,{mayaEnabled:!!sandbox,paymentService}));

@@ -3,7 +3,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 function page(){
   const nodes={},requests=[],assigned=[];let auth;
   const document={getElementById:id=>nodes[id]||(nodes[id]={hidden:true,textContent:'',events:{},addEventListener(event,fn){this.events[event]=fn},removeAttribute(name){delete this[name]}})};
-  const context={document,URL,URLSearchParams,location:{search:'?order=10000000-0000-4000-8000-000000000001&result=success',assign:url=>assigned.push(url)},window:{addEventListener(){}},
+  const context={document,URL,URLSearchParams,location:{search:'?order=10000000-0000-4000-8000-000000000001&result=success',assign:url=>assigned.push(url)},window:{addEventListener(){},confirm:()=>true},
     signInPath:value=>'/signin.html?next='+encodeURIComponent(value),getAuthClient:async()=>({auth:{onAuthStateChange(fn){auth=fn}}}),
     orderRequest:(url,options)=>url==='/api/me'?Promise.resolve({id:'customer'}):new Promise((resolve,reject)=>requests.push({url,options,resolve,reject}))};
   vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/pages/payment.js'),'utf8').replace(/^import .*;\r?\n/gm,''),context);
@@ -34,4 +34,10 @@ test('payment sign-in return accepts only exact local UUID links',()=>{
   const context={URLSearchParams};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/routes.js'),'utf8').replace(/export /g,''),context);
   const valid='/payment.html?order=10000000-0000-4000-8000-000000000001';assert.equal(context.safeDestination(valid),valid);
   for(const value of ['https://evil.example'+valid,valid+'&next=https://evil.example','/payment.html?order=bad',valid+'#fragment'])assert.equal(context.safeDestination(value),'/#menu');
+});
+test('safe payment retries retain the order and send the current attempt exactly once',async()=>{
+  const f=page();await tick();const attemptId='20000000-0000-4000-8000-000000000001';
+  f.requests[0].resolve({payment:{status:'expired',attemptId,providerStatus:'PAYMENT_EXPIRED'},orderStatus:'pending'});await tick();assert.equal(f.nodes.paymentRetry.hidden,false);
+  f.nodes.paymentRetry.events.click();f.nodes.paymentRetry.events.click();assert.equal(f.requests.length,2);assert.match(f.requests[1].url,/10000000-0000-4000-8000-000000000001\/retry$/);assert.equal(JSON.parse(f.requests[1].options.body).attemptId,attemptId);
+  f.auth('SIGNED_OUT',null);f.requests[1].resolve({payment:{status:'pending'},redirectUrl:'https://payments-web-sandbox.maya.ph/test'});await tick();assert.equal(f.assigned.length,0);assert.equal(f.nodes.paymentRetry.hidden,true);
 });

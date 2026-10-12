@@ -1,0 +1,34 @@
+name: Sandbox payment recovery
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  contents: read
+concurrency:
+  group: sandbox-payment-recovery
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    # Explicit repository variable prevents activation before database rollout.
+    if: vars.MAYA_RECOVERY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --omit=dev --ignore-scripts
+      - name: Recover unresolved sandbox payments
+        run: npm run payments:reconcile
+        env:
+          MAYA_SANDBOX_ENABLED: 'true'
+          MAYA_RELIABILITY_ENABLED: 'true'
+          MAYA_SANDBOX_PUBLIC_DEMO: ${{ vars.MAYA_SANDBOX_PUBLIC_DEMO || 'true' }}
+          SUPABASE_URL: ${{ secrets.KATHYS_SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.KATHYS_SUPABASE_SECRET_KEY }}
+          APP_BASE_URL: ${{ vars.KATHYS_APP_BASE_URL }}
+          MAYA_SANDBOX_PUBLIC_KEY: ${{ secrets.KATHYS_MAYA_SANDBOX_PUBLIC_KEY }}
+          MAYA_SANDBOX_SECRET_KEY: ${{ secrets.KATHYS_MAYA_SANDBOX_SECRET_KEY }}

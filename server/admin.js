@@ -30,6 +30,26 @@ function adminRouter(url, key, createClient, paymentService=null) {
   router.use('/orders', requireRole(...roleSets.orders));
   router.use(['/menu','/members'], requireRole(...roleSets.management));
   mountAdminOrders(router,paymentService);
+  router.use('/payments',requireRole('owner','platform_admin','staff'));
+  router.get('/payments',async(req,res)=>{
+    const page=Number(req.query.page||1);
+    const filter=req.query.filter||'attention';
+    if(!['attention','all'].includes(filter))return res.status(400).json({error:'Invalid payment filter.'});
+    if(!Number.isSafeInteger(page)||page<1||page>10000)return res.status(400).json({error:'Invalid page.'});
+    if(!paymentService?.investigate)return res.status(503).json({error:'Payment investigation requires reliability setup.'});
+    try {res.json(await paymentService.investigate(page,filter));}catch{res.status(503).json({error:'Unable to load payments. Retry after checking database setup.'});}
+  });
+  router.get('/payments/:id/history',async(req,res)=>{
+    if(!validId.test(req.params.id))return res.status(400).json({error:'Invalid order reference.'});
+    if(!paymentService?.audit)return res.status(503).json({error:'Payment audit requires reliability setup.'});
+    try {res.json({items:await paymentService.audit(req.params.id)});}catch{res.status(503).json({error:'Unable to load payment history.'});}
+  });
+  router.post('/payments/:id/recheck',async(req,res)=>{
+    if(!validId.test(req.params.id))return res.status(400).json({error:'Invalid order reference.'});
+    if(!paymentService?.investigate)return res.status(503).json({error:'Payment investigation requires reliability setup.'});
+    try {const row=await paymentService.find(req.params.id);if(!row)return res.status(404).json({error:'Payment not found.'});if(paymentService.recheck)await paymentService.recheck(req.params.id);else await paymentService.verify(row);res.json({ok:true});}
+    catch{res.status(503).json({error:'Maya verification is unavailable. No payment was manually marked paid. Retry later.'});}
+  });
   router.get('/overview', requireRole(...roleSets.workspace), async (req, res) => {
     if(!roleSets.management.includes(req.adminRole)) {
       try {

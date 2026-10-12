@@ -2,7 +2,7 @@ const express=require('express');
 const {randomUUID}=require('node:crypto');
 const {createMayaClient,verifiedResult}=require('./maya-client.cjs');
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const publicPayment=row=>({status:row?.status||'not-started',providerStatus:row?.provider_status||null,updatedAt:row?.updated_at||null});
+const publicPayment=row=>({status:row?.status||'not-started',providerStatus:row?.provider_status||null,updatedAt:row?.updated_at||null,attemptId:row?.current_attempt_id||null,lastVerifiedAt:row?.last_verified_at||null});
 function createPaymentService(db,maya) {
   const conflict=message=>Object.assign(new Error(message),{status:409,code:'PAYMENT_REVIEW_REQUIRED'});
   async function find(orderId){const {data,error}=await db.from('maya_sandbox_payments').select('*').eq('order_id',orderId).maybeSingle();if(error)throw new Error('Sandbox payment storage is unavailable. Ask the owner to finish setup.');return data;}
@@ -69,6 +69,7 @@ function mayaRouter({config,url,key,secret,createClient,maya,paymentService}) {
     const reference=req.body?.requestReferenceNumber;
     if(!uuid.test(reference||''))return res.status(400).json({error:'Invalid payment reference.'});
     try {
+      if(service.enqueue){await service.enqueue(reference);return res.json({received:true});}
       const {data,error}=await db.from('maya_sandbox_payments').select('*').eq('id',reference).maybeSingle();
       if(error)throw error;
       if(data)await service.verify(data); // Webhook body is a hint; retrieve authoritative data.
@@ -107,6 +108,15 @@ function mayaRouter({config,url,key,secret,createClient,maya,paymentService}) {
       if(row)row=await service.verify(row);
       res.json({payment:publicPayment(row),orderStatus:order.status,redirectUrl:row?.status==='pending'&&order.status==='pending'?row.redirect_url:null});
     }catch(error){res.status(503).json({error:error.message});}
+  });
+  router.post('/:id/retry',express.json({limit:'1kb'}),async(req,res)=>{
+    try {
+      if(!service.retry)return res.status(503).json({error:'Payment retries require reliability setup.'});
+      const order=await ownedOrder(req,res);if(!order)return;
+      if(order.status!=='pending'||!uuid.test(req.body?.attemptId||''))return res.status(409).json({error:'Refresh this pending order before retrying payment.'});
+      const row=await service.retry(order,req.body.attemptId);
+      res.json({payment:publicPayment(row),orderStatus:order.status,redirectUrl:row.status==='pending'?row.redirect_url:null});
+    }catch(error){res.status(error.status||503).json({error:error.message});}
   });
   router.use((error,_req,res,_next)=>res.status(400).json({error:'Invalid payment request.'}));
   return router;
