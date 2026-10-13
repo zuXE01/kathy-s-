@@ -1,5 +1,17 @@
 # Customer UI refresh
 
+## Menu language — 2026-10-13
+
+Search labels now visibly name the active group; result counts name the selected section when narrowed and use item/items correctly. Clear filters explicitly returns to the full menu. Empty catalog, no search matches and loading failure use distinct guidance; the retry action is Retry loading menu. Accessible search names match visible labels. No filter, cart, ordering or payment rules changed. Targeted menu/landing tests pass; mobile/zoom visual verification remains outstanding after earlier local preview timeouts.
+
+## Menu grouping — 2026-10-13
+
+The public menu uses four persistent controls: All, Food, Drinks and Desserts, mapped to existing all/bites/coffee/sweet values without database changes. Bingsu remains Desserts. The native section picker is available on phone and desktop, scoped to the selected group. Changing groups resets the section only. Search stays within the group; its accessible label, placeholder and results communicate scope. Empty filtered results offer Clear filters, resetting group/section/search and focusing search. Promotional section entry selects the matching group when unambiguous. Portion selections and cart contents survive changes; unknown categories remain under All. Prices, guest browsing, authentication and payments are unchanged. Four 48px-minimum targets use a mobile-first grid. All 130 tests pass; mobile/desktop visual verification remains pending because the local preview timed out. Not deployed.
+
+## Customer tracking hardening — 2026-10-13
+
+Order history now checks every 15 seconds while visible and offers a 48px-minimum Refresh orders action with a last-successful-update time. Background reads pause while a card has focus or history is expanded; a response arriving during interaction is deferred rather than replacing working content. Identical responses do not rebuild cards. Failed reads preserve the last loaded page and timestamp, with a direct retry; failed pagination does not claim a new page. Reads serialize, modern browsers apply a 15-second request timeout, rate limiting pauses automatic checks until explicit retry, and permission loss/account changes/page exit clear private content and timers. Cancellation is serialized against refreshes. No payment processing, database policy, deployment or restaurant-contact changes were made. Automated tests pass; the local browser preview was unreachable, so responsive visual confirmation remains outstanding.
+
 - `/` is a public, mobile-first landing page with illustrated hero, category shortcuts, the full live menu, and a short restaurant introduction.
 - `/signin.html` is authentication-only (sign-in, registration and recovery). It returns to an allowlisted `next` destination, defaulting to `/#menu`. Old email callbacks at `/` forward their query/fragment to sign-in. No authentication settings or database permissions changed.
 - Account and checkout share `customer-theme.css`; the landing page uses `restaurant.css`. All customers use the same public menu and rendering/filter/cart modules. Account links remain visible on phones; authenticated customers see sign-out and admins see an admin link.

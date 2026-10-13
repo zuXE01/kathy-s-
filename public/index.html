@@ -24,13 +24,14 @@
           <div class="section-heading"><div><p class="eyebrow">KATHY'S DINERS &amp; CAFE</p><h2 id="menuTitle">Find your next favorite.</h2></div><span class="preview-tag">Full menu</span></div>
           <p class="section-description">Explore food, drinks and sweet treats. Choose a portion to see its price in Philippine pesos. Sign in to add items to your cart.</p>
           <p class="catalog-access-note" data-auth-prompt>Menu and prices are public. <a data-signin href="/signin.html">Sign in to add to cart</a>.</p>
+          <div class="menu-filters" id="catalogFilters" role="group" aria-label="Browse menu groups"></div>
           <label class="mobile-section-picker" for="mobileMenuSection">Menu section<select id="mobileMenuSection"><option value="all">All sections</option></select></label>
-          <div class="menu-filters" id="catalogFilters" role="group" aria-label="Menu sections"><button type="button" class="active" data-filter="all" aria-pressed="true">All menu</button></div>
-          <div class="catalog-toolbar"><label>Search the menu<input type="search" id="catalogSearch" placeholder="Try matcha, pasta, cheesecake…"></label></div>
+          <div class="catalog-toolbar"><label><span id="catalogSearchLabel">Search the full menu</span><input type="search" id="catalogSearch" placeholder="Try matcha, pasta, cheesecake…" aria-describedby="catalogSearchHelp"></label><p class="section-description" id="catalogSearchHelp">Search within your selected group and section. Clear filters shows the full menu again.</p></div>
           <p id="menuResult" class="catalog-feedback" role="status" aria-live="polite">Loading the menu…</p>
           <div class="catalog-grid" id="catalogGrid" aria-busy="true"></div>
-          <p class="catalog-empty" id="catalogEmpty" hidden>No favorites found. Try another filter.</p>
-          <button class="catalog-retry" id="catalogRetry" type="button" hidden>Try again</button>
+          <p class="catalog-empty" id="catalogEmpty" hidden>No matching items. Try another section or search.</p>
+          <button class="catalog-retry" id="catalogClear" type="button" hidden>Clear filters</button>
+          <button class="catalog-retry" id="catalogRetry" type="button" hidden>Retry loading menu</button>
           <button class="catalog-more" id="catalogMore" type="button" hidden>Show more items</button>
           </div>
         </section>

@@ -1,4 +1,12 @@
 import { getOptions } from './menu-card.js';
+export const menuGroups = [
+  {value:'all',label:'All'}, {value:'bites',label:'Food'},
+  {value:'coffee',label:'Drinks'}, {value:'sweet',label:'Desserts'}
+];
+export function sectionGroup(items, section) {
+  const categories=[...new Set(items.filter(item=>(item.section||'House Favorites')===section).map(item=>item.category))];
+  return categories.length===1&&menuGroups.some(group=>group.value===categories[0])?categories[0]:'all';
+}
 export function filterMenu(items, { search = '', category = 'all', section = 'all', sort = 'name' } = {}) {
   const term = search.trim().toLocaleLowerCase();
   const result = items.filter(item => (category === 'all' || item.category === category) && (section === 'all' || (item.section || 'House Favorites') === section) &&

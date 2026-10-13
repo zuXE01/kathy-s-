@@ -30,7 +30,7 @@ Priority definitions: P1 significantly affects the workflow; P2 causes friction 
 
 ### UX-01 — P1: Make order freshness visible
 
-Status: Open
+Status: Partial — 2026-10-13. Customer history now has serialized visible-page refresh, manual retry/refresh, last-success time and preserved cards on failures. Staff queue freshness was implemented earlier. Owner outstanding-work overview and real-browser verification remain open.
 
 Staff queues and customer history refresh through explicit actions and can look current while becoming stale. Owner overview emphasizes catalog/member statistics rather than outstanding work.
 
@@ -134,11 +134,11 @@ Suggested workflow: `audit`.
 
 ## Secondary improvements
 
-All items below are Open. Implement only when relevant to the requested scope.
+Items below are Open unless marked otherwise. Implement only when relevant to the requested scope.
 
 | ID | Improvement | Acceptance direction |
 | --- | --- | --- |
-| UX-06 | Group the 22 menu sections into understandable families | Food/Drinks/Desserts or another verified grouping reduces scanning while preserving named sections and search; mobile filtering remains available. |
+| UX-06 (Partial, 2026-10-13) | Group the 22 menu sections into understandable families | All/Food/Drinks/Desserts implemented with scoped section picker/search and Clear filters. All products retained and automated checks pass; mobile/desktop browser confirmation remains pending. |
 | UX-07 | Replace menu variant delimiter syntax | Staff edit labeled portion/price rows with add/remove controls; preserve validation and explain calculated base price. |
 | UX-08 | Remove irrelevant account presentation | Birthday/Gender placeholders no longer distract from contact/address tasks; do not delete historical database data as an incidental UI change. |
 | UX-09 | Improve member retrieval and recovery | Provide direct retry; add server-backed search when needed for membership size, respecting permissions and pagination. |
@@ -181,6 +181,12 @@ Reviewer heuristic baseline (judgment, not automated measurement or accessibilit
 Do not increase this score merely because tasks are marked complete. Reassess the actual experience after relevant changes.
 
 ## Completion record
+
+### 2026-10-13 — Impeccable customer tracking hardening
+
+- Updated customer history controller, markup and mobile-first refresh controls. Background checks pause for hidden pages, focused cards and expanded history; unchanged results retain DOM. Failed refresh/pagination preserves existing results and last-success time. Rate limiting pauses checks; permission changes/sign-out/page exit clear private content and timers.
+- Preserved server-side ownership, cancellation and payment safeguards. No new contact claims, schema changes, deployments or unrelated redesign.
+- Added four regression tests covering serialized refresh/failure recovery, visibility/focus/details, rate limits/permission loss and malformed pagination. All 128 tests pass after allowing loopback test connections. Local browser preview returned connection refused; mobile/desktop visuals and real screen-reader behavior are not certified. UX-01 remains Partial.
 
 ### 2026-10-12 — Direct Maya handoff (approved shape brief)
 

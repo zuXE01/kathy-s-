@@ -4,10 +4,10 @@
 <body>
 <header><a href="/#menu">← Back to menu</a><span>Kathy’s Diners &amp; Cafe</span></header>
 <main>
-  <p class="eyebrow">YOUR VISITS</p>
   <h1>Order history</h1>
-  <p>Review your saved demo orders. Reload this page to check for status updates. No real payment or delivery is arranged here.</p>
-  <p id="ordersStatus" role="status" aria-live="polite">Loading your orders…</p>
+  <p>Review your saved demo orders. Updates check every 15 seconds while this page is visible, pausing while you use an order or read its history. No real payment or delivery is arranged here.</p>
+  <p id="ordersStatus" role="status" aria-live="polite" tabindex="-1">Loading your orders…</p>
+  <div class="history-refresh"><button id="ordersRefresh" type="button" disabled>Refresh orders</button><p id="ordersUpdated" class="fine"></p></div>
   <p class="fine" data-auth-prompt hidden><a data-signin href="/signin.html">Sign in or create an account</a> to view your orders.</p>
   <div id="ordersLoading" class="orders-loading" aria-hidden="true"></div>
   <div id="orderHistory" class="order-history" aria-busy="true"></div>

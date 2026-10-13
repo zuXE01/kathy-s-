@@ -1,4 +1,7 @@
 .orders-controls{display:flex;flex-direction:column;gap:14px;margin:20px 0}.orders-controls label{display:flex;flex-direction:column;gap:8px}
+.history-refresh{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-block:20px}
+.history-refresh button,#ordersRetry{min-height:48px;max-width:100%;font-size:16px;white-space:normal;overflow-wrap:anywhere}
+.history-refresh p{margin:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 .orders-controls select,#orderUpdateForm select,#orderUpdateForm textarea{width:100%;min-height:48px;padding:12px;font:inherit;font-size:16px;border:1px solid #d8ccb6;border-radius:10px;background:#fffdf8;color:#1e2266}
 .order-list{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}.order-card{padding:20px;border:1px solid #e6ddc6;background:#fffdf8;border-radius:18px;overflow-wrap:anywhere}
 /* Shared status palette: keep the written label so color is never the only cue. */

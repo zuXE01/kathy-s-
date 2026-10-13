@@ -37,7 +37,8 @@ h1,h2,h3{text-wrap:balance}
 .catalog-price{font-variant-numeric:tabular-nums}
 .catalog-card .cart-add{width:100%}
 .catalog-grid{grid-template-columns:minmax(0,1fr)}
-.menu-filters#catalogFilters{display:none}
+.menu-filters#catalogFilters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;overflow:visible;padding:16px 0 0}
+.menu-filters#catalogFilters button{min-width:0;white-space:normal;overflow-wrap:anywhere;padding:12px 4px;font-size:14px;border-radius:8px}
 .mobile-section-picker{margin-top:24px;font-size:14px}
 .catalog-toolbar label{font-size:14px}
 @media(min-width:600px){
@@ -46,8 +47,8 @@ h1,h2,h3{text-wrap:balance}
 }
 @media(min-width:900px){
   .catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .menu-filters#catalogFilters{display:flex}
-  .mobile-section-picker{display:none}
+  .menu-filters#catalogFilters{display:grid;max-width:540px}
+  .mobile-section-picker{display:grid;max-width:540px}
   .product-ads{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:719px){
