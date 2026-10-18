@@ -1,0 +1,76 @@
+/* User-requested LOTM/tarot-card reference: foil frame, dark ink, antique gold.
+   Presentation only; no fixed height, clipped content, or interaction-only effects. */
+#offerList{--offer-gap:24px;align-items:start;gap:var(--offer-gap);grid-template-columns:minmax(0,1fr)}
+#offerList .offer{
+  --card-ink:#f3ead5;--card-muted:#d4c8ad;--card-gold:#ead29b;
+  --card-paper:#151c2c;--card-rule:#58606c;--card-crown:#263c59;--card-foil:#72b8b2;
+  position:relative;isolation:isolate;display:flex;flex-direction:column;
+  min-width:0;padding:56px 20px 28px;border:1px solid transparent;border-radius:16px;
+  color:var(--card-ink);
+  background:linear-gradient(165deg,var(--card-crown),var(--card-paper) 340px) padding-box,
+    linear-gradient(135deg,#9e8256 0%,#e4cf93 18%,var(--card-foil) 36%,#8b8ec7 55%,var(--card-foil) 73%,#e4cf93 90%,#9e8256) border-box;
+  box-shadow:0 10px 24px #151c2c16;
+}
+/* Stable offer IDs, never list positions: filtering preserves each card's identity.
+   Shared parchment text / gold actions; jewel-toned crown, ink and foil per offer. */
+#offerList .offer[data-offer="general-basic"]{--card-paper:#10271f;--card-crown:#205440;--card-foil:#65e2aa;--card-rule:#5c8e75}
+#offerList .offer[data-offer="general-standard"]{--card-paper:#14213e;--card-crown:#244c78;--card-foil:#7bbcf5;--card-rule:#668bb7}
+#offerList .offer[data-offer="general-premium"]{--card-paper:#291a39;--card-crown:#543568;--card-foil:#c6a0f4;--card-rule:#9375a7}
+#offerList .offer[data-offer="debut-basic"]{--card-paper:#351923;--card-crown:#713246;--card-foil:#ff9eae;--card-rule:#ad7481}
+#offerList .offer[data-offer="debut-standard"]{--card-paper:#321c34;--card-crown:#673965;--card-foil:#ed9ddc;--card-rule:#a478a0}
+#offerList .offer[data-offer="debut-premium"]{--card-paper:#351718;--card-crown:#74332c;--card-foil:#ff9277;--card-rule:#b47a6d}
+#offerList .offer[data-offer="wedding"]{--card-paper:#302616;--card-crown:#614d25;--card-foil:#f0d584;--card-rule:#a08c5b}
+#offerList .offer[data-offer="events-hall"]{--card-paper:#10282c;--card-crown:#20545c;--card-foil:#7ce0e8;--card-rule:#62959a}
+#offerList .offer[data-offer="main-hall"]{--card-paper:#332214;--card-crown:#704628;--card-foil:#f7b878;--card-rule:#ab8762}
+#offerList .offer[data-offer="museum"]{--card-paper:#1d2037;--card-crown:#414868;--card-foil:#aab5f5;--card-rule:#858bb1}
+#offerList .offer::before{
+  content:"";position:absolute;inset:8px;border:1px solid #9c875b;border-radius:11px;
+  pointer-events:none;z-index:-1;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40' fill='none' stroke='%23c6ad73' stroke-width='1'%3E%3Cpath d='M4 34V12a8 8 0 0 1 8-8h22M10 31V15a5 5 0 0 1 5-5h16M5 22l8-8 8-8M12 12l4 4-4 4-4-4z'/%3E%3Ccircle cx='25' cy='5' r='2'/%3E%3C/svg%3E") left top/40px 40px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40' fill='none' stroke='%23c6ad73' stroke-width='1'%3E%3Cpath d='M36 34V12a8 8 0 0 0-8-8H6M30 31V15a5 5 0 0 0-5-5H9M35 22l-8-8-8-8M28 12l-4 4 4 4 4-4z'/%3E%3Ccircle cx='15' cy='5' r='2'/%3E%3C/svg%3E") right top/40px 40px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40' fill='none' stroke='%23c6ad73' stroke-width='1'%3E%3Cpath d='M4 6v22a8 8 0 0 0 8 8h22M10 9v16a5 5 0 0 0 5 5h16M5 18l8 8 8 8M12 28l4-4-4-4-4 4z'/%3E%3C/svg%3E") left bottom/40px 40px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40' fill='none' stroke='%23c6ad73' stroke-width='1'%3E%3Cpath d='M36 6v22a8 8 0 0 1-8 8H6M30 9v16a5 5 0 0 1-5 5H9M35 18l-8 8-8 8M28 28l-4-4 4-4 4 4z'/%3E%3C/svg%3E") right bottom/40px 40px no-repeat;
+}
+#offerList .offer::after{
+  content:"";position:absolute;inset-block-start:17px;inset-inline-start:calc(50% - 16px);width:32px;height:26px;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 26' fill='none' stroke='%23ead29b' stroke-width='1'%3E%3Cpath d='M16 2l3 8 9 3-9 3-3 8-3-8-9-3 9-3z'/%3E%3Ccircle cx='16' cy='13' r='4'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+#offerList .offer h3{color:var(--card-gold);text-align:center;font-size:27px;line-height:1.2;margin-block-end:12px}
+#offerList .offer .offer-type{color:var(--card-muted);text-align:center;margin:0 0 24px;font-size:14px;line-height:1.6}
+#offerList .offer .offer-price{color:var(--card-gold);font-size:22px;line-height:1.45;text-align:center;font-variant-numeric:tabular-nums;margin-block-end:12px;text-wrap:balance}
+#offerList .offer .fine{color:var(--card-muted)}
+#offerList .offer p,#offerList .offer li,#offerList .offer dd{font-size:16px}
+#offerList .offer .rate-list{margin-block:20px}
+#offerList .offer .rate-list div{border-color:var(--card-rule);flex-wrap:wrap;gap:6px 12px}
+#offerList .offer .rate-list dd{color:var(--card-gold)}
+#offerList .offer ul{margin-block:12px 20px;padding-inline-start:20px}
+#offerList .offer li{margin-block:8px}
+#offerList .offer li::marker{color:var(--card-gold)}
+#offerList .offer details{border-top:1px solid var(--card-rule);margin-block:4px}
+#offerList .offer summary{color:var(--card-gold);padding-block:14px;min-height:48px;overflow-wrap:anywhere}
+#offerList .offer h4{color:var(--card-gold)}
+#offerList .offer label{margin-block:8px 0;color:var(--card-ink);font-size:14px}
+#offerList .offer select{font-variant-numeric:tabular-nums;cursor:pointer}
+#offerList .offer summary::marker{color:var(--card-gold)}
+#offerList .offer details[open]>summary{padding-block-end:8px}
+.selection-summary{padding-block:20px;border-block:1px solid #cbbda8;margin:0}
+.selection-summary h3{margin-block-end:12px}
+.selection-summary p{margin-block:8px}
+.selection-summary a{display:inline-flex;align-items:center;min-height:48px}
+.guest-error{color:#9b242a;font-size:14px;line-height:1.5}
+#reservationForm input[aria-invalid="true"]{border:2px solid #9b242a}
+.draft-actions button:disabled{background:var(--disabled-surface,#d9cec0);color:var(--content-primary,#202550);cursor:wait}
+.draft-actions button:not(:disabled):active,#offerList .offer .primary:active{filter:brightness(.94)}
+#offerList .offer .source-link{color:var(--card-muted);line-height:1.5;margin-top:12px}
+#offerList .offer .primary{background:#ead29b;color:#151c2c;border:1px solid #ead29b;font-weight:700;line-height:1.5;margin-block:20px 24px;min-height:52px}
+#offerList .offer :focus-visible{outline:3px solid #9be4e2;outline-offset:4px}
+@media(hover:hover) and (pointer:fine){#offerList .offer .primary:hover{background:#f5e6c4}#offerList .offer .source-link:hover{color:#fff5dd}#offerList .offer summary:hover{text-decoration:underline;text-underline-offset:4px}}
+/* Content, not device labels, determines when a second comparison column fits. */
+.reservation-intro{padding-block:32px}
+.section-head{gap:20px}
+.inquiry{row-gap:32px}
+#reservationForm{align-content:start}
+@media(min-width:720px){#offerList{grid-template-columns:repeat(2,minmax(0,1fr))}#offerList .offer{padding-inline:24px}.reservation-intro{padding-block:48px}}
+@media(min-width:1120px){#offerList{--offer-gap:28px;grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(forced-colors:active){#offerList .offer{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}#offerList .offer::before,#offerList .offer::after{display:none}#offerList .offer h3,#offerList .offer h4,#offerList .offer p,#offerList .offer li,#offerList .offer summary,#offerList .offer dd,#offerList .offer .source-link{color:CanvasText}#offerList .offer .primary{background:ButtonFace;color:ButtonText;border-color:ButtonText}}
