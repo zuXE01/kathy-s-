@@ -27,6 +27,7 @@ export function createMenuCard(item, { onEdit, onRemove, onAdd, selectedLabel, o
   const photos=getMenuPhotos(item);
   const photo=(name,index)=>{
     const image=node('img','catalog-photo');
+    image.setAttribute('data-photo',name);
     image.src='/assets/menu/'+name+'-800.webp';
     image.srcset='/assets/menu/'+name+'-400.webp 400w, /assets/menu/'+name+'-800.webp 800w';
     image.sizes='(min-width:900px) 380px, (min-width:600px) 45vw, 90vw';

@@ -34,8 +34,14 @@
   .catalog-toolbar label{min-width:0;font-size:12px}
   .catalog-toolbar input,.catalog-toolbar select{min-height:48px}
 }
-/* Locally optimized, real product photos; contain preserves the supplied framing. */
-.catalog-photo{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;background:var(--surface-page,#fbf7ef);border-radius:12px;margin-block-end:16px}
+/* Uniform editorial frames, with reviewed focal positions for the portrait originals. */
+.catalog-photo{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;object-position:50% 55%;background:var(--surface-page,#fbf7ef);border-radius:12px;margin-block-end:16px;flex-shrink:0}
+.catalog-photo[data-photo="meaty-pizza"]{object-position:50% 50%}
+.catalog-photo[data-photo="ube-cream-cheese"]{object-position:50% 68%}
+.catalog-photo[data-photo="red-velvet-cream-cheese"]{object-position:50% 58%}
+.catalog-photo[data-photo="kiwi-soda"],.catalog-photo[data-photo="passion-fruit-soda"]{object-position:50% 75%}
+.catalog-photo[data-photo="biscoff-cookie-1"]{object-position:50% 50%}
+.catalog-photo[data-photo="cookies-and-cream-cookie-2"],.catalog-photo[data-photo="double-chocolate-chip"],.catalog-photo[data-photo="biscoff-cookie-2"],.catalog-photo[data-photo="chocolate-chip-walnut-2"],.catalog-photo[data-photo="chocolate-chip-oat"]{object-position:50% 60%}
 .catalog-photo[hidden]{display:none}
 .catalog-photo-views{margin-block:0 16px}
 .catalog-photo-views summary{min-height:48px;display:list-item;padding-block:12px;cursor:pointer;font-size:16px;font-weight:600}

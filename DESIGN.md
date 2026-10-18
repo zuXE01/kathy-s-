@@ -1,5 +1,9 @@
 # Customer UI refresh
 
+## Photo framing — 2026-10-18
+
+Menu photos now fill a consistent 4:3 frame with object-fit:cover, replacing letterboxed contain rendering. Per-photo data attributes select reviewed focal positions: drinks emphasize the lower part of portrait originals, while cookies and pizza center their products. Originals and optimized assets remain unchanged; this is nondestructive presentation cropping, without stretching. Applies to primary and additional views on customer/admin cards. Ten focused regression tests pass, including crop CSS and photo attribute checks. The current local browser attempt timed out, so final mobile/desktop crop confirmation remains outstanding. No deployment or ordering changes.
+
 ## Real menu photos — 2026-10-18
 
 13 named user-supplied Drive photos map explicitly to 10 products by section and name. Shared customer/admin cards use local 400/800px-wide WebP assets, lazy loading, descriptive alt text and broken-image hiding. Additional views stay under native More photos disclosures on the same card; no duplicated products. Full supplied framing is preserved. Camera filenames remain unassigned pending identification. No database, price, permissions or payment changes. See MENU_PHOTOS.md for mapping and maintenance. Desktop and 390px synthetic browser checks showed product images loading and no horizontal overflow at 390px; real-device verification remains outstanding. Local only, not deployed.

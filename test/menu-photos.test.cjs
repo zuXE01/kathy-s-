@@ -21,7 +21,13 @@ test('menu cards use local responsive lazy photos, retain controls and hide brok
   const card=createMenuCard(item),all=node=>[node,...node.children.flatMap(all)],nodes=all(card),images=nodes.filter(node=>node.tag==='img');
   assert.equal(images.length,2);assert.equal(images[0].loading,'lazy');assert.equal(images[0].decoding,'async');
   assert.match(images[0].src,/^\/assets\/menu\//);assert.match(images[0].srcset,/400w.*800w/);assert.match(images[0].alt,/Biscoff Cookie/);
+  assert.equal(images[0].attributes['data-photo'],'biscoff-cookie-1');
   assert.ok(nodes.some(node=>node.tag==='summary'&&node.textContent==='More photos'));
   assert.ok(nodes.some(node=>node.className==='catalog-price'));
   images[0].handlers.error();assert.equal(images[0].hidden,true);
+});
+test('all card photos fill a consistent frame without distortion and drinks have focal overrides',()=>{
+  const css=fs.readFileSync(path.join(__dirname,'../public/menu-cards.css'),'utf8');
+  assert.match(css,/\.catalog-photo\{[^}]*aspect-ratio:4\/3;object-fit:cover/);
+  for(const name of ['ube-cream-cheese','red-velvet-cream-cheese','kiwi-soda','passion-fruit-soda'])assert.ok(css.includes('[data-photo="'+name+'"]'));
 });
