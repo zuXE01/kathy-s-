@@ -1,5 +1,9 @@
 # Customer UI refresh
 
+## Business contact — 2026-10-18
+
+The public landing contact section uses details supplied on the owner's business-card photo: Kathy's Hub; events place, grazing tables and cafeteria; kathyshub08@gmail.com; 0960-2617-352; 8165 Dr. A. Santos Ave., Parañaque City. Metro Manila/nearby-provinces coverage is presented as event inquiries, never a delivery guarantee. Mobile-first contact links have 48px minimum height and wrapping; desktop pairs service context with contact details. Payment help links to /#contact and asks for an order reference, never payment secrets. No hours, booking confirmation, refund promise, database change or deployment was added. Thirteen targeted contact/landing/payment tests pass; final responsive visual verification remains pending.
+
 ## Photo framing — 2026-10-18
 
 Menu photos now fill a consistent 4:3 frame with object-fit:cover, replacing letterboxed contain rendering. Per-photo data attributes select reviewed focal positions: drinks emphasize the lower part of portrait originals, while cookies and pizza center their products. Originals and optimized assets remain unchanged; this is nondestructive presentation cropping, without stretching. Applies to primary and additional views on customer/admin cards. Ten focused regression tests pass, including crop CSS and photo attribute checks. The current local browser attempt timed out, so final mobile/desktop crop confirmation remains outstanding. No deployment or ordering changes.
