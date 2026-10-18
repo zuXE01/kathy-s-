@@ -34,3 +34,9 @@
   .catalog-toolbar label{min-width:0;font-size:12px}
   .catalog-toolbar input,.catalog-toolbar select{min-height:48px}
 }
+/* Locally optimized, real product photos; contain preserves the supplied framing. */
+.catalog-photo{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;background:var(--surface-page,#fbf7ef);border-radius:12px;margin-block-end:16px}
+.catalog-photo[hidden]{display:none}
+.catalog-photo-views{margin-block:0 16px}
+.catalog-photo-views summary{min-height:48px;display:list-item;padding-block:12px;cursor:pointer;font-size:16px;font-weight:600}
+.catalog-photo-views .catalog-photo{margin-block:8px 0}

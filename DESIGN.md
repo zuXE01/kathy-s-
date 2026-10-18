@@ -1,5 +1,9 @@
 # Customer UI refresh
 
+## Real menu photos — 2026-10-18
+
+13 named user-supplied Drive photos map explicitly to 10 products by section and name. Shared customer/admin cards use local 400/800px-wide WebP assets, lazy loading, descriptive alt text and broken-image hiding. Additional views stay under native More photos disclosures on the same card; no duplicated products. Full supplied framing is preserved. Camera filenames remain unassigned pending identification. No database, price, permissions or payment changes. See MENU_PHOTOS.md for mapping and maintenance. Desktop and 390px synthetic browser checks showed product images loading and no horizontal overflow at 390px; real-device verification remains outstanding. Local only, not deployed.
+
 ## Menu language — 2026-10-13
 
 Search labels now visibly name the active group; result counts name the selected section when narrowed and use item/items correctly. Clear filters explicitly returns to the full menu. Empty catalog, no search matches and loading failure use distinct guidance; the retry action is Retry loading menu. Accessible search names match visible labels. No filter, cart, ordering or payment rules changed. Targeted menu/landing tests pass; mobile/zoom visual verification remains outstanding after earlier local preview timeouts.
