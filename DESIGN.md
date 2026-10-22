@@ -2,6 +2,8 @@
 
 ## Kitchen merchant workflow — 2026-10-23
 
+Visual follow-up replaces the kitchen's full admin sidebar with a compact brand/sign-out bar, promotes Orders and queue navigation, and uses a white/green merchant composition from the supplied references. Kitchen cards prioritize short order reference, quantity, elapsed age, item list and large actions; full reference/payment data remains available in View order. Dedicated kitchen.css loads last and is scoped to the verified kitchen role. Tablet/wide screens use two columns; phones use one. No fake driver status, timer or photo requirement introduced.
+
 Kitchen staff enter To prepare (accepted orders), with direct Preparing and Ready queue buttons. The supplied merchant screenshots inform white order surfaces, green primary actions, large order references and readable item lists. Existing status dropdown retains access to other states. Start preparing and Mark ready use server-approved transitions and order versions; staff acceptance precedes kitchen preparation. Actual elapsed age is shown, with no invented countdown, driver state, scheduled-order support or photo workflow. This scoped kitchen treatment preserves other workspace roles and customer pages. Queue and role tests pass; live deployment and responsive browser verification remain outstanding.
 
 ## Business contact — 2026-10-18

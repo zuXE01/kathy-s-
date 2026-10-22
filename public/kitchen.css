@@ -1,0 +1,37 @@
+/* Merchant-style kitchen workspace, scoped to the verified kitchen role. */
+body.kitchen-workspace{background:#f5f6f5;color:#18221d;font-family:Arial,sans-serif}
+.kitchen-workspace .admin-shell{display:block}
+.kitchen-workspace .admin-sidebar{position:static;width:auto;height:auto;padding:12px 20px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;border:0;border-bottom:1px solid #e4e9e6;background:white;gap:12px}
+.kitchen-workspace .admin-sidebar .nav-caption,.kitchen-workspace .admin-sidebar nav,.kitchen-workspace .admin-note,.kitchen-workspace .admin-sidebar>a:last-of-type,.kitchen-workspace .admin-brand small,.kitchen-workspace .brand-monogram{display:none}
+.kitchen-workspace .admin-brand .word{font:700 20px/1.3 Arial,sans-serif;color:#18221d}
+.kitchen-workspace .admin-logout{position:static;margin:0;padding:12px;border:0;font-size:14px;color:#43564b;min-height:44px}
+.kitchen-workspace .admin-topbar{display:none}
+.kitchen-workspace .admin-content{padding:0;max-width:1040px}
+.kitchen-workspace #adminMessage:empty{display:none}
+.kitchen-workspace [data-panel="orders"]{padding:0;border-radius:0;background:#f5f6f5}
+.kitchen-workspace [data-panel="orders"]>.admin-heading{margin:0;padding:20px 20px 12px;background:white}
+.kitchen-workspace .admin-heading h1{font:700 30px/1.2 Arial,sans-serif;letter-spacing:-.02em;color:#18221d}
+.kitchen-workspace .admin-heading .eyebrow{display:none}
+.kitchen-workspace .admin-heading p:last-child{margin:8px 0 0;font-size:13px;line-height:1.5;max-width:48ch}
+.kitchen-workspace .kitchen-queue-nav{margin:0;padding-inline:12px;background:white;gap:8px}
+.kitchen-workspace .kitchen-queue-nav button{border-radius:0;padding:16px 8px;font-size:17px}
+.kitchen-workspace .orders-controls{display:flex;gap:12px;align-items:end;padding:16px 20px 0;margin:0}
+.kitchen-workspace .orders-controls label{flex:1;font-size:13px}
+.kitchen-workspace .orders-controls select{background:white;min-height:48px;font-size:16px}
+.kitchen-workspace #ordersRefresh{min-height:48px;background:#e4eee8!important;color:#175336!important;font-size:14px!important}
+.kitchen-workspace #ordersMessage{margin:12px 20px;font-size:13px;line-height:1.5;color:#536259}
+.kitchen-workspace .order-list{gap:12px;padding:0 12px;grid-template-columns:minmax(0,1fr)}
+.kitchen-workspace .order-card{padding:20px;border-radius:14px;border:1px solid #dce3df;position:relative}
+.kitchen-workspace .order-card h2{font-size:26px;color:#18221d;margin:10px 0 4px}
+.kitchen-workspace .kitchen-item-count{color:#647168;margin:0;font-size:16px}
+.kitchen-workspace .queue-age{font-size:14px;margin:10px 0}
+.kitchen-workspace .queue-items{margin:12px 0}
+.kitchen-workspace .queue-items li{font-size:16px;padding-block:10px}
+.kitchen-workspace .queue-actions .admin-button{font-size:16px!important;font-weight:700!important}
+.kitchen-workspace .admin-pagination{padding:8px 20px 24px}
+.kitchen-workspace #orderDialog{background:white;border-radius:20px;color:#18221d;width:calc(100% - 24px);padding:20px}
+.kitchen-workspace #orderDialog .dialog-heading{background:white}
+.kitchen-workspace #orderDetails li{padding-block:12px;line-height:1.5;font-size:16px}
+.kitchen-workspace #orderDetails ul{padding-inline-start:20px}
+.kitchen-workspace #orderSave{background:#087d46!important;min-height:52px;font-size:16px!important}
+@media(min-width:800px){.kitchen-workspace .order-list{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.kitchen-workspace .admin-sidebar{padding-inline:max(20px,calc((100vw - 1000px)/2))}}

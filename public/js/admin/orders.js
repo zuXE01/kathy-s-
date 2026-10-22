@@ -67,7 +67,9 @@ export function loadOrders(nextPage=1,background=false) {
     data.items.forEach(order=>{
       const card=node('article',undefined,'order-card');
       if(order.payment_review_required)card.append(node('p','Payment review required: test payment received for a closed order. No refund has been issued.','payment-review-notice'));
-      card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge order-status status-'+order.status),node('h2',kitchenMode?'Order '+order.id.slice(0,8).toUpperCase():order.customer?.name || 'Order '+order.id.slice(0,8)),
+      if(kitchenMode){
+        card.append(node('p',order.status==='accepted'?'To prepare':order.status==='preparing'?'Preparing':order.status==='ready'?'Ready for handoff':order.status,'order-badge order-status status-'+order.status),node('h2','Order '+order.id.slice(0,8).toUpperCase()),node('p',order.items.reduce((sum,item)=>sum+item.quantity,0)+' items','kitchen-item-count'));
+      }else card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge order-status status-'+order.status),node('h2',order.customer?.name || 'Order '+order.id.slice(0,8)),
         node('p',new Date(order.created_at).toLocaleString()),node('p','Reference: '+order.id),
         node('p',order.items.reduce((sum,item)=>sum+item.quantity,0)+' items · '+formatPrice(order.total_cents/100)),
         node('p',order.payment_method==='maya-sandbox'?'Maya sandbox · '+order.payment_status+' · no real money':order.payment_method==='cod'?'COD · Unpaid':'Online · Simulated, not paid'));
