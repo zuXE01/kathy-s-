@@ -5,6 +5,27 @@ const el=id=>document.getElementById(id);
 const transitions={pending:['accepted','rejected','cancelled'],accepted:['preparing','rejected'],preparing:['ready','rejected'],ready:['completed'],completed:[],rejected:[],cancelled:[]};
 let page=1,revision=0,busy=false,selected=null;
 let visible=false,timer,inFlight=false,queued=null,lastUpdated=null;
+let kitchenMode=false;
+export function configureKitchenQueue(enabled){
+  kitchenMode=enabled;
+  document.body.classList.toggle('kitchen-workspace',enabled);
+  let navigation=el('kitchenQueueNav');
+  if(!navigation){
+    navigation=node('nav',undefined,'kitchen-queue-nav');navigation.id='kitchenQueueNav';navigation.setAttribute('aria-label','Kitchen order queues');
+    for(const [status,label] of [['accepted','To prepare'],['preparing','Preparing'],['ready','Ready']]){
+      const button=node('button',label);button.type='button';button.dataset.status=status;
+      button.addEventListener('click',()=>{el('ordersFilter').value=status;syncKitchenQueue();loadOrders();});navigation.append(button);
+    }
+    el('ordersFilter').closest('.orders-controls').before(navigation);
+  }
+  navigation.hidden=!enabled;
+  if(enabled)el('ordersFilter').value='accepted';
+  syncKitchenQueue();
+}
+function syncKitchenQueue(){
+  const navigation=el('kitchenQueueNav');if(!navigation)return;
+  for(const button of navigation.querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.status===el('ordersFilter').value));
+}
 function scheduleRefresh() {
   if(typeof setTimeout!=='function')return;
   clearTimeout(timer);
@@ -46,7 +67,7 @@ export function loadOrders(nextPage=1,background=false) {
     data.items.forEach(order=>{
       const card=node('article',undefined,'order-card');
       if(order.payment_review_required)card.append(node('p','Payment review required: test payment received for a closed order. No refund has been issued.','payment-review-notice'));
-      card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge order-status status-'+order.status),node('h2',order.customer?.name || 'Order '+order.id.slice(0,8)),
+      card.append(node('p',order.status.toUpperCase()+' · DEMO','order-badge order-status status-'+order.status),node('h2',kitchenMode?'Order '+order.id.slice(0,8).toUpperCase():order.customer?.name || 'Order '+order.id.slice(0,8)),
         node('p',new Date(order.created_at).toLocaleString()),node('p','Reference: '+order.id),
         node('p',order.items.reduce((sum,item)=>sum+item.quantity,0)+' items · '+formatPrice(order.total_cents/100)),
         node('p',order.payment_method==='maya-sandbox'?'Maya sandbox · '+order.payment_status+' · no real money':order.payment_method==='cod'?'COD · Unpaid':'Online · Simulated, not paid'));
@@ -56,11 +77,13 @@ export function loadOrders(nextPage=1,background=false) {
       order.items.forEach(item=>items.append(node('li',item.quantity+' × '+item.name+' · '+item.label)));
       card.append(items);
       const open=node('button','View order','admin-button');open.type='button';open.addEventListener('click',()=>openOrder(order));
+      open.className='admin-button queue-view';
       const actions=node('div',undefined,'queue-actions');actions.append(open);
       const next=(order.allowed_statuses||[]).find(status=>['accepted','preparing','ready','completed'].includes(status)&&(transitions[order.status]||[]).includes(status));
       if(next){
         const labels={accepted:'Accept order',preparing:'Start preparing',ready:'Mark ready',completed:'Mark completed'};
         const advance=node('button',labels[next],'admin-button');advance.type='button';
+        advance.className='admin-button queue-advance';
         advance.addEventListener('click',()=>quickUpdate(order,next,advance));actions.append(advance);
       }
       card.append(actions);el('orderRows').append(card);
@@ -110,7 +133,7 @@ export function initOrders() {
   window.addEventListener('pagehide',()=>setOrdersVisible(false));
   document.addEventListener('visibilitychange',()=>{if(visible)scheduleRefresh();});
   el('ordersRefresh').addEventListener('click',()=>loadOrders(page));
-  el('ordersFilter').addEventListener('change',()=>loadOrders());
+  el('ordersFilter').addEventListener('change',()=>{syncKitchenQueue();loadOrders();});
   el('ordersPrev').addEventListener('click',()=>loadOrders(page-1));
   el('ordersNext').addEventListener('click',()=>loadOrders(page+1));
   el('orderClose').addEventListener('click',()=>{if(!busy)el('orderDialog').close();});

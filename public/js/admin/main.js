@@ -2,7 +2,7 @@ import { getAuthClient } from '../auth-client.js';
 import { request, cancelRequests } from './request.js';
 import { initMembers, loadMembers } from './members.js';
 import { initMenuManager, loadMenu, clearMenu } from './menu.js';
-import { initOrders, loadOrders, clearOrders, setOrdersVisible } from './orders.js';
+import { initOrders, loadOrders, clearOrders, setOrdersVisible, configureKitchenQueue } from './orders.js';
 import {initPayments,loadPayments,clearPayments} from './payments.js';
 const el = id => document.getElementById(id);
 let managementAccess=false, workspaceRole=null;
@@ -26,6 +26,7 @@ function overview() {
     const changedRole=workspaceRole!==data.role;
     if(changedRole)el('ordersFilter').value='active';
     workspaceRole=data.role;
+    if(changedRole)configureKitchenQueue(data.role==='kitchen_staff');
     managementAccess=management;
     document.querySelector('[data-section="payments"]').hidden=!['owner','platform_admin','staff'].includes(data.role);
     document.querySelectorAll('[data-section="members"],[data-section="menu"],[data-open-menu]').forEach(control=>{control.hidden=!management;});

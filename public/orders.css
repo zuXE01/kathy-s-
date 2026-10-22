@@ -44,6 +44,25 @@ body:has(#orderDialog[open]){overflow:hidden}
 #paymentRows summary{padding-block:12px;cursor:pointer}
 #paymentRows details p{font-size:.9rem}
 .admin-pagination{flex-wrap:wrap;gap:12px}
+.kitchen-queue-nav{display:flex;gap:4px;border-bottom:1px solid #dce3df;margin-block:16px 24px}
+.kitchen-queue-nav[hidden]{display:none}
+.kitchen-queue-nav button{flex:1;min-width:0;min-height:52px;border:0;border-bottom:3px solid transparent;background:transparent;color:#495650;font:600 16px Arial,sans-serif;padding:12px 8px;cursor:pointer}
+.kitchen-queue-nav button[aria-pressed="true"]{color:#086039;border-bottom-color:#087d46}
+.kitchen-workspace [data-panel="orders"]{background:#f5f7f6;color:#17251e;border-radius:12px;padding:16px}
+.kitchen-workspace .order-list{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.kitchen-workspace .order-card{background:#fff;border:1px solid #dce3df;border-radius:16px;padding:20px;box-shadow:none}
+.kitchen-workspace .order-card h2{font:700 24px/1.25 Arial,sans-serif;margin-block:12px}
+.kitchen-workspace .order-card p{overflow-wrap:anywhere}
+.kitchen-workspace .queue-items{list-style:none;padding:0;margin-block:16px;border-block:1px solid #e3e9e5}
+.kitchen-workspace .queue-items li{padding-block:12px;font-size:17px;line-height:1.5;border-bottom:1px solid #edf1ee}
+.kitchen-workspace .queue-age{font-weight:700;color:#495650;font-variant-numeric:tabular-nums}
+.kitchen-workspace .queue-actions{display:flex;flex-wrap:wrap;gap:12px}
+.kitchen-workspace .queue-actions button{flex:1;min-width:120px;min-height:52px;font-size:16px;white-space:normal}
+.kitchen-workspace .queue-actions .queue-view{background:#eaf3ee!important;color:#175336!important}
+.kitchen-workspace .queue-actions .queue-advance{background:#087d46!important;color:#fff!important;border-radius:26px}
+.kitchen-workspace .queue-actions button:disabled{opacity:.6;cursor:wait}
+.kitchen-workspace :focus-visible{outline:3px solid #087d46;outline-offset:4px}
+@media(min-width:1000px){.kitchen-workspace .order-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .order-card,.history-card,.orders-controls>*{min-width:0}
 #orderDialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overscroll-behavior:contain;scroll-padding-block:20px}
 #orderDialog .dialog-heading{position:sticky;top:-20px;z-index:1;background:var(--surface-page,#fbf7ef);padding-block:12px}

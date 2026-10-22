@@ -1,5 +1,9 @@
 # Customer UI refresh
 
+## Kitchen merchant workflow — 2026-10-23
+
+Kitchen staff enter To prepare (accepted orders), with direct Preparing and Ready queue buttons. The supplied merchant screenshots inform white order surfaces, green primary actions, large order references and readable item lists. Existing status dropdown retains access to other states. Start preparing and Mark ready use server-approved transitions and order versions; staff acceptance precedes kitchen preparation. Actual elapsed age is shown, with no invented countdown, driver state, scheduled-order support or photo workflow. This scoped kitchen treatment preserves other workspace roles and customer pages. Queue and role tests pass; live deployment and responsive browser verification remain outstanding.
+
 ## Business contact — 2026-10-18
 
 The public landing contact section uses details supplied on the owner's business-card photo: Kathy's Hub; events place, grazing tables and cafeteria; kathyshub08@gmail.com; 0960-2617-352; 8165 Dr. A. Santos Ave., Parañaque City. Metro Manila/nearby-provinces coverage is presented as event inquiries, never a delivery guarantee. Mobile-first contact links have 48px minimum height and wrapping; desktop pairs service context with contact details. Payment help links to /#contact and asks for an order reference, never payment secrets. No hours, booking confirmation, refund promise, database change or deployment was added. Thirteen targeted contact/landing/payment tests pass; final responsive visual verification remains pending.
