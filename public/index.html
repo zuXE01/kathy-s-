@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Kathy’s Diners & Cafe: comforting meals, coffee, pizza, pasta and sweet treats."><title>Kathy’s — Good food. Good company.</title><link rel="stylesheet" href="/menu-cards.css"><link rel="stylesheet" href="/cart.css"><link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/restaurant.css"><link rel="stylesheet" href="/color-tokens.css"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Kathy’s Diners & Cafe: comforting meals, coffee, pizza, pasta and sweet treats."><title>Kathy’s — Good food. Good company.</title><link rel="stylesheet" href="/menu-cards.css"><link rel="stylesheet" href="/cart.css"><link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/restaurant.css"><link rel="stylesheet" href="/color-tokens.css"><link rel="stylesheet" href="/recommendations.css"></head>
 <body class="restaurant"><a class="skip-link" href="#menu">Skip to menu</a>
 <div class="announcement">A LITTLE COMFORT IN EVERY VISIT</div>
 <header class="site-header"><a class="brand" href="/" aria-label="Kathy’s home"><img src="/assets/logo.jpg" width="44" height="44" alt=""><span>Kathy’s<small>DINERS & CAFE</small></span></a><nav aria-label="Main navigation"><a href="#menu">Menu</a><a href="#story">Our story</a><a class="nav-account" href="/account.html">My account</a><a class="nav-orders" href="/orders.html">Orders</a><a data-signin href="/signin.html">Sign in</a><a data-admin hidden href="/admin.html">Admin</a><button data-signout hidden type="button">Sign out</button></nav></header>
@@ -24,6 +24,23 @@
           <div class="section-heading"><div><p class="eyebrow">KATHY'S DINERS &amp; CAFE</p><h2 id="menuTitle">Find your next favorite.</h2></div><span class="preview-tag">Full menu</span></div>
           <p class="section-description">Explore food, drinks and sweet treats. Choose a portion to see its price in Philippine pesos. Sign in to add items to your cart.</p>
           <p class="catalog-access-note" data-auth-prompt>Menu and prices are public. <a data-signin href="/signin.html">Sign in to add to cart</a>.</p>
+          <details class="recommendations" id="recommendations">
+            <summary>Help me choose</summary>
+            <p>Find a few menu options that fit your choices, with a reason for each suggestion.</p>
+            <form id="recommendationForm">
+              <div class="recommendation-fields">
+                <label for="recommendationGroup">What are you looking for?<select id="recommendationGroup"><option value="all">Anything</option><option value="bites">Food</option><option value="coffee">Drinks</option><option value="sweet">Desserts</option></select></label>
+                <label for="recommendationBudget">Maximum price per portion (PHP, optional)<input id="recommendationBudget" type="number" min="0.01" max="100000" step="0.01" inputmode="decimal" placeholder="e.g. 150"></label>
+              </div>
+              <p>Suggestions also follow the Menu section selected below. Choose All sections for the widest choice. Your price limit applies to one portion, not a whole order.</p>
+              <label class="recommendation-history"><input id="recommendationHistory" type="checkbox" disabled aria-describedby="recommendationHistoryHelp">Use my completed orders</label>
+              <p id="recommendationHistoryHelp">Sign in to include your completed orders.</p>
+              <button class="recommendation-submit" type="submit">Find suggestions</button>
+            </form>
+            <p id="recommendationStatus" role="status" aria-live="polite">Choose your preferences, then find suggestions. The full menu stays below.</p>
+            <div class="catalog-grid" id="recommendationGrid" aria-busy="false"></div>
+            <p>Suggestions do not verify allergens or dietary suitability. Menu prices and availability are checked again at checkout.</p>
+          </details>
           <div class="menu-filters" id="catalogFilters" role="group" aria-label="Browse menu groups"></div>
           <label class="mobile-section-picker" for="mobileMenuSection">Menu section<select id="mobileMenuSection"><option value="all">All sections</option></select></label>
           <div class="catalog-toolbar"><label><span id="catalogSearchLabel">Search the full menu</span><input type="search" id="catalogSearch" placeholder="Try matcha, pasta, cheesecake…" aria-describedby="catalogSearchHelp"></label><p class="section-description" id="catalogSearchHelp">Search within your selected group and section. Clear filters shows the full menu again.</p></div>
@@ -44,4 +61,4 @@
   </address>
 </section>
 <section class="story" id="story" aria-labelledby="story-title"><div class="story-mark" aria-hidden="true">K.<span>GOOD FOOD<br>GOOD COMPANY</span></div><div><p class="kicker">MAKE YOURSELF AT HOME</p><h2 id="story-title">A familiar favorite.<br>A new little ritual.</h2><p>A hearty Fire Fighter’s Meal. Coffee just the way you like it. Pizza to share, and cheesecake worth saving room for.</p><p>That’s the spirit of Kathy’s: something comforting for whatever your day brings.</p><a class="primary-link" href="#menu">Explore the menu ↗</a></div></section>
-</main><footer class="site-footer"><a class="brand" href="/">Kathy’s<small>DINERS & CAFE</small></a><p>A little comfort in every visit.</p><nav aria-label="Footer"><a href="#menu">Menu</a><a href="/account.html">My account</a><a href="/orders.html">Order history</a><a data-signin href="/signin.html">Sign in</a><a href="#">Back to top ↑</a></nav><small>Demo website · No real payment or delivery booking</small></footer><script src="/vendor/supabase.js"></script><script type="module" src="/js/pages/landing.js"></script><script type="module" src="/js/customer-navigation.js"></script></body></html>
+</main><footer class="site-footer"><a class="brand" href="/">Kathy’s<small>DINERS & CAFE</small></a><p>A little comfort in every visit.</p><nav aria-label="Footer"><a href="#menu">Menu</a><a href="/account.html">My account</a><a href="/orders.html">Order history</a><a data-signin href="/signin.html">Sign in</a><a href="#">Back to top ↑</a></nav><small>Demo website · No real payment or delivery booking</small></footer><script src="/vendor/supabase.js"></script><script type="module" src="/js/pages/landing.js"></script><script type="module" src="/js/customer-navigation.js"></script><script type="module" src="/js/recommendations.js"></script></body></html>

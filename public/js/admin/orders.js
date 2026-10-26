@@ -6,6 +6,7 @@ const transitions={pending:['accepted','rejected','cancelled'],accepted:['prepar
 let page=1,revision=0,busy=false,selected=null;
 let visible=false,timer,inFlight=false,queued=null,lastUpdated=null;
 let kitchenMode=false;
+let actionNotice='';
 export function configureKitchenQueue(enabled){
   kitchenMode=enabled;
   document.body.classList.toggle('kitchen-workspace',enabled);
@@ -31,7 +32,7 @@ function scheduleRefresh() {
   clearTimeout(timer);
   if(visible)timer=setTimeout(()=>{
     if(!document.hidden&&!busy&&!el('orderDialog').open&&!el('orderRows').contains(document.activeElement))loadOrders(page,true);
-    else scheduleRefresh();
+    else {if(!document.hidden&&!busy&&lastUpdated)el('ordersMessage').textContent='Updates paused while you are reviewing an order. Last update: '+lastUpdated+'. Choose Refresh orders to check again.';scheduleRefresh();}
   },15000);
 }
 export function setOrdersVisible(value) {
@@ -42,26 +43,29 @@ const node=(tag,text,className)=>{const value=document.createElement(tag);if(tex
 export function clearOrders() {
   setOrdersVisible(false);inFlight=false;queued=null;lastUpdated=null;
   el('orderRows').setAttribute('aria-busy','false');
-  revision++;busy=false;selected=null;el('orderRows').replaceChildren();el('orderDetails').replaceChildren();el('orderDialog').close();el('ordersMessage').textContent='';
+    revision++;busy=false;selected=null;actionNotice='';el('orderRows').replaceChildren();el('orderDetails').replaceChildren();el('orderDialog').close();el('ordersMessage').textContent='';
 }
 export function loadOrders(nextPage=1,background=false) {
   if(inFlight||busy){if(!background)queued={nextPage,background};return;}
   inFlight=true;
-  const current=++revision;page=nextPage;
-  const finishLoading=background?()=>{}:showSkeleton(el('orderRows'),3);
+  const current=++revision;
+  const previousPage=page,previousPrev=el('ordersPrev').disabled,previousNext=el('ordersNext').disabled;
+  const finishLoading=background||lastUpdated?()=>{}:showSkeleton(el('orderRows'),3);
   if(!background)el('ordersMessage').textContent='Loading saved orders…';el('ordersRefresh').disabled=true;
   el('ordersPrev').disabled=el('ordersNext').disabled=true;
-  request('/orders?page='+page+'&status='+encodeURIComponent(el('ordersFilter').value),{},(error,data)=>{
+  request('/orders?page='+nextPage+'&status='+encodeURIComponent(el('ordersFilter').value),{},(error,data)=>{
     finishLoading();
     if(current!==revision)return;
     inFlight=false;
     if(queued){const next=queued;queued=null;loadOrders(next.nextPage,next.background);return;}
     el('ordersRefresh').disabled=false;
-    if(error){el('ordersMessage').textContent='Could not refresh orders. '+error.message+' Choose Refresh orders to retry.'+(lastUpdated?' Last successful update: '+lastUpdated+'.':'');scheduleRefresh();return;}
+    if(error){page=previousPage;el('ordersPrev').disabled=previousPrev;el('ordersNext').disabled=previousNext;el('ordersMessage').textContent='Could not refresh orders. '+error.message+' Choose Refresh orders to retry.'+(lastUpdated?' Showing previously loaded orders. Last successful update: '+lastUpdated+'.':'');scheduleRefresh();return;}
     if(background&&(!visible||document.hidden||busy||el('orderDialog').open||el('orderRows').contains(document.activeElement))){scheduleRefresh();return;}
+    page=nextPage;
     lastUpdated=new Date().toLocaleTimeString();
     el('orderRows').replaceChildren();
     el('ordersMessage').textContent=(data.total?data.total+' orders · Page '+page:'No orders in this status.')+' · Updated '+lastUpdated+'. Auto-refresh checks every 15 seconds while this queue is visible and you are not working in it.';
+    if(actionNotice){el('ordersMessage').textContent=actionNotice+' '+el('ordersMessage').textContent;actionNotice='';}
     if(data.items.some(order=>order.contact_status==='unavailable'))el('ordersMessage').textContent+=' Customer contact details could not load. Refresh to retry; if this persists, ask the owner to verify database setup.';
     el('ordersPrev').disabled=page<=1;el('ordersNext').disabled=page*20>=data.total;
     data.items.forEach(order=>{
@@ -94,7 +98,7 @@ export function loadOrders(nextPage=1,background=false) {
   });
 }
 function quickUpdate(order,status,button) {
-  if(busy||inFlight)return;
+  if(busy||inFlight){el('ordersMessage').textContent='An order update or refresh is still running. Your action was not submitted. Please try again when it finishes.';return;}
   busy=true;button.disabled=true;button.textContent='Updating…';
   const current=revision;
   request('/orders/'+order.id,{method:'PATCH',body:JSON.stringify({status,note:'',version:order.version})},(error)=>{
@@ -102,6 +106,7 @@ function quickUpdate(order,status,button) {
     busy=false;
     if(error){button.textContent='Refresh before retrying';button.disabled=true;el('ordersMessage').textContent=error.message+' Choose Refresh orders to get the latest status before trying again.';scheduleRefresh();return;}
     // Move focus outside replaced cards, only after an explicit user action.
+    actionNotice='Order '+order.id.slice(0,8).toUpperCase()+' moved to '+status+'.';
     el('ordersRefresh').focus();queued=null;loadOrders(page);
   });
 }

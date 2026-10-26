@@ -1,0 +1,16 @@
+.recommendations{margin-block:28px;padding-block:22px;border-block:1px solid var(--border-strong);color:var(--content-primary)}
+.recommendations summary{cursor:pointer;min-height:48px;padding-block:10px;font:600 24px/1.25 var(--font-display)}
+.recommendations p{max-width:70ch;color:var(--content-muted)}
+.recommendation-fields{display:grid;gap:16px;margin-block:18px}
+.recommendation-fields label{display:grid;gap:8px;font-weight:600}
+.recommendation-fields select,.recommendation-fields input{min-width:0;width:100%;min-height:48px;padding:10px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface-panel);color:var(--content-primary);font:16px var(--font-ui);box-sizing:border-box}
+.recommendation-history{display:flex;align-items:center;gap:10px;min-height:48px}
+.recommendation-history input{width:20px;height:20px;accent-color:var(--action);flex-shrink:0}
+.recommendation-submit{min-height:48px;padding:12px 22px;border:0;border-radius:10px;background:var(--action);color:var(--surface-panel);font:600 16px var(--font-ui);cursor:pointer}
+.recommendation-submit:hover{background:var(--action-hover)}
+.recommendation-submit:disabled{background:var(--disabled-surface);color:var(--content-muted);cursor:wait}
+.recommendations :focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px}
+.recommendations [data-error]{color:var(--action);font-weight:600}
+.recommendations .recommendation-reason{font-size:14px;margin-block:16px 0}
+.recommendations .catalog-grid{margin-top:20px}
+@media(min-width:640px){.recommendation-fields{grid-template-columns:1fr 1fr}}
