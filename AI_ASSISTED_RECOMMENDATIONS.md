@@ -2,7 +2,7 @@
 
 Implemented locally: 2026-10-26 (Asia/Manila).
 
-Update 2026-10-27: a separate **Chat with Kathy’s** interface now connects this recommender to optional local Ollama AI. See [CHATBOT.md](CHATBOT.md) for setup and conversational behavior. This document describes the deterministic recommendation engine and the original form; its ranking algorithm remains unchanged.
+Update 2026-10-27: a separate **Chat with Kathy’s** interface now connects this recommender to Google Gemini cloud AI. See [CHATBOT.md](CHATBOT.md) for setup and conversational behavior. This document describes the deterministic recommendation engine and the original form; its ranking algorithm remains unchanged.
 
 ## What this version does
 

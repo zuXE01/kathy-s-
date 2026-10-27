@@ -6,7 +6,7 @@ Added 2026-10-27 (Asia/Manila). Open the public menu and expand **Chat with Kath
 
 Implements the requested AI-Assisted Restaurant Ordering and Customer Recommendation System: customers describe preferences in chat, ask follow-up questions, choose a category, or opt into suggestions based on their completed orders. The existing **Help me choose** form remains available.
 
-The chatbot combines an Ollama language model for preference extraction with the existing deterministic recommendation engine. The model interprets a request; application code selects available products, checks portion prices and writes factual replies. It does not generate a fictional menu, independently confirm ingredient claims, or place orders.
+The chatbot combines an Google Gemini cloud language model for preference extraction with the existing deterministic recommendation engine. The model interprets a request; application code selects available products, checks portion prices and writes factual replies. It does not generate a fictional menu, independently confirm ingredient claims, or place orders.
 
 Example conversation:
 
@@ -17,37 +17,28 @@ Example conversation:
 
 Customers choose a portion and use **Add to cart** on the returned cards, then use the existing cart and checkout. Guests can chat and see prices but must sign in to add items. Chat itself never creates, updates, cancels or pays for an order. Demo payment/delivery messaging remains in place.
 
-## Local Ollama setup
+## Cloud AI setup
 
-Ollama runs on the same host as the Express server by default. Customers do not need to install it on their devices.
+The website server calls Google Gemini; customers need no AI installation. Create a key in [Google AI Studio](https://aistudio.google.com/apikey). Set GEMINI_API_KEY and GEMINI_MODEL on the server. Old OpenAI keys cannot authenticate with Gemini.
 
-1. Install [Ollama for Windows](https://docs.ollama.com/windows) or the appropriate runtime for your server.
-2. Start Ollama and download a model. The initial configuration uses the small [Gemma 3 1B model](https://ollama.com/library/gemma3:1b):
-
-   ```powershell
-   ollama pull gemma3:1b
-   ```
-
-3. Add these server-only entries to your existing `.env`:
+1. Set these private variables in your local .env or hosting environment:
 
    ```dotenv
    CHAT_AI_ENABLED=true
-   OLLAMA_URL=http://127.0.0.1:11434
-   OLLAMA_MODEL=gemma3:1b
+   GEMINI_API_KEY=your_private_api_key
+   GEMINI_MODEL=gemini-3.5-flash-lite
    ```
 
-4. Restart Kathy’s server with `npm start`.
-5. Run `npm run test:chat-ai` to check real model interpretation using synthetic requests and the source catalog.
+2. Restart the website with `npm start`.
+3. Run `npm run test:chat-ai` to check three synthetic requests against the actual provider. This consumes API usage; it sends no real account/order data.
 
-If the Ollama desktop application is not running, `ollama serve` starts its server. Do not start a second copy if the port is already in use. The package example defaults to `CHAT_AI_ENABLED=false` so existing deployments start without a model.
+A configured key enables cloud AI unless CHAT_AI_ENABLED=false. Without a key, the website continues in clearly labeled basic mode; explicitly enabling AI without a key reports a configuration error. Keep the key in server environment variables, never in HTML, public scripts, browser configuration or Git. The default gemini-3.5-flash-lite model has a [free tier](https://ai.google.dev/gemini-api/docs/pricing) with account/model limits. Check quota in AI Studio; enabling billing can incur charges. Free-tier content may be used to improve Google products, so avoid personal/payment details.
 
-No hosted-AI key or new npm dependency is required. A small model can misunderstand complex wording. Review the displayed **Current choices**, refine the request or start a new chat. Hardware and model load time affect latency; larger models need separate latency and extraction-quality testing.
-
-For a hosted Kathy’s website, `127.0.0.1` refers to its server, not the owner’s laptop. Provision Ollama on a private reachable host and set `OLLAMA_URL` accordingly; installing it on this development computer does not activate AI on Render. Keep the model API private. No deployment, tunnel, public Ollama exposure or cloud infrastructure is created by this feature.
+On Render, set the same variables on the web service and redeploy/restart. No Ollama runtime, local model, tunnel or public AI port is needed. Hosting configuration and deployment have not been changed by this implementation. Model/API errors, exhausted quota and timeouts use the visible basic fallback.
 
 ## Honest modes and fallback
 
-- **AI:** Ollama returned valid structured preferences; the server used the live menu to answer.
+- **AI:** Google Gemini returned valid structured preferences; the server used the live menu to answer.
 - **Basic:** AI is disabled. A limited English parser handles category names, catalog words, price limits and hot/cold follow-ups.
 - **Fallback:** AI is configured but offline, busy, slow or returned invalid output. Basic matching answers when it can, with a visible notice.
 - **Guided:** Built-in ordering, history-consent, dietary or clarification guidance; this reply did not require model inference.
@@ -58,7 +49,7 @@ The browser labels these modes. A basic reply is never presented as a model-gene
 
 `public/js/menu-chat.js` sends the current message, validated preference context and explicit history choice to `POST /api/chat`. `server/chat.js` verifies any requested history access, reads the public catalog, interprets the message, filters matching candidates and calls the existing recommender. `createMenuCard` displays the latest suggestions and reuses `addToCart`.
 
-`server/ollama-chat.js` calls Ollama’s [chat endpoint](https://docs.ollama.com/api/chat) with non-streaming [structured JSON output](https://docs.ollama.com/capabilities/structured-outputs). The prompt includes only the current message, previous preference fields, schema and public catalog section names. Completed orders, customer identities, contact fields, authentication tokens and payment information are never included in the model request.
+`server/cloud-chat.js` calls Gemini’s [generateContent endpoint](https://ai.google.dev/api/generate-content) with JSON Schema output. The API key travels only in the server request’s x-goog-api-key header. Only the current message, previous preference fields, schema and public catalog section names enter the prompt. Completed orders, customer identities, contact fields, authentication tokens and payment information are never included. The typed message is sent to Google; provider retention and data-use policies apply. Blocked, truncated, malformed and invalid outputs use basic fallback.
 
 `server/recommendation-history.js` is shared with the existing recommendation endpoint. It verifies the bearer token, queries `items,status` for the verified owner’s latest 50 completed orders, and retains request-scoped RLS. Browser-supplied owner IDs have no effect.
 
@@ -115,5 +106,12 @@ No new database tables, migrations or permission policies are required. Deployme
 
 - All 170 automated tests passed, including 12 new chatbot tests and the existing recommendation, authentication, checkout, staff-order and payment tests.
 - Browser scenarios passed at 320px, 390px and 1280px using synthetic data; 390px and 1280px captures were visually inspected. The cream/navy/burgundy identity, readable messages and responsive controls are preserved.
-- The installed-browser checks exercise basic mode, not a real model. Provider request/schema validation and failure fallback are separately tested with a mock Ollama response.
+- The installed-browser checks exercise basic mode, not a real model. Provider request/schema validation and failure fallback are separately tested with a mock cloud response.
 - No Render deployment or live database mutation/query was performed. Real-device and screen-reader checks remain unverified. The Impeccable helper was unavailable in this session; no detector certification is claimed.
+
+
+### Gemini migration — 2026-10-27
+
+The active cloud adapter now uses Gemini; no OpenAI request is made. Configure GEMINI_API_KEY privately and restart the server, then run npm run test:chat-ai. No Gemini credential was present during migration, so live model inference remains unverified. No deployment or database change was performed.
+
+- Gemini migration validation: all 170 tests passed, including provider-header/schema and blocked/truncated/error response cases. Browser scenarios passed at 320px, 390px and 1280px using synthetic data/basic mode. The live smoke check stopped with the expected missing GEMINI_API_KEY configuration error. The unused OpenAI SDK was removed; Gemini uses the built-in server fetch. Tests ran with Node 24 in this workspace; the hosting target remains Node 22.

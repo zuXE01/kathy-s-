@@ -95,7 +95,7 @@ Keep public URLs and HTML entry points stable. Add new page behavior under `publ
 
 ## Development notes
 
-**Chat with Kathy’s** adds conversational menu recommendations with optional local Ollama AI, follow-up preferences and private completed-order personalization. See [chatbot setup, privacy and verification](CHATBOT.md). The AI runtime is separate from the website server; the chat clearly labels basic fallback when it is unavailable.
+**Chat with Kathy’s** adds conversational menu recommendations with Google Gemini cloud AI, follow-up preferences and private completed-order personalization. See [chatbot setup, privacy and verification](CHATBOT.md). The API key stays on the website server; the chat clearly labels basic fallback when it is unavailable.
 
 The menu's **Help me choose** panel offers preference-based suggestions and optional completed-order personalization. See [AI-assisted recommendation setup, ranking and limitations](AI_ASSISTED_RECOMMENDATIONS.md). It needs no additional AI key or database migration.
 

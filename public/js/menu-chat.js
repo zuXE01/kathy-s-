@@ -53,7 +53,7 @@ export function initMenuChat() {
   fetch('/api/chat/config', { cache: 'no-store' }).then(response => {
     if (!response.ok) throw new Error('Config unavailable'); return response.json();
   }).then(config => {
-    if (!disposed) mode.textContent = config.aiEnabled ? 'Local AI enabled. You can refine your request in a follow-up.' : 'Basic menu matching. Local AI is not connected.';
+    if (!disposed) mode.textContent = config.aiEnabled ? 'Cloud AI enabled. You can refine your request in a follow-up.' : 'Basic menu matching. Cloud AI is not connected.';
   }).catch(() => { if (!disposed) mode.textContent = 'Menu assistant. Send a message to check availability.'; });
   el('chatReset').addEventListener('click', () => { reset(); input.focus(); });
   history.addEventListener('change', () => reset(history.checked ? 'Completed orders enabled. Ask for your usual or tell me what you feel like.' : 'Completed orders turned off. What would you like to try?'));
@@ -98,8 +98,8 @@ export function initMenuChat() {
       if (typeof response.reply !== 'string' || !Array.isArray(response.recommendations) || !response.state) throw new Error('The reply could not be read. Please retry.');
       state = response.state; pending = null;
       bubble('assistant', response.reply);
-      mode.textContent = { ai: 'Understood with local AI.', basic: 'Basic menu matching. Local AI is not connected.',
-        fallback: 'Local AI is unavailable. Using basic menu matching for this reply.', guided: 'Menu and ordering guidance.' }[response.mode] || 'Menu assistant';
+      mode.textContent = { ai: 'Understood with cloud AI.', basic: 'Basic menu matching. Cloud AI is not connected.',
+        fallback: 'Cloud AI is unavailable. Using basic menu matching for this reply.', guided: 'Menu and ordering guidance.' }[response.mode] || 'Menu assistant';
       const category = { all: 'Any category', bites: 'Food', coffee: 'Drinks', sweet: 'Desserts' }[state.category];
       el('chatPreferences').textContent = 'Current choices: ' + [category, state.section !== 'all' ? state.section : '', state.query,
         state.temperature !== 'any' ? state.temperature + ' portions' : '', state.budget !== null ? 'up to ₱' + state.budget + ' per portion' : 'any price'].filter(Boolean).join(' · ');

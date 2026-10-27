@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const express = require('express');
 const { chatRouter } = require('../server/chat');
 const { initialState, basicIntent, filterChatMenu, cleanIntent } = require('../server/chat-intent');
-const { ollamaConfig, createOllamaInterpreter } = require('../server/ollama-chat');
+const { cloudConfig, createCloudInterpreter } = require('../server/cloud-chat');
 const menu = [
   { id: 'coffee', name: 'Americano', category: 'coffee', section: 'Coffee', available: true, variants: [{ label: 'Hot', price: 100 }, { label: 'Cold', price: 135 }] },
   { id: 'matcha', name: 'Matcha Latte', category: 'coffee', section: 'Non Coffee', available: true, variants: [{ label: 'Hot', price: 120 }, { label: 'Cold', price: 145 }] },
@@ -40,26 +40,41 @@ test('allergy requests stay blocked across follow-ups until explicit reset; no i
   assert.equal(basicIntent('cheaper', initialState(), menu).intent, 'budget');
 });
 test('model configuration and output reject unknown states, sections and invalid prices', () => {
-  assert.equal(ollamaConfig({}), null);
-  assert.throws(() => ollamaConfig({ CHAT_AI_ENABLED: 'true' }));
-  assert.throws(() => ollamaConfig({ CHAT_AI_ENABLED: 'true', OLLAMA_URL: 'file:///tmp', OLLAMA_MODEL: 'test' }));
+  assert.equal(cloudConfig({}), null);
+  assert.equal(cloudConfig({ OPENAI_API_KEY: 'old-provider-key' }), null);
+  assert.throws(() => cloudConfig({ GEMINI_API_KEY: 'test', GEMINI_MODEL: '../bad' }));
+  assert.throws(() => cloudConfig({ CHAT_AI_ENABLED: 'true' }));
+  assert.equal(cloudConfig({ CHAT_AI_ENABLED: 'false', GEMINI_API_KEY: 'test' }), null);
+  assert.equal(cloudConfig({ GEMINI_API_KEY: 'test' }).endpoint, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent');
   assert.equal(cleanIntent({ intent: 'recommend', state: { ...initialState(), section: 'Imaginary' } }, menu), null);
   assert.equal(cleanIntent({ intent: 'recommend', state: { ...initialState(), budget: -5 } }, menu), null);
   const missing = initialState(); delete missing.budget;
   assert.equal(cleanIntent({ intent: 'recommend', state: missing }, menu), null);
 });
-test('Ollama requests structured extraction only, validates output and never includes account history', async () => {
+test('Cloud AI requests structured extraction only, validates output and never includes account history', async () => {
   let captured;
   const desired = { intent: 'recommend', state: { ...initialState(), category: 'coffee', budget: 150 } };
-  const interpret = createOllamaInterpreter({ endpoint: 'http://127.0.0.1:11434/api/chat', model: 'test' }, async (_url, options) => {
+  const interpret = createCloudInterpreter(cloudConfig({ GEMINI_API_KEY: 'private-test-key' }), async (_url, options) => {
+    assert.equal(_url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent');
+    assert.equal(options.headers['x-goog-api-key'], 'private-test-key');
     captured = JSON.parse(options.body);
-    return new Response(JSON.stringify({ message: { content: JSON.stringify(desired) } }));
+    return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(desired) }] } }] }));
   });
   assert.deepEqual(await interpret('a drink below 150 pesos', initialState(), menu, new AbortController().signal), desired);
-  assert.equal(captured.stream, false); assert.equal(captured.format.type, 'object');
-  assert.equal(captured.messages.length, 2); assert.doesNotMatch(JSON.stringify(captured), /user_id|access_token|completed.*items/);
-  const malformed = createOllamaInterpreter({ endpoint: 'http://local/api/chat', model: 'test' }, async () => new Response(JSON.stringify({ message: { content: '{bad' } })));
+  assert.equal(captured.generationConfig.responseMimeType, 'application/json'); assert.equal(captured.generationConfig.responseJsonSchema.type, 'object');
+  assert.equal(captured.generationConfig.responseJsonSchema.additionalProperties, false); assert.doesNotMatch(JSON.stringify(captured), /private-test-key/);
+  assert.equal(captured.contents.length, 1); assert.doesNotMatch(JSON.stringify(captured), /user_id|access_token|completed.*items/);
+  const malformed = createCloudInterpreter(cloudConfig({ GEMINI_API_KEY: 'private-test-key' }), async () => new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{bad' }] } }] })));
   await assert.rejects(malformed('hello', initialState(), menu, new AbortController().signal));
+  for (const payload of [
+    { candidates: [{ finishReason: 'MAX_TOKENS' }] },
+    { promptFeedback: { blockReason: 'SAFETY' } }
+  ]) {
+    const refused = createCloudInterpreter(cloudConfig({ GEMINI_API_KEY: 'test' }), async () => Response.json(payload));
+    await assert.rejects(refused('hello', initialState(), menu, new AbortController().signal));
+  }
+  const unavailable = createCloudInterpreter(cloudConfig({ GEMINI_API_KEY: 'test' }), async () => Response.json({ error: { status: 'PERMISSION_DENIED', message: 'secret must never be echoed' } }, { status: 401 }));
+  await assert.rejects(unavailable('hello', initialState(), menu, new AbortController().signal), error => error.message === 'Cloud AI HTTP 401 (PERMISSION_DENIED)');
 });
 async function fixture(t, interpret) {
   const reads = []; let historyFails = false, menuFails = false;
@@ -110,7 +125,7 @@ test('chat history requires explicit opt-in and verified owner; a forged user ID
   assert.equal(fallback.history, 'unavailable'); assert.match(fallback.reply, /could not be loaded/);
 });
 test('AI failure has an honest basic fallback; catalog errors and invalid messages recover cleanly', async t => {
-  const f = await fixture(t, async () => { throw new Error('Ollama unavailable'); });
+  const f = await fixture(t, async () => { throw new Error('Cloud unavailable'); });
   const result = await (await f.send({ message: 'coffee under 150' })).json();
   assert.equal(result.mode, 'fallback'); assert.ok(result.recommendations.length);
   assert.equal((await f.send({ message: ' ' })).status, 400);

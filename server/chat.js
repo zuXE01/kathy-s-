@@ -4,10 +4,10 @@ const { readMenu } = require('./menu-store');
 const { recommend } = require('./recommendations');
 const { readRecommendationHistory } = require('./recommendation-history');
 const { initialState, cleanState, guardedIntent, basicIntent, filterChatMenu } = require('./chat-intent');
-const { ollamaConfig, createOllamaInterpreter } = require('./ollama-chat');
+const { cloudConfig, createCloudInterpreter } = require('./cloud-chat');
 
 function chatRouter(url, key, createClient, env, dependencies = {}) {
-  const interpret = dependencies.interpret || createOllamaInterpreter(ollamaConfig(env));
+  const interpret = dependencies.interpret || createCloudInterpreter(cloudConfig(env));
   const router = express.Router();
   router.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
   router.get('/config', (_req, res) => res.json({ aiEnabled: !!interpret }));
