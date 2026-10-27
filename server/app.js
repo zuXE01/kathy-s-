@@ -7,6 +7,7 @@ const { adminRouter } = require('./admin');
 const { readMenu } = require('./menu-store');
 const { ordersRouter } = require('./orders');
 const { recommendationsRouter } = require('./recommendations');
+const { chatRouter } = require('./chat');
 const { mayaConfig,createMayaClient } = require('./maya-client.cjs');
 const { mayaRouter,createPaymentService } = require('./maya-payments.cjs');
 const {createReliablePaymentService,startPaymentWorker}=require('./maya-reliability.cjs');
@@ -63,6 +64,7 @@ function createApp(env = process.env, createAuthClient = createClient) {
   app.use('/api/payments/maya',mayaRouter({config:sandbox,url,key,secret:env.SUPABASE_SECRET_KEY,createClient:createAuthClient,paymentService}));
   app.use('/api/orders', ordersRouter(url,key,createAuthClient,{mayaEnabled:!!sandbox,paymentService}));
   app.use('/api/recommendations', recommendationsRouter(url,key,createAuthClient));
+  app.use('/api/chat', chatRouter(url,key,createAuthClient,env));
   app.get('/api/menu', async (_req, res) => {
     res.set('Cache-Control', 'no-store');
     try {

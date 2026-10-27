@@ -95,6 +95,8 @@ Keep public URLs and HTML entry points stable. Add new page behavior under `publ
 
 ## Development notes
 
+**Chat with Kathy’s** adds conversational menu recommendations with optional local Ollama AI, follow-up preferences and private completed-order personalization. See [chatbot setup, privacy and verification](CHATBOT.md). The AI runtime is separate from the website server; the chat clearly labels basic fallback when it is unavailable.
+
 The menu's **Help me choose** panel offers preference-based suggestions and optional completed-order personalization. See [AI-assisted recommendation setup, ranking and limitations](AI_ASSISTED_RECOMMENDATIONS.md). It needs no additional AI key or database migration.
 
 The menu was transcribed from the supplied Kathy's Diners / Cafe photos. See [menu setup, editing and verification](MENU_CATALOG.md) before setting up another database. Orders are saved through the server to Supabase. See [order setup and limits](CHECKOUT.md). Payments and delivery booking remain demo-only. Supabase controls authentication and email delivery; configure its email provider and production policies before inviting real customers.

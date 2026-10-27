@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
     "test": "node --test test/*.test.cjs",
+    "test:chat-ai": "node --env-file-if-exists=.env scripts/check-chat-ai.cjs",
     "test:database": "node scripts/verify-review-database.cjs",
     "payments:reconcile": "node --env-file-if-exists=.env scripts/reconcile-maya.cjs"
   },

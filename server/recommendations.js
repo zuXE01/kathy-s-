@@ -1,5 +1,6 @@
 const express = require('express');
 const { readMenu } = require('./menu-store');
+const { readRecommendationHistory } = require('./recommendation-history');
 
 function preferences(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return null;
@@ -61,23 +62,10 @@ function recommendationsRouter(url, key, createClient) {
     if (!prefs) return res.status(400).json({ error: 'Choose a valid menu group, section and positive price limit.' });
     try {
       const publicClient = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-      let history = 'off', orders = [];
-      if (prefs.useHistory) {
-        const token = /^Bearer (\S+)$/.exec(req.headers.authorization || '')?.[1];
-        if (!token) return res.status(401).json({ error: 'Sign in to use your completed orders.' });
-        const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false }, global: { headers: { Authorization: 'Bearer ' + token } } });
-        const { data, error } = await client.auth.getUser(token);
-        if (error || !data.user || data.user.is_anonymous) return res.status(401).json({ error: 'Sign in again to use your completed orders.' });
-        try {
-          const result = await client.from('orders').select('items,status').eq('user_id', data.user.id)
-            .eq('status', 'completed').order('created_at', { ascending: false }).order('id').range(0, 49);
-          if (result.error || !Array.isArray(result.data)) throw new Error('History unavailable');
-          orders = result.data; history = orders.length ? 'used' : 'empty';
-        } catch { history = 'unavailable'; }
-      }
+      const { history, orders } = await readRecommendationHistory({ useHistory: prefs.useHistory, authorization: req.headers.authorization, url, key, createClient });
       const menu = await readMenu(publicClient, { publicOnly: true });
       res.json({ recommendations: recommend(menu, prefs, orders), history });
-    } catch { res.status(503).json({ error: 'Suggestions are unavailable. Try again or browse the full menu below.' }); }
+    } catch (error) { res.status(error.status === 401 ? 401 : 503).json({ error: error.status === 401 ? error.message : 'Suggestions are unavailable. Try again or browse the full menu below.' }); }
   });
   router.use((error, _req, res, _next) => res.status(error.status === 413 ? 413 : 400).json({ error: 'Invalid recommendation request.' }));
   return router;

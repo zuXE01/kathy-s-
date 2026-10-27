@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Kathy’s Diners & Cafe: comforting meals, coffee, pizza, pasta and sweet treats."><title>Kathy’s — Good food. Good company.</title><link rel="stylesheet" href="/menu-cards.css"><link rel="stylesheet" href="/cart.css"><link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/restaurant.css"><link rel="stylesheet" href="/color-tokens.css"><link rel="stylesheet" href="/recommendations.css"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Explore Kathy’s Diners & Cafe: comforting meals, coffee, pizza, pasta and sweet treats."><title>Kathy’s — Good food. Good company.</title><link rel="stylesheet" href="/menu-cards.css"><link rel="stylesheet" href="/cart.css"><link rel="stylesheet" href="/motion.css"><link rel="stylesheet" href="/restaurant.css"><link rel="stylesheet" href="/color-tokens.css"><link rel="stylesheet" href="/recommendations.css"><link rel="stylesheet" href="/menu-chat.css"></head>
 <body class="restaurant"><a class="skip-link" href="#menu">Skip to menu</a>
 <div class="announcement">A LITTLE COMFORT IN EVERY VISIT</div>
 <header class="site-header"><a class="brand" href="/" aria-label="Kathy’s home"><img src="/assets/logo.jpg" width="44" height="44" alt=""><span>Kathy’s<small>DINERS & CAFE</small></span></a><nav aria-label="Main navigation"><a href="#menu">Menu</a><a href="#story">Our story</a><a class="nav-account" href="/account.html">My account</a><a class="nav-orders" href="/orders.html">Orders</a><a data-signin href="/signin.html">Sign in</a><a data-admin hidden href="/admin.html">Admin</a><button data-signout hidden type="button">Sign out</button></nav></header>
@@ -24,6 +24,35 @@
           <div class="section-heading"><div><p class="eyebrow">KATHY'S DINERS &amp; CAFE</p><h2 id="menuTitle">Find your next favorite.</h2></div><span class="preview-tag">Full menu</span></div>
           <p class="section-description">Explore food, drinks and sweet treats. Choose a portion to see its price in Philippine pesos. Sign in to add items to your cart.</p>
           <p class="catalog-access-note" data-auth-prompt>Menu and prices are public. <a data-signin href="/signin.html">Sign in to add to cart</a>.</p>
+          <details class="menu-chat" id="menuChat">
+            <summary>Chat with Kathy’s</summary>
+            <p class="chat-intro">Tell us what you’re craving. Find menu options by preference, category or your previous orders.</p>
+            <p class="chat-mode" id="chatMode">Checking assistant availability…</p>
+            <div class="chat-prompts" role="group" aria-label="Start with a menu category">
+              <button type="button" data-chat-prompt="Recommend food">Food</button>
+              <button type="button" data-chat-prompt="Recommend drinks">Drinks</button>
+              <button type="button" data-chat-prompt="Recommend desserts">Desserts</button>
+              <button type="button" data-chat-prompt="Coffee under PHP 150">Coffee under ₱150</button>
+            </div>
+            <div class="chat-log" id="chatLog" role="log" aria-label="Conversation with Kathy’s assistant" aria-live="polite" aria-relevant="additions text" tabindex="0"></div>
+            <p class="chat-preferences" id="chatPreferences"></p>
+            <label class="chat-history"><input type="checkbox" id="chatHistory" disabled aria-describedby="chatHistoryHelp">Use my completed orders</label>
+            <p class="chat-history-help" id="chatHistoryHelp">Sign in to use your completed orders or add items to your cart.</p>
+            <form class="chat-form" id="chatForm" aria-busy="false">
+              <label for="chatMessage">What would you like?</label>
+              <textarea id="chatMessage" rows="2" maxlength="500" required placeholder="Try “coffee under ₱150”, then “make it cold”" aria-describedby="chatPrivacy"></textarea>
+              <div class="chat-actions">
+                <button class="chat-send" id="chatSend" type="submit">Send message</button>
+                <button id="chatCancel" type="button" hidden>Stop reply</button>
+                <button id="chatRetry" type="button" hidden>Retry message</button>
+                <button id="chatReset" type="button">New chat</button>
+              </div>
+            </form>
+            <p class="chat-status" id="chatStatus" role="status" aria-live="polite"></p>
+            <h3 class="chat-results-heading" id="chatResultsHeading" hidden>Menu suggestions</h3>
+            <div class="catalog-grid" id="chatResults"></div>
+            <p class="chat-footer" id="chatPrivacy">Chat stays in this tab and clears when you leave or change accounts. Messages are processed by the restaurant’s assistant; avoid personal or payment details. Sign in to add items, then review them in your cart. Demo ordering only. <a href="#contact">Contact the restaurant</a> · <a href="/orders.html">My orders</a></p>
+          </details>
           <details class="recommendations" id="recommendations">
             <summary>Help me choose</summary>
             <p>Find a few menu options that fit your choices, with a reason for each suggestion.</p>
@@ -61,4 +90,4 @@
   </address>
 </section>
 <section class="story" id="story" aria-labelledby="story-title"><div class="story-mark" aria-hidden="true">K.<span>GOOD FOOD<br>GOOD COMPANY</span></div><div><p class="kicker">MAKE YOURSELF AT HOME</p><h2 id="story-title">A familiar favorite.<br>A new little ritual.</h2><p>A hearty Fire Fighter’s Meal. Coffee just the way you like it. Pizza to share, and cheesecake worth saving room for.</p><p>That’s the spirit of Kathy’s: something comforting for whatever your day brings.</p><a class="primary-link" href="#menu">Explore the menu ↗</a></div></section>
-</main><footer class="site-footer"><a class="brand" href="/">Kathy’s<small>DINERS & CAFE</small></a><p>A little comfort in every visit.</p><nav aria-label="Footer"><a href="#menu">Menu</a><a href="/account.html">My account</a><a href="/orders.html">Order history</a><a data-signin href="/signin.html">Sign in</a><a href="#">Back to top ↑</a></nav><small>Demo website · No real payment or delivery booking</small></footer><script src="/vendor/supabase.js"></script><script type="module" src="/js/pages/landing.js"></script><script type="module" src="/js/customer-navigation.js"></script><script type="module" src="/js/recommendations.js"></script></body></html>
+</main><footer class="site-footer"><a class="brand" href="/">Kathy’s<small>DINERS & CAFE</small></a><p>A little comfort in every visit.</p><nav aria-label="Footer"><a href="#menu">Menu</a><a href="/account.html">My account</a><a href="/orders.html">Order history</a><a data-signin href="/signin.html">Sign in</a><a href="#">Back to top ↑</a></nav><small>Demo website · No real payment or delivery booking</small></footer><script src="/vendor/supabase.js"></script><script type="module" src="/js/pages/landing.js"></script><script type="module" src="/js/customer-navigation.js"></script><script type="module" src="/js/recommendations.js"></script><script type="module" src="/js/menu-chat.js"></script></body></html>
