@@ -1,0 +1,241 @@
+{
+  "title": "Load Bearing Skill",
+  "subtitle": "How the skill turns a plan into verified assumptions.",
+  "metadata": {
+    "purpose": "onboarding",
+    "sourceRoot": "/path/to/source",
+    "generatedBy": "flowchart skill"
+  },
+  "views": [
+    {
+      "id": "overview",
+      "label": "Overview",
+      "description": "The required phase sequence."
+    },
+    {
+      "id": "debug",
+      "label": "Debug",
+      "description": "Highlights handoffs and loops where results can weaken.",
+      "highlightNodeIds": ["discover", "strategize", "validate", "evaluate", "assumption-ledger"]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "frame",
+      "label": "Frame Goal",
+      "type": "entry",
+      "level": 0,
+      "lane": "Main",
+      "position": { "x": 80, "y": 220 },
+      "summary": "Collect the plan or intended approach and restate the goal.",
+      "description": "This step turns the user's request and plan into a short shared brief. Later steps use that brief so they all check the same goal.",
+      "badges": ["phase 0"],
+      "evidence": [
+        { "label": "Phase 0", "path": "load-bearing/SKILL.md", "lines": "72-75" }
+      ]
+    },
+    {
+      "id": "discover",
+      "label": "Discover Assumptions",
+      "type": "llm-call",
+      "level": 1,
+      "lane": "Main",
+      "position": { "x": 260, "y": 220 },
+      "summary": "A stateful finder enumerates falsifiable assumptions the plan depends on.",
+      "description": "The model reads the brief and lists claims that could change the plan if they are wrong. The main agent reviews that list and keeps only claims that still need proof.",
+      "badges": ["stateful", "checkpoint"],
+      "model": "default Codex subagent model",
+      "modelSelection": "Uses the stateful finder size requested by the load-bearing skill.",
+      "prompts": [
+        {
+          "label": "Finder prompt",
+          "language": "markdown",
+          "summary": "This prompt asks the finder to identify the assumptions that the plan depends on.",
+          "content": "You are finding the load-bearing assumptions in a plan. Think as hard as you can."
+        }
+      ],
+      "evidence": [
+        { "label": "Phase 1", "path": "load-bearing/SKILL.md", "lines": "76-93" }
+      ]
+    },
+    {
+      "id": "strategize",
+      "label": "Choose Validation",
+      "type": "llm-call",
+      "level": 2,
+      "lane": "Main",
+      "position": { "x": 470, "y": 220 },
+      "summary": "A separate strategist assigns the cheapest reliable validation method.",
+      "description": "The model pairs each claim with the cheapest trustworthy way to check it. The main agent reviews the choices and avoids unsafe commands or unnecessary extra work.",
+      "badges": ["stateful", "checkpoint"],
+      "model": "default Codex subagent model",
+      "modelSelection": "Uses the stateful strategist size requested by the load-bearing skill.",
+      "prompts": [
+        {
+          "label": "Strategist prompt",
+          "language": "markdown",
+          "summary": "This prompt asks the strategist to choose the cheapest reliable validation method for each assumption.",
+          "content": "You are assigning each assumption the best way to VALIDATE it. Think as hard as you can."
+        }
+      ],
+      "evidence": [
+        { "label": "Phase 2", "path": "load-bearing/SKILL.md", "lines": "95-103" }
+      ]
+    },
+    {
+      "id": "validate",
+      "label": "Validate In Parallel",
+      "type": "phase",
+      "level": 3,
+      "lane": "Main",
+      "position": { "x": 690, "y": 220 },
+      "summary": "Stateless validators gather direct evidence for each validation target.",
+      "description": "Separate workers check the selected claims at the same time. One path can proceed directly, while another stops for approval if the check would change something.",
+      "badges": ["parallel", "stateless"],
+      "expanded": false,
+      "evidence": [
+        { "label": "Phase 3", "path": "load-bearing/SKILL.md", "lines": "105-113" }
+      ]
+    },
+    {
+      "id": "validator-target",
+      "label": "Target Brief",
+      "type": "artifact",
+      "parent": "validate",
+      "level": 4,
+      "lane": "Parallel validators",
+      "position": { "x": 720, "y": 90 },
+      "summary": "Gives each worker the claim, chosen check, and safety limits.",
+      "description": "This brief is the entry point for the validator work. It splits into a safe direct check and a path that may need approval before changing anything.",
+      "badges": ["entry"]
+    },
+    {
+      "id": "validator-a",
+      "label": "Validator A",
+      "type": "llm-call",
+      "parent": "validate",
+      "level": 4,
+      "lane": "Parallel validators",
+      "position": { "x": 880, "y": 90 },
+      "summary": "Validates one high-cost claim or a safe grouped set.",
+      "description": "This worker checks one important claim, or a small set that can be checked together. It can finish directly because its assigned check does not need approval.",
+      "badges": ["evidence"],
+      "model": "default Codex subagent model",
+      "modelSelection": "Uses a stateless validator size selected for the assigned claim.",
+      "tools": ["read-only shell", "repo inspection", "official docs or web when needed"],
+      "prompts": [
+        {
+          "label": "Validator prompt",
+          "language": "markdown",
+          "summary": "This prompt asks a validator to gather evidence and report a rigorous verdict.",
+          "content": "Validate the assigned assumption(s) and report back. Think rigorously; do not rubber-stamp them."
+        }
+      ]
+    },
+    {
+      "id": "validator-b",
+      "label": "Validator B",
+      "type": "llm-call",
+      "parent": "validate",
+      "level": 4,
+      "lane": "Parallel validators",
+      "position": { "x": 880, "y": 250 },
+      "summary": "Runs independently so validation results are not contaminated.",
+      "description": "This worker starts fresh so it does not copy another worker's reasoning. Its path includes an approval stop because its check may require a change.",
+      "badges": ["fresh context"],
+      "model": "default Codex subagent model",
+      "modelSelection": "Uses a stateless validator size selected for the assigned claim.",
+      "tools": ["read-only shell", "repo inspection", "official docs or web when needed"],
+      "prompts": [
+        {
+          "label": "Validator prompt",
+          "language": "markdown",
+          "summary": "This prompt asks an independent validator to check assigned assumptions without rubber-stamping them.",
+          "content": "Validate the assigned assumption(s) and report back. Think rigorously; do not rubber-stamp them."
+        }
+      ]
+    },
+    {
+      "id": "blocked-action",
+      "label": "Blocked Action",
+      "type": "failure",
+      "parent": "validate",
+      "level": 4,
+      "lane": "Parallel validators",
+      "position": { "x": 1080, "y": 250 },
+      "summary": "State-changing validation is reported for user approval.",
+      "description": "If checking a claim would change files, data, settings, or outside systems, the worker stops. It tells the main agent what approval would be needed.",
+      "badges": ["approval"]
+    },
+    {
+      "id": "validator-report",
+      "label": "Evidence Report",
+      "type": "artifact",
+      "parent": "validate",
+      "level": 4,
+      "lane": "Parallel validators",
+      "position": { "x": 1080, "y": 90 },
+      "summary": "Collects the worker verdicts and proof for the judging step.",
+      "description": "This report is the exit point for the validator work. It gathers direct proof, blocked approval requests, and confidence notes before the main agent judges the results.",
+      "badges": ["exit"]
+    },
+    {
+      "id": "evaluate",
+      "label": "Evaluate Loop",
+      "type": "decision",
+      "level": 4,
+      "lane": "Main",
+      "position": { "x": 900, "y": 220 },
+      "summary": "Judge reports skeptically and loop on weak, inconclusive, or newly surfaced assumptions.",
+      "description": "The main agent reads each report and decides whether the plan can rely on it. Weak proof sends the claim back for a better check.",
+      "badges": ["loop"],
+      "evidence": [
+        { "label": "Phase 4", "path": "load-bearing/SKILL.md", "lines": "115-124" }
+      ]
+    },
+    {
+      "id": "report",
+      "label": "Report Facts",
+      "type": "artifact",
+      "level": 5,
+      "lane": "Main",
+      "position": { "x": 1110, "y": 220 },
+      "summary": "Summarize verified facts, falsified assumptions, residual risks, and open items.",
+      "description": "The final report tells the user what the plan can rely on, what turned out wrong, and what still needs a decision. It keeps the findings separate so the next step is clear.",
+      "badges": ["phase 5"],
+      "evidence": [
+        { "label": "Phase 5", "path": "load-bearing/SKILL.md", "lines": "126-127" }
+      ]
+    },
+    {
+      "id": "assumption-ledger",
+      "label": "Assumption Ledger",
+      "type": "artifact",
+      "level": 2,
+      "lane": "Artifacts",
+      "position": { "x": 560, "y": 430 },
+      "summary": "The central table tracks claim, method, status, and evidence.",
+      "description": "This shared table keeps the claims, chosen checks, current status, and proof together. It lets the main agent see what is settled and what still needs work.",
+      "badges": ["state"],
+      "evidence": [
+        { "label": "Ledger", "path": "load-bearing/SKILL.md", "lines": "129-137" }
+      ]
+    }
+  ],
+  "edges": [
+    { "id": "frame-discover", "source": "frame", "target": "discover", "type": "flow", "label": "goal + plan" },
+    { "id": "discover-strategize", "source": "discover", "target": "strategize", "type": "flow", "label": "reviewed claims" },
+    { "id": "strategize-validate", "source": "strategize", "target": "validate", "type": "flow", "label": "methods", "summary": "The selected checks and claim groups become validator assignments." },
+    { "id": "validate-evaluate", "source": "validate", "target": "evaluate", "type": "flow", "label": "evidence reports", "summary": "The evidence report moves to the judging step." },
+    { "id": "evaluate-report", "source": "evaluate", "target": "report", "type": "flow", "label": "settled facts" },
+    { "id": "evaluate-loop", "source": "evaluate", "target": "strategize", "type": "error", "label": "weak or new assumptions" },
+    { "id": "discover-ledger", "source": "discover", "target": "assumption-ledger", "type": "data", "label": "claims" },
+    { "id": "strategize-ledger", "source": "strategize", "target": "assumption-ledger", "type": "data", "label": "methods" },
+    { "id": "validate-ledger", "source": "validate", "target": "assumption-ledger", "type": "data", "label": "status + evidence", "summary": "The validation status and proof update the shared table." },
+    { "id": "target-a", "source": "validator-target", "target": "validator-a", "type": "control", "label": "safe direct check", "summary": "This path can gather proof without changing files or outside systems." },
+    { "id": "target-b", "source": "validator-target", "target": "validator-b", "type": "control", "label": "may need approval", "summary": "This path is used when proof might require a change that needs approval." },
+    { "id": "a-report", "source": "validator-a", "target": "validator-report", "type": "evidence", "label": "direct proof", "summary": "The safe worker sends its verdict and proof straight to the report." },
+    { "id": "b-blocked", "source": "validator-b", "target": "blocked-action", "type": "error", "label": "approval needed", "summary": "The worker stops here when the next proof step would change something." },
+    { "id": "blocked-report", "source": "blocked-action", "target": "validator-report", "type": "evidence", "label": "blocked request", "summary": "The blocked action is reported so the main agent can ask for approval." }
+  ]
+}

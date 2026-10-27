@@ -1,0 +1,11 @@
+subagent-output/
+
+node_modules/
+.opencode/node_modules/
+
+__pycache__/
+*.py[cod]
+
+*.tmp
+*.log
+.DS_Store

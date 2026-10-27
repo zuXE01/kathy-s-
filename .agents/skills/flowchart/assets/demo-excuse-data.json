@@ -1,0 +1,107 @@
+{
+  "title": "The Automated Excuse Generator",
+  "subtitle": "How a late arrival becomes a plausible story.",
+  "metadata": {
+    "purpose": "onboarding",
+    "sourceRoot": "/path/to/source",
+    "generatedBy": "flowchart skill"
+  },
+  "colorGroups": {
+    "intake": { "label": "Intake", "color": "#dbeafe" },
+    "model": { "label": "Model", "color": "#ede9fe" },
+    "delivery": { "label": "Delivery", "color": "#dcfce7" }
+  },
+  "nodes": [
+    {
+      "id": "spot",
+      "label": "Spot the Delay",
+      "type": "entry",
+      "level": 0,
+      "lane": "Main",
+      "colorGroup": "intake",
+      "position": { "x": 120, "y": 300 },
+      "summary": "Notice you are late and see who is waiting.",
+      "description": "The tool notices that you are running behind and works out who is expecting you and how many minutes late you will be by the time you finally arrive.",
+      "badges": ["you're late"]
+    },
+    {
+      "id": "gather",
+      "label": "Gather the Facts",
+      "type": "process",
+      "level": 1,
+      "lane": "Main",
+      "colorGroup": "intake",
+      "position": { "x": 380, "y": 300 },
+      "summary": "Collect the traffic, weather, and calendar details.",
+      "description": "This step pulls together the small true details that make a story believable, such as the weather outside, the state of the roads, and what your calendar claims you were doing.",
+      "badges": ["3 sources"]
+    },
+    {
+      "id": "write",
+      "label": "Write the Excuse",
+      "type": "llm-call",
+      "level": 2,
+      "lane": "Main",
+      "colorGroup": "model",
+      "position": { "x": 640, "y": 300 },
+      "summary": "A model turns the facts and tone into one short line.",
+      "description": "A single model reads the facts and the chosen tone, then writes one short note that sounds sorry, stays vague enough to survive questions, and quietly blames something other than you.",
+      "model": "gpt-4o",
+      "modelSelection": "Uses a small, fast model, because a late note does not deserve your very best thinking.",
+      "prompts": [
+        {
+          "label": "Excuse prompt",
+          "language": "markdown",
+          "sourcePath": "prompts/excuse_writer.md",
+          "summary": "This prompt asks for a short, sincere reason you are late that nobody can disprove.",
+          "content": "You are a world-class excuse writer.\nUsing the facts below, write one short, sincere\nreason the user is late that nobody can disprove.\nNever blame the user. When in doubt, blame the trains.\n\nFacts: {{facts}}\nTone: {{tone}}"
+        }
+      ],
+      "badges": ["1 model call"]
+    },
+    {
+      "id": "check",
+      "label": "Believable Enough?",
+      "type": "decision",
+      "level": 3,
+      "lane": "Main",
+      "colorGroup": "model",
+      "position": { "x": 900, "y": 300 },
+      "summary": "Judge whether the excuse would actually hold up.",
+      "description": "Here the tool reads the draft the way a suspicious friend would and decides whether the story is convincing enough to deliver or too flimsy to risk, throwing weak drafts back for another try.",
+      "badges": ["gate"]
+    },
+    {
+      "id": "send",
+      "label": "Send It",
+      "type": "process",
+      "level": 4,
+      "lane": "Main",
+      "colorGroup": "delivery",
+      "position": { "x": 1160, "y": 300 },
+      "summary": "Fire off the winning excuse and brace yourself.",
+      "description": "Once a draft passes the check, the tool delivers your chosen excuse to whoever is waiting, marks the moment you committed to the story, and then leaves you alone to live with it.",
+      "badges": ["no takebacks"]
+    },
+    {
+      "id": "note",
+      "label": "The Sent Note",
+      "type": "artifact",
+      "level": 2,
+      "lane": "Output",
+      "colorGroup": "delivery",
+      "position": { "x": 640, "y": 520 },
+      "summary": "The finished note the tool ends up sending.",
+      "description": "This is the exact wording the tool settled on, kept nearby so that you can reread it later and remember which convenient story you committed to on this particular morning.",
+      "badges": ["copy + paste"]
+    }
+  ],
+  "edges": [
+    { "id": "spot-gather", "source": "spot", "target": "gather", "type": "flow", "label": "running late", "summary": "Realizing you are late starts the whole rescue effort." },
+    { "id": "gather-write", "source": "gather", "target": "write", "type": "flow", "label": "facts + tone", "summary": "The collected details and the chosen tone feed the writer." },
+    { "id": "write-check", "source": "write", "target": "check", "type": "flow", "label": "draft", "summary": "The freshly written draft goes to the believability gate." },
+    { "id": "check-send", "source": "check", "target": "send", "type": "control", "label": "believable", "summary": "A convincing draft is cleared for sending." },
+    { "id": "check-write", "source": "check", "target": "write", "type": "error", "label": "too flimsy", "summary": "A weak draft is thrown back for another attempt." },
+    { "id": "write-note", "source": "write", "target": "note", "type": "data", "label": "saved copy", "summary": "Each finished note is kept so you can see the exact wording." }
+  ]
+}
