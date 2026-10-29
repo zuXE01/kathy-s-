@@ -1,0 +1,299 @@
+{
+  "reference-tapa": {
+    "filename": "Beef_Tapa_with_Egg.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Beef_Tapa_with_Egg.jpg",
+    "author": "Maffeth.opiana",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "label": "Beef tapa"
+  },
+  "reference-tocino": {
+    "filename": "Tocino.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Tocino.jpg",
+    "author": "Kguirnela",
+    "license": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "label": "Tocino"
+  },
+  "reference-longganisa": {
+    "filename": "Sweet_Longsilog_-_1025194119.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sweet_Longsilog_-_1025194119.jpg",
+    "author": "Arnold Gatilao",
+    "license": "https://creativecommons.org/licenses/by/2.0/",
+    "label": "Longganisa"
+  },
+  "reference-bangus": {
+    "filename": "Bangsilog.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Bangsilog.jpg",
+    "author": "Maffeth.opiana",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "label": "Bangus"
+  },
+  "reference-luncheon": {
+    "filename": "Spamsilog.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Spamsilog.jpg",
+    "author": "ShmilyDigital",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "label": "Luncheon meat"
+  },
+  "reference-sisig": {
+    "filename": "Sisig_(Philippines)_01.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sisig_(Philippines)_01.jpg",
+    "author": "Obsidian Soul",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "label": "Sisig"
+  },
+  "reference-corned-beef": {
+    "filename": "PXL_20201019_004035415.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:PXL_20201019_004035415.jpg",
+    "author": "Daragang Nagueña",
+    "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "label": "Corned beef"
+  },
+  "reference-stevia": {
+    "filename": "Stevia.jpg",
+    "thumbnailWidth": 330,
+    "source": "https://commons.wikimedia.org/wiki/File:Stevia.jpg",
+    "author": "onezzzart",
+    "license": "https://creativecommons.org/licenses/by/2.0/",
+    "label": "Stevia plant"
+  },
+  "reference-rice": {
+    "image": "https://images.unsplash.com/photo-1680137248876-6ad53db8caef",
+    "source": "https://unsplash.com/photos/a-white-bowl-filled-with-rice-on-top-of-a-wooden-table-qM8PlclZGg4",
+    "label": "Rice",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-sausage": {
+    "image": "https://images.unsplash.com/photo-1692742245810-eff85d739158",
+    "source": "https://unsplash.com/photos/a-white-plate-topped-with-meat-and-veggies-sgVhYCdyckU",
+    "label": "Sausage",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-egg": {
+    "image": "https://images.unsplash.com/photo-1642451378137-7bf98fb6a65a",
+    "source": "https://unsplash.com/fr/photos/un-oeuf-au-plat-sur-une-assiette-blanche-sur-une-table-en-bois-pvbKrbqN54g",
+    "label": "Egg",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-pepperoni": {
+    "image": "https://images.unsplash.com/photo-1692737580547-b45bb4a02356",
+    "source": "https://unsplash.com/photos/a-pepperoni-pizza-sitting-on-top-of-a-wooden-cutting-board-xIqVfW8XUt4",
+    "label": "Pepperoni pizza",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-carbonara": {
+    "image": "https://images.unsplash.com/photo-1633337474564-1d9478ca4e2e",
+    "source": "https://unsplash.com/photos/a-white-plate-topped-with-spaghetti-and-bacon-fDLBn8X_IlU",
+    "label": "Carbonara",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-red-pasta": {
+    "image": "https://images.unsplash.com/photo-1626844131082-256783844137",
+    "source": "https://unsplash.com/photos/a-white-plate-topped-with-spaghetti-and-tomatoes--9UJTnXpUXM",
+    "label": "Tomato pasta",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-fries": {
+    "image": "https://images.unsplash.com/photo-1688978181542-87a886a16fbe",
+    "source": "https://unsplash.com/photos/a-pile-of-french-fries-sitting-on-top-of-a-table-VzGdnv5URPI",
+    "label": "Fries",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-onion-rings": {
+    "image": "https://images.unsplash.com/photo-1630825533949-74f62f54553a",
+    "source": "https://unsplash.com/photos/onion-rings-on-white-paper-AuXET-GaEqA",
+    "label": "Onion rings",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-matcha": {
+    "image": "https://images.unsplash.com/photo-1734662312255-9783d6540afd",
+    "source": "https://unsplash.com/id/foto/secangkir-teh-hijau-dengan-daun-di-atasnya-2BMbNI4YQ_s",
+    "label": "Matcha drink",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-strawberry-milk": {
+    "image": "https://images.unsplash.com/photo-1629174113399-14e5709f5e8f",
+    "source": "https://unsplash.com/photos/strawberry-and-white-milk-in-clear-drinking-glass-crX4jNcxgmE",
+    "label": "Strawberry milk",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-chocolate": {
+    "image": "https://images.unsplash.com/photo-1512035986687-f3cc6aefba8d",
+    "source": "https://unsplash.com/photos/chocolate-coffee-sWvPvEVygkU",
+    "label": "Chocolate drink",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-milk-tea": {
+    "image": "https://images.unsplash.com/photo-1604380630036-4d55c056f390",
+    "source": "https://unsplash.com/photos/iced-milk-tea-with-foam-and-a-straw-jkASc0JDFaw",
+    "label": "Milk tea",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-frappe": {
+    "image": "https://images.unsplash.com/photo-1750818287648-df4cb95966d5",
+    "source": "https://unsplash.com/photos/chocolate-frappe-topped-with-whipped-cream-l0K7R-danOI",
+    "label": "Frappe",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-strawberry-shake": {
+    "image": "https://images.unsplash.com/photo-1579954115545-a95591f28bfc",
+    "source": "https://unsplash.com/es/fotos/batido-de-fresa-en-vaso-transparente-rwBJaJdesGg",
+    "label": "Strawberry shake",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-mango": {
+    "image": "https://images.unsplash.com/photo-1704881661177-7747fe663400",
+    "source": "https://unsplash.com/de/fotos/ein-glas-mango-smoothie-mit-einem-loffel-auf-einem-holztablett-YisNrOGnZ2k",
+    "label": "Mango drink",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-bingsu": {
+    "image": "https://images.unsplash.com/photo-1653065293534-ddc6aaef59ab",
+    "source": "https://unsplash.com/photos/a-bowl-of-food-sitting-on-top-of-a-wooden-table-ZkaaGtgIdAI",
+    "label": "Bingsu",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-brownie": {
+    "image": "https://images.unsplash.com/photo-1461009312844-e80697a81cc7",
+    "source": "https://unsplash.com/pt-br/fotografias/brownies-assados-fatiados-em-bandeja-frustrada-WPRuXYLNY68",
+    "label": "Brownie",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-muffin": {
+    "image": "https://images.unsplash.com/photo-1634391036491-1ff328919d33",
+    "source": "https://unsplash.com/pt-br/fotografias/um-close-up-de-um-muffin-em-uma-mesa-oX6nVnAMClM",
+    "label": "Muffin",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-espresso": {
+    "image": "https://images.unsplash.com/photo-1579992357036-b19b591b7519",
+    "source": "https://unsplash.com/photos/white-ceramic-mug-with-brown-liquid-1Mjr2ontCEM",
+    "label": "Coffee",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-milk": {
+    "image": "https://images.unsplash.com/photo-1517448931760-9bf4414148c5",
+    "source": "https://unsplash.com/photos/clear-drinking-glass-with-white-liquid-p3ViLmVgVJ4",
+    "label": "Milk",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-tea": {
+    "image": "https://images.unsplash.com/photo-1711380586172-5c6432238071",
+    "source": "https://unsplash.com/photos/a-cup-of-tea-sits-on-a-table-lQwzl0BGO7Y",
+    "label": "Tea",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-french-press": {
+    "image": "https://images.unsplash.com/photo-1601907235668-6bab74c845ce",
+    "source": "https://unsplash.com/fr/photos/tasse-en-ceramique-noire-et-blanche-sur-table-blanche-irRqZH_rCQ4",
+    "label": "French press",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-pour-over": {
+    "image": "https://images.unsplash.com/photo-1747852222501-e03aeccd2093",
+    "source": "https://unsplash.com/photos/pouring-hot-water-over-coffee-grounds-to-brew-nEtxl8MPyM0",
+    "label": "Pour over",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-siphon": {
+    "image": "https://images.unsplash.com/photo-1568431710123-a7e75af79e8e",
+    "source": "https://unsplash.com/photos/-UiaSDzXUAc",
+    "label": "Siphon coffee",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-water": {
+    "image": "https://images.unsplash.com/photo-1643582158005-0cd0294a89a0",
+    "source": "https://unsplash.com/photos/a-hand-holding-a-water-bottle-in-front-of-a-blue-sky-RveZdpCela0",
+    "label": "Water",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-orange": {
+    "image": "https://images.unsplash.com/photo-1740555612192-3e3cf77b5d1f",
+    "source": "https://unsplash.com/photos/a-glass-of-orange-juice-on-a-table-MIPUEtnidco",
+    "label": "Orange juice",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-syrup": {
+    "image": "https://images.unsplash.com/photo-1653291340302-d08072d36d13",
+    "source": "https://unsplash.com/photos/a-person-pours-syrup-into-a-glass-on-a-table-IHJ5a2uYTzk",
+    "label": "Drink add-on",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-iced-tea": {
+    "image": "https://images.unsplash.com/photo-1599390719613-912787a6e65a",
+    "source": "https://unsplash.com/photos/clear-drinking-glass-with-red-liquid-and-sliced-lemon-hC0oEDunlJo",
+    "label": "Fruit tea",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-sauce": {
+    "image": "https://images.unsplash.com/photo-1481391032119-d89fee407e44",
+    "source": "https://unsplash.com/es/fotos/chocolate-vertido-sobre-helado-de-vainilla-en-taza-de-ceramica-X2gM-SIufpU",
+    "label": "Sauce",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-truffle-pasta": {
+    "image": "https://images.unsplash.com/photo-1642354609876-5386fea5e7fc",
+    "source": "https://unsplash.com/photos/a-plate-of-pasta-with-meatballs-and-a-knife--iPCD8Rpve4",
+    "label": "Truffle pasta",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-vegetable-pizza": {
+    "image": "https://images.unsplash.com/photo-1552539618-7eec9b4d1796",
+    "source": "https://unsplash.com/photos/cooked-pizza-on-brown-wooden-table-yDKHJxfiWDk",
+    "label": "Vegetable pizza",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-hawaiian": {
+    "image": "https://images.unsplash.com/photo-1671572579366-89bec1184f5e",
+    "source": "https://unsplash.com/photos/a-man-holding-a-pineapple-on-top-of-a-pizza-xdggJmLhtHg",
+    "label": "Hawaiian pizza",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-cola": {
+    "image": "https://images.unsplash.com/photo-1636144832475-0d81f893354d",
+    "source": "https://unsplash.com/es/fotos/un-vaso-lleno-de-hielo-y-coca-cola-sobre-una-mesa-zJnhOqGDru0",
+    "label": "Soft drink",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-waffle": {
+    "image": "https://images.unsplash.com/photo-1629656426786-cdf826085ab8",
+    "source": "https://unsplash.com/photos/brown-waffle-on-white-textile-8CVek0mjRls",
+    "label": "Waffle",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-strawberry-waffle": {
+    "image": "https://images.unsplash.com/photo-1639574110048-3521872df20c",
+    "source": "https://unsplash.com/photos/a-stack-of-waffles-with-strawberries-on-top-cPUVtNHDzXY",
+    "label": "Waffle",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-croissant": {
+    "image": "https://images.unsplash.com/photo-1619540158579-1b4fd3529849",
+    "source": "https://unsplash.com/photos/bread-on-white-ceramic-plate-mxEyXazwOjo",
+    "label": "Croissant",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-cheesecake": {
+    "image": "https://images.unsplash.com/photo-1631582148163-c88df282fd93",
+    "source": "https://unsplash.com/ja/写真/青い皿の上に座っているケーキ-HowXImQlxTc",
+    "label": "Basque cheesecake",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-latte": {
+    "image": "https://images.unsplash.com/photo-1537286164997-b6a9bbac8b55",
+    "source": "https://unsplash.com/photos/white-cup-filled-with-latte-with-art-iJMHMXT5-5E",
+    "label": "Latte",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-pesto": {
+    "image": "https://images.unsplash.com/photo-1707448460889-e268eb742820",
+    "source": "https://unsplash.com/photos/a-plate-of-pasta-with-broccoli-and-parmesan-cheese-docP-fBTnjw",
+    "label": "Pesto pasta",
+    "license": "https://unsplash.com/license"
+  },
+  "reference-empanada": {
+    "image": "https://images.unsplash.com/photo-1624128082323-beb6b8b508db",
+    "source": "https://unsplash.com/es/s/fotos/empanadas",
+    "label": "Empanada",
+    "license": "https://unsplash.com/license"
+  }
+}

@@ -22,3 +22,11 @@ Mappings are explicit in `public/js/menu-card.js`, keyed by both section and pro
 Camera-named files (`20261017_*.jpg`, `Copy of IMG_*.HEIC/heic`) remain unassigned because their names do not identify menu products. Rename them to the intended section/product or supply a mapping before assigning them. No visual flavor guessing was used to assign them.
 
 The shared card displays photos for public browsing and staff catalog management, preserving existing ordering controls and permissions. Images lazy-load and hide if unavailable. Photos fill uniform 4:3 frames using cover (not stretching), with per-photo focal positions in menu-cards.css to emphasize the products. This crops presentation only; the complete optimized files remain intact. Test coverage verifies matches, asset signatures/size, responsive sources, focal attributes, framing CSS and fallback. This is a local asset/code change, not a Render deployment.
+
+## Supplemental menu coverage — 2026-10-29
+
+All 120 catalog products now resolve to local photos. The original 10 product mappings (13 photos) retain priority and their image files were preserved byte for byte. Explicit supplemental mappings cover the other 110 products, using 48 licensed web sources and three matching existing project JPG derivatives. Related products can share a family reference; these are illustrative images, not a claim about actual restaurant servings. Each supplemental card links a visible reference-photo disclosure to `/menu-photo-credits.html`, with source, author and license information.
+
+The source manifest and non-overwriting importer live in `scripts/menu-reference-sources.json` and `scripts/import-menu-reference-photos.cjs`. Supply Sharp through the installed module or MENU_SHARP_PATH when reimporting. Replace a reference mapping with a verified restaurant photo when one becomes available. Existing photos, prices, cart behavior and permissions are unchanged. Responsive WebP variants are lazy loaded.
+
+Validation: 171 tests pass. Local fixture browser checks at 320, 390 and 1280 pixels show all 120 cards, 123 decoded photos, 110 reference disclosures and no horizontal page overflow. This is a local change, not a deployment.

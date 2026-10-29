@@ -43,6 +43,8 @@
 .catalog-photo[data-photo="biscoff-cookie-1"]{object-position:50% 50%}
 .catalog-photo[data-photo="cookies-and-cream-cookie-2"],.catalog-photo[data-photo="double-chocolate-chip"],.catalog-photo[data-photo="biscoff-cookie-2"],.catalog-photo[data-photo="chocolate-chip-walnut-2"],.catalog-photo[data-photo="chocolate-chip-oat"]{object-position:50% 60%}
 .catalog-photo[hidden]{display:none}
+.catalog-photo-credit{display:block;align-content:center;min-height:44px;margin-block:-12px 12px;font-size:14px;line-height:1.4;color:var(--content-secondary,#53504b);text-underline-offset:3px;overflow-wrap:anywhere}
+.catalog-photo-credit:focus-visible{outline:2px solid currentColor;outline-offset:3px}
 .catalog-photo-views{margin-block:0 16px}
 .catalog-photo-views summary{min-height:48px;display:list-item;padding-block:12px;cursor:pointer;font-size:16px;font-weight:600}
 .catalog-photo-views .catalog-photo{margin-block:8px 0}

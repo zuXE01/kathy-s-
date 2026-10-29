@@ -12,9 +12,343 @@ export const menuPhotos = {
   'soda pop|kiwi':['kiwi-soda'],
   'soda pop|passion fruit':['passion-fruit-soda']
 };
+// Illustrative references fill gaps only; original product photos always win.
+export const supplementalMenuPhotos = {
+  "fire fighter's meal|classic beef tapa": [
+    "reference-tapa"
+  ],
+  "fire fighter's meal|tocino": [
+    "reference-tocino"
+  ],
+  "fire fighter's meal|longganisa": [
+    "reference-longganisa"
+  ],
+  "fire fighter's meal|boneless bangus": [
+    "reference-bangus"
+  ],
+  "fire fighter's meal|hungarian sausage": [
+    "reference-sausage"
+  ],
+  "fire fighter's meal|chicken sausage": [
+    "reference-sausage"
+  ],
+  "fire fighter's meal|corned beef": [
+    "reference-corned-beef"
+  ],
+  "fire fighter's meal|luncheon meat": [
+    "reference-luncheon"
+  ],
+  "fire fighter's meal|sisig": [
+    "reference-sisig"
+  ],
+  "meal add-ons|extra egg": [
+    "reference-egg"
+  ],
+  "meal add-ons|extra rice": [
+    "reference-rice"
+  ],
+  "meal add-ons|convert rice to waffle": [
+    "reference-waffle"
+  ],
+  "meal add-ons|with soda": [
+    "reference-cola"
+  ],
+  "pizza thin crust|truffle": [
+    "reference-vegetable-pizza"
+  ],
+  "pizza thin crust|pepperoni": [
+    "reference-pepperoni"
+  ],
+  "pizza thin crust|hawaiian": [
+    "reference-hawaiian"
+  ],
+  "pizza thin crust|spanish sardines": [
+    "reference-vegetable-pizza"
+  ],
+  "pizza thin crust|vegetable": [
+    "reference-vegetable-pizza"
+  ],
+  "croissant|classic": [
+    "reference-croissant"
+  ],
+  "croissant|ham and cheese": [
+    "reference-croissant"
+  ],
+  "croissant|tuna mayo": [
+    "reference-croissant"
+  ],
+  "croissant|egg and cheese": [
+    "reference-croissant"
+  ],
+  "pasta|truffle": [
+    "reference-truffle-pasta"
+  ],
+  "pasta|pesto": [
+    "reference-pesto"
+  ],
+  "pasta|spanish sardines": [
+    "reference-red-pasta"
+  ],
+  "pasta|carbonara": [
+    "reference-carbonara"
+  ],
+  "pasta|red sauce": [
+    "reference-red-pasta"
+  ],
+  "burnt basque cheesecake|classic": [
+    "reference-cheesecake"
+  ],
+  "burnt basque cheesecake|strawberry": [
+    "reference-cheesecake"
+  ],
+  "burnt basque cheesecake|blueberry": [
+    "reference-cheesecake"
+  ],
+  "burnt basque cheesecake|mango": [
+    "reference-cheesecake"
+  ],
+  "burnt basque cheesecake|cookies and cream": [
+    "reference-cheesecake"
+  ],
+  "burnt basque cheesecake|biscoff": [
+    "reference-cheesecake"
+  ],
+  "burnt basque cheesecake|nutella": [
+    "reference-cheesecake"
+  ],
+  "desserts|muffins": [
+    "reference-muffin"
+  ],
+  "desserts|brownies slice": [
+    "reference-brownie"
+  ],
+  "empanada|ham and cheese": [
+    "reference-empanada"
+  ],
+  "empanada|tuna and cheese": [
+    "reference-empanada"
+  ],
+  "barkada snacks|fries": [
+    "reference-fries"
+  ],
+  "barkada snacks|onion rings": [
+    "reference-onion-rings"
+  ],
+  "classic waffles|plain": [
+    "reference-waffle"
+  ],
+  "classic waffles|biscoff": [
+    "provided-biscoff-waffle"
+  ],
+  "classic waffles|nutella": [
+    "reference-waffle"
+  ],
+  "premium waffles|nutella alcapone": [
+    "reference-waffle"
+  ],
+  "premium waffles|biscoff alcapone": [
+    "reference-waffle"
+  ],
+  "premium waffles|biscoff overload": [
+    "reference-waffle"
+  ],
+  "premium waffles|cookies and cream": [
+    "reference-waffle"
+  ],
+  "premium waffles|strawberry cream": [
+    "reference-strawberry-waffle"
+  ],
+  "premium waffles|mango float": [
+    "reference-waffle"
+  ],
+  "coffee|cafe americano": [
+    "reference-espresso"
+  ],
+  "coffee|latte machiatto": [
+    "reference-latte"
+  ],
+  "coffee|cappucino": [
+    "reference-latte"
+  ],
+  "coffee|mochacinno": [
+    "reference-latte"
+  ],
+  "coffee|french vanilla latte": [
+    "reference-latte"
+  ],
+  "coffee|hazelnut latte": [
+    "reference-latte"
+  ],
+  "coffee|salted caramel latte": [
+    "reference-latte"
+  ],
+  "coffee|cinnamon latte": [
+    "reference-latte"
+  ],
+  "coffee|roasted almond latte": [
+    "reference-latte"
+  ],
+  "coffee|spanish latte": [
+    "reference-latte"
+  ],
+  "coffee|ube latte": [
+    "reference-latte"
+  ],
+  "coffee|biscoff latte": [
+    "reference-latte"
+  ],
+  "coffee|toffenut latte": [
+    "reference-latte"
+  ],
+  "coffee|espresso sunrise": [
+    "reference-espresso"
+  ],
+  "coffee|dirty matcha latte": [
+    "reference-matcha"
+  ],
+  "non coffee|chocolate": [
+    "reference-chocolate"
+  ],
+  "non coffee|milk tea": [
+    "reference-milk-tea"
+  ],
+  "non coffee|matcha latte": [
+    "reference-matcha"
+  ],
+  "non coffee|matcha hazelnut latte": [
+    "reference-matcha"
+  ],
+  "non coffee|strawberry matcha": [
+    "reference-matcha"
+  ],
+  "non coffee|dark chocolate matcha": [
+    "reference-matcha"
+  ],
+  "non coffee|lemon and ginger tea": [
+    "reference-tea"
+  ],
+  "non coffee|milk strawberry latte": [
+    "reference-strawberry-milk"
+  ],
+  "non coffee|milk coconut": [
+    "reference-milk"
+  ],
+  "non coffee|red velvet tea": [
+    "reference-iced-tea"
+  ],
+  "non coffee|green apple fruit tea": [
+    "reference-iced-tea"
+  ],
+  "non coffee|watermelon fruit tea": [
+    "reference-iced-tea"
+  ],
+  "non coffee|passion fruit black tea": [
+    "reference-iced-tea"
+  ],
+  "coffee frappe|frozen cappuccino": [
+    "reference-frappe"
+  ],
+  "coffee frappe|roasted almond": [
+    "reference-frappe"
+  ],
+  "coffee frappe|salted caramel": [
+    "reference-frappe"
+  ],
+  "coffee frappe|dark chocolate": [
+    "reference-frappe"
+  ],
+  "coffee frappe|mocha": [
+    "reference-frappe"
+  ],
+  "coffee frappe|biscoff": [
+    "provided-biscoff-frappe"
+  ],
+  "drink add-ons|espresso shot": [
+    "reference-espresso"
+  ],
+  "drink add-ons|oatside milk": [
+    "reference-milk"
+  ],
+  "drink add-ons|extra dairy milk": [
+    "reference-milk"
+  ],
+  "drink add-ons|decaf": [
+    "reference-espresso"
+  ],
+  "drink add-ons|stevia": [
+    "reference-stevia"
+  ],
+  "drink add-ons|extra syrup": [
+    "reference-syrup"
+  ],
+  "drink add-ons|extra sauce": [
+    "reference-sauce"
+  ],
+  "non coffee frappe|strawberry matcha": [
+    "reference-matcha"
+  ],
+  "non coffee frappe|matcha hazelnut": [
+    "reference-matcha"
+  ],
+  "non coffee frappe|strawberry cream": [
+    "reference-strawberry-shake"
+  ],
+  "non coffee frappe|caramel white chocolate": [
+    "reference-frappe"
+  ],
+  "non coffee frappe|tropical sunset frappe": [
+    "reference-mango"
+  ],
+  "non coffee frappe|autumn sunrise frappe": [
+    "provided-autumn-frappe"
+  ],
+  "cream cheese series|matcha cream cheese": [
+    "reference-matcha"
+  ],
+  "brewing experience|syphon": [
+    "reference-siphon"
+  ],
+  "brewing experience|pour over": [
+    "reference-pour-over"
+  ],
+  "brewing experience|french press": [
+    "reference-french-press"
+  ],
+  "twinings tea|choice of your tea": [
+    "reference-tea"
+  ],
+  "soda pop|strawberry": [
+    "reference-iced-tea"
+  ],
+  "soda pop|blueberry": [
+    "reference-iced-tea"
+  ],
+  "bingsu|strawberry": [
+    "reference-bingsu"
+  ],
+  "bingsu|mango": [
+    "reference-bingsu"
+  ],
+  "bingsu|blueberry": [
+    "reference-bingsu"
+  ],
+  "bingsu|passion fruit": [
+    "reference-bingsu"
+  ],
+  "other drinks|coke / coke zero / sprite / royal": [
+    "reference-cola"
+  ],
+  "other drinks|minute made orange juice": [
+    "reference-orange"
+  ],
+  "other drinks|bottled water": [
+    "reference-water"
+  ]
+};
 export function getMenuPhotos(item){
   const normalize=value=>String(value||'').trim().toLowerCase().replace(/\s+/g,' ');
-  return menuPhotos[normalize(item.section)+'|'+normalize(item.name)]||[];
+  const key=normalize(item.section)+'|'+normalize(item.name);
+  return menuPhotos[key]||supplementalMenuPhotos[key]||[];
 }
 export const formatPrice = value => new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 2, minimumFractionDigits: 0 }).format(value);
 export function getOptions(item) {
@@ -31,12 +365,19 @@ export function createMenuCard(item, { onEdit, onRemove, onAdd, selectedLabel, o
     image.src='/assets/menu/'+name+'-800.webp';
     image.srcset='/assets/menu/'+name+'-400.webp 400w, /assets/menu/'+name+'-800.webp 800w';
     image.sizes='(min-width:900px) 380px, (min-width:600px) 45vw, 90vw';
-    image.alt=item.name+' — '+item.section+(index?' (additional view)':'');
+    image.alt=(/^(reference-|provided-)/.test(name)?'Illustrative '+item.section+' photo for ':'')+item.name+' — '+item.section+(index?' (additional view)':'');
     image.loading='lazy';image.decoding='async';image.width=800;image.height=800;
     image.addEventListener('error',()=>{image.hidden=true;});
     return image;
   };
-  if(photos.length)card.append(photo(photos[0],0));
+  if(photos.length){
+    card.append(photo(photos[0],0));
+    if(/^(reference-|provided-)/.test(photos[0])){
+      const credit=node('a','catalog-photo-credit','Reference photo · serving may differ');
+      credit.href='/menu-photo-credits.html#'+photos[0];
+      card.append(credit);
+    }
+  }
   const top = node('div','catalog-card-top');
   const mark = node('span','catalog-symbol', {coffee:'☕',bites:'🍽',sweet:'🍰'}[item.category] || '🍽'); mark.setAttribute('aria-hidden','true');
   top.append(mark, node('span','catalog-section', item.section || 'House Favorites'));

@@ -2,19 +2,37 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const {items}=require('../server/menu-catalog.cjs');
 function fixture(){
   const context={Intl,document:{createElement:tag=>({tag,children:[],handlers:{},attributes:{},append(...nodes){this.children.push(...nodes);},setAttribute(key,value){this.attributes[key]=value;},addEventListener(key,handler){this.handlers[key]=handler;}})}};
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/menu-card.js'),'utf8').replace(/export /g,''),context);return context;
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../public/js/menu-card.js'),'utf8').replace(/export /g,'')+';globalThis.originalPhotos=menuPhotos;globalThis.supplementalPhotos=supplementalMenuPhotos;',context);return context;
 }
 test('13 optimized food photos match 10 products by section and name without duplicate products',()=>{
-  const {getMenuPhotos}=fixture();const matched=items.filter(item=>getMenuPhotos(item).length);
+  const {getMenuPhotos,originalPhotos}=fixture();const matched=items.filter(item=>originalPhotos[(item.section+'|'+item.name).toLowerCase()]);
   assert.equal(matched.length,10);assert.equal(matched.reduce((total,item)=>total+getMenuPhotos(item).length,0),13);
   const names=matched.flatMap(getMenuPhotos);assert.equal(new Set(names).size,13);
   for(const name of names)for(const width of [400,800]){
     const bytes=fs.readFileSync(path.join(__dirname,'../public/assets/menu',name+'-'+width+'.webp'));
     assert.equal(bytes.toString('ascii',0,4),'RIFF');assert.equal(bytes.toString('ascii',8,12),'WEBP');assert.ok(bytes.length<200000);
   }
-  assert.equal(getMenuPhotos({section:'Premium Waffles',name:'Cookies and Cream'}).length,0);
-  assert.equal(getMenuPhotos({section:'Coffee Frappe',name:'Biscoff'}).length,0);
+  assert.ok(!getMenuPhotos({section:'Premium Waffles',name:'Cookies and Cream'}).includes('cookies-and-cream-cookie-1'));
+  assert.ok(!getMenuPhotos({section:'Coffee Frappe',name:'Biscoff'}).includes('biscoff-cookie-1'));
   assert.equal(getMenuPhotos({section:' desserts ',name:' BISCOFF   COOKIE '}).length,2);
+});
+
+test('every published menu item has local photo assets and references cannot replace originals',()=>{
+  const {getMenuPhotos,originalPhotos,createMenuCard}=fixture();
+  const credits=fs.readFileSync(path.join(__dirname,'../public/menu-photo-credits.html'),'utf8');
+  for(const item of items){
+    const photos=getMenuPhotos(item);assert.ok(photos.length,item.section+' / '+item.name);
+    const original=originalPhotos[(item.section+'|'+item.name).toLowerCase()];
+    if(original)assert.deepEqual(photos,original);
+    for(const name of photos)for(const width of [400,800]){
+      const bytes=fs.readFileSync(path.join(__dirname,'../public/assets/menu',name+'-'+width+'.webp'));
+      assert.equal(bytes.toString('ascii',8,12),'WEBP');assert.ok(bytes.length<200000);
+    }
+    const card=createMenuCard(item),notice=card.children.find(node=>node.className==='catalog-photo-credit');
+    if(!original){assert.match(notice.textContent,/Reference photo/);assert.ok(credits.includes('id="'+photos[0]+'"'));}
+    else assert.equal(notice,undefined);
+  }
+  assert.equal(getMenuPhotos({section:'Unknown',name:'New product'}).length,0);
 });
 test('menu cards use local responsive lazy photos, retain controls and hide broken images',()=>{
   const {createMenuCard}=fixture();const item=items.find(item=>item.name==='Biscoff Cookie');
