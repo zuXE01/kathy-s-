@@ -91,3 +91,8 @@ Only a pending server response with an allowlisted HTTPS sandbox destination can
 ## Menu photo completion — 2026-10-29
 
 Preserve existing restaurant photography and its focal framing. Supplemental menu images use the same mobile-first card framing, responsive local WebP sources and explicit section/product mappings. A readable, focusable reference-photo link distinguishes illustrative web imagery from actual servings and opens the source credits. Shared family references must not be presented as exact product photographs. All 120 items have coverage; 171 tests and fixture browser checks at 320/390/1280px passed with no horizontal overflow. No deployment performed.
+
+## Our Story — 2026-10-29
+
+The landing #story section uses the user-supplied assets/kathysStory/story.md as its factual source. Concise editorial copy explains Marc Alan Ong's tribute to Katherine Joyce Ong, her volunteer service, coffee, museum and charitable activities. Three unique supplied venue photographs are converted to responsive local WebP derivatives; duplicate JPGs and all original files are preserved. Mobile reads introduction, venue, story and gallery; desktop pairs copy with photography. Cream/navy/burgundy identity retained. Browser inspection at 390px and 1280px confirmed loaded photos and no horizontal overflow; all 171 existing tests pass. Local only, not deployed.
+
