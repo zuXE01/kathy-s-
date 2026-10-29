@@ -96,3 +96,8 @@ Preserve existing restaurant photography and its focal framing. Supplemental men
 
 The landing #story section uses the user-supplied assets/kathysStory/story.md as its factual source. Concise editorial copy explains Marc Alan Ong's tribute to Katherine Joyce Ong, her volunteer service, coffee, museum and charitable activities. Three unique supplied venue photographs are converted to responsive local WebP derivatives; duplicate JPGs and all original files are preserved. Mobile reads introduction, venue, story and gallery; desktop pairs copy with photography. Cream/navy/burgundy identity retained. Browser inspection at 390px and 1280px confirmed loaded photos and no horizontal overflow; all 171 existing tests pass. Local only, not deployed.
 
+
+## Our Story media — 2026-10-29
+
+Four additional supplied venue photos extend Our Story with an Inside Kathy’s gallery. Optimized 480/960 WebP derivatives preserve original JPGs. The 13-second supplied portrait video retains full framing, native controls, playsinline, muted initial playback, no autoplay, preload=none, a locally extracted poster, a visual description and a separate video link. No speech transcription was supplied or verified. Mobile stacks media; desktop pairs portrait video with a two-column photo gallery. Local browser checks at 320/390/1280px confirmed seven loaded story photos, no horizontal overflow, no autoplay, and successful explicit video playback. No deployment.
+
