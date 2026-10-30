@@ -1,0 +1,12 @@
+.order-notifications{margin:16px auto;padding:16px;max-width:1200px;border:1px solid #d4c6ad;border-radius:12px;background:#fffdf8;color:#202550}
+.order-notifications summary{min-height:48px;cursor:pointer;font-weight:700;line-height:1.6}
+.order-notifications p,.order-notifications li{font-size:1rem;line-height:1.6}
+.order-notifications ul{padding-left:20px;max-height:320px;overflow:auto}
+.order-notifications a{display:block;padding:12px 0;color:#762219;overflow-wrap:anywhere}
+.order-notifications button,.stock-controls button{min-height:48px;padding:10px 16px;background:#202550;color:#fff;border:0;border-radius:8px;font:inherit;cursor:pointer}
+.order-notifications button:disabled,.stock-controls button:disabled{opacity:.55;cursor:default}
+.order-notifications :focus-visible{outline:3px solid #8f2b23;outline-offset:3px}
+.stock-controls{border-top:1px solid #d4c6ad;margin-top:20px;padding-top:16px;display:grid;gap:12px}
+.stock-controls label{display:grid;gap:8px;font-size:1rem}
+.stock-controls input{width:100%;min-width:0;box-sizing:border-box;min-height:48px;font-size:16px;padding:10px}
+.stock-controls p{overflow-wrap:anywhere;font-size:.875rem;line-height:1.5}

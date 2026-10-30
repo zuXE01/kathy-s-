@@ -1,3 +1,4 @@
+import './order-notifications.js';
 import { getAuthClient } from './auth-client.js';
 import { forgetCart } from './cart-storage.js';
 import { clearCart } from './cart.js';

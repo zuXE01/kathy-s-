@@ -101,3 +101,8 @@ The landing #story section uses the user-supplied assets/kathysStory/story.md as
 
 Four additional supplied venue photos extend Our Story with an Inside Kathy’s gallery. Optimized 480/960 WebP derivatives preserve original JPGs. The 13-second supplied portrait video retains full framing, native controls, playsinline, muted initial playback, no autoplay, preload=none, a locally extracted poster, a visual description and a separate video link. No speech transcription was supplied or verified. Mobile stacks media; desktop pairs portrait video with a two-column photo gallery. Local browser checks at 320/390/1280px confirmed seven loaded story photos, no horizontal overflow, no autoplay, and successful explicit video playback. No deployment.
 
+
+## Order updates and finished-item inventory — 2026-10-30
+
+Customer pages gain a persistent Order updates disclosure with unread count, status links and read acknowledgement. Owner menu cards gain 48px stock inputs/buttons with conflict errors. Shared cream/navy/burgundy treatment, no autoplay or notification sound. Database transaction reserves finished-item counts across sizes; pre-preparation cancellation/rejection restores reservations. See ORDER_UPDATES_INVENTORY.md for activation, limits and verification. All 171 existing tests pass; isolated stock/notification verification passes. Headless Edge launch failed; visual/staging verification remains outstanding. Local only, no live migration or deployment.
+

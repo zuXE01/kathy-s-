@@ -80,6 +80,13 @@ function ordersRouter(url,key,createClient,{mayaEnabled=false,paymentService=nul
     } catch {res.status(503).json({error:'Unable to verify your account.'});}
   });
   router.use(express.json({limit:'32kb'}));
+  router.get('/notifications',async(req,res)=>{
+    try{const {data,error}=await req.orderClient.from('order_notifications').select('id,order_id,status,created_at,read_at').eq('user_id',req.orderUser.id).order('created_at',{ascending:false}).limit(50);if(error)throw error;res.json({items:data});}catch{res.status(503).json({error:'Order notifications are unavailable. Check Orders for current status.'});}
+  });
+  router.post('/notifications/read',async(req,res)=>{
+    const ids=req.body?.ids;if(!Array.isArray(ids)||ids.length>50||ids.some(id=>!uuid.test(id)))return res.status(400).json({error:'Invalid notifications.'});
+    try{const {error}=await req.orderClient.from('order_notifications').update({read_at:new Date().toISOString()}).eq('user_id',req.orderUser.id).in('id',ids).is('read_at',null);if(error)throw error;res.json({ok:true});}catch{res.status(503).json({error:'Unable to mark notifications read.'});}
+  });
   router.get('/',async(req,res)=>{
     const page=Number(req.query.page||1);
     if(!Number.isSafeInteger(page)||page<1||page>10000)return res.status(400).json({error:'Invalid order page.'});

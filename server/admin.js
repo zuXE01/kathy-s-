@@ -78,6 +78,11 @@ function adminRouter(url, key, createClient, paymentService=null) {
       res.json({ items: data, total: count, page });
     } catch { res.status(503).json({ error: 'Unable to load members.' }); }
   });
+  router.get('/menu/stock',async(req,res)=>{try{const {data,error}=await req.adminClient.rpc('menu_stock_list');if(error)throw error;res.json({items:data});}catch{res.status(503).json({error:'Inventory unavailable. Apply stock-notifications-setup.sql and retry.'});}});
+  router.put('/menu/:id/stock',async(req,res)=>{
+    const {quantity,version}=req.body||{};if(!validId.test(req.params.id)||!(quantity===null||Number.isInteger(quantity)&&quantity>=0&&quantity<=1000000)||!Number.isInteger(version)||version<0)return res.status(400).json({error:'Use a whole stock count from 0 to 1000000, or disable tracking.'});
+    try{const {error}=await req.adminClient.rpc('set_menu_stock',{item_id:req.params.id,new_quantity:quantity,expected_version:version});if(error)return res.status(error.code==='P0001'?409:503).json({error:error.code==='P0001'?'Stock changed. Refresh before saving again.':'Unable to update stock.'});res.json({ok:true});}catch{res.status(503).json({error:'Unable to update stock.'});}
+  });
   router.get('/menu', async (req, res) => {
     try { res.json({ items: await readMenu(req.adminClient) }); }
     catch { res.status(503).json({ error: 'Unable to load menu.' }); }

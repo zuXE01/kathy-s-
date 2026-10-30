@@ -1,4 +1,4 @@
-# AI-assisted menu recommendations
+  # AI-assisted menu recommendations
 
 Implemented locally: 2026-10-26 (Asia/Manila).
 

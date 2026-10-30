@@ -3,12 +3,14 @@ import { createMenuCard } from '../menu-card.js';
 import { filterMenu, fillSections } from '../menu-filter.js';
 import { parseOptions } from '../menu-options.js';
 const el = id => document.getElementById(id);
-let items = [], removing = null, visible = 12;
+let stock = new Map(), stockError = "", items = [], removing = null, visible = 12;
 export function clearMenu() { items = []; removing = null; el('adminMenuGrid').replaceChildren(); el('itemForm').reset(); }
 export function loadMenu() {
   request('/menu', {}, function loaded(error, data) {
     if (error) { el('adminMessage').textContent = error.message; return; }
-    items = data.items; fillSections(el('adminSection'),items);
+    items = data.items;
+    request('/menu/stock',{},function loadedStock(error,result){stockError=error?error.message:'';stock=new Map((result?.items||[]).map(row=>[row.product_id,row]));renderMenu();});
+    fillSections(el('adminSection'),items);
     el('menuSections').replaceChildren();
     [...new Set(items.map(item => item.section || 'House Favorites'))].forEach(section => {
       const option = document.createElement('option'); option.value = section; el('menuSections').append(option);
@@ -22,7 +24,17 @@ function renderMenu() {
   el('menuEmpty').hidden = filtered.length !== 0;
   el('adminMenuCount').textContent = 'Showing ' + Math.min(visible,filtered.length) + ' of ' + filtered.length + ' items';
   el('adminMenuMore').hidden = visible >= filtered.length;
-  filtered.slice(0,visible).forEach(item => el('adminMenuGrid').append(createMenuCard(item,{onEdit:openEditor,onRemove:confirmRemoval})));
+  filtered.slice(0,visible).forEach(item => {
+    const card=createMenuCard(item,{onEdit:openEditor,onRemove:confirmRemoval});
+    const form=document.createElement('form');form.className='stock-controls';
+    const label=document.createElement('label');label.textContent='Stock remaining (all sizes)';
+    const input=document.createElement('input');input.type='number';input.min='0';input.max='1000000';input.step='1';input.inputMode='numeric';
+    const row=stock.get(item.id);input.value=row?.quantity??'';input.placeholder='Not tracked';input.setAttribute('aria-label','Stock remaining for '+item.name);label.append(input);
+    const save=document.createElement('button');save.type='submit';save.textContent='Save stock';save.disabled=!row;
+    const message=document.createElement('p');message.setAttribute('role','status');message.textContent=stockError||(!row?'Loading inventory…':row.quantity===0?'Out of stock':row.quantity===null?'Tracking off. Enter a count to enable.':'Clear the count to turn tracking off.');
+    form.append(label,save,message);form.addEventListener('submit',function(event){event.preventDefault();if(save.disabled||!form.reportValidity())return;const quantity=input.value===''?null:Number(input.value);save.disabled=true;request('/menu/'+item.id+'/stock',{method:'PUT',body:JSON.stringify({quantity,version:row.version})},function saved(error){save.disabled=false;message.textContent=error?error.message:'Stock saved.';if(!error){row.quantity=quantity;row.version++;}else if(error.status===409)loadMenu();});});
+    card.append(form);el('adminMenuGrid').append(card);
+  });
 }
 function confirmRemoval(item) {
   removing = item.id; el('deletePrompt').textContent = item.name; el('deleteError').textContent = ''; el('deleteDialog').showModal();
