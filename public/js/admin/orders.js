@@ -20,7 +20,7 @@ export function configureKitchenQueue(enabled){
     el('ordersFilter').closest('.orders-controls').before(navigation);
   }
   navigation.hidden=!enabled;
-  if(enabled)el('ordersFilter').value='accepted';
+  el('ordersFilter').value=enabled?'accepted':'pending';
   syncKitchenQueue();
 }
 function syncKitchenQueue(){

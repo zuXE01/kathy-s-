@@ -3,8 +3,10 @@ const app = createApp();
 const port = process.env.PORT || 3000;
 const server = app.listen(port, '0.0.0.0', () => console.log(`Kathy's Hub listening on port ${port}`));
 const stopPaymentWorker=app.locals.startPaymentWorker();
+const stopOrderExpiry=app.locals.startOrderExpiry();
 function shutdown(signal) {
   stopPaymentWorker();
+  stopOrderExpiry();
   console.log(`${signal} received, draining connections…`);
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(1), 10000);

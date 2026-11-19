@@ -1,4 +1,5 @@
 const express = require('express');
+const { startOrderExpiry } = require('./order-expiry');
 const { sandboxConfig, createProvider } = require('./lalamove');
 const helmet = require('helmet');
 const path = require('node:path');
@@ -59,6 +60,9 @@ function createApp(env = process.env, createAuthClient = createClient) {
   const sandbox=mayaConfig(env);
   const reliable=env.MAYA_RELIABILITY_ENABLED==='true';
   const paymentService=sandbox?(reliable?createReliablePaymentService:createPaymentService)(createAuthClient(url,env.SUPABASE_SECRET_KEY,{auth:{persistSession:false,autoRefreshToken:false}}),createMayaClient(sandbox)):null;
+  app.locals.startOrderExpiry = () => env.ORDER_EXPIRY_ENABLED === 'true' && env.SUPABASE_SECRET_KEY
+    ? startOrderExpiry(createAuthClient(url, env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } }), paymentService)
+    : () => {};
   app.locals.startPaymentWorker=()=>paymentService&&reliable?startPaymentWorker(paymentService,{onError:code=>console.error(code)}):()=>{};
   const deliveryConfig = sandboxConfig(env);
   const delivery = deliveryConfig ? {
