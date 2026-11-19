@@ -1,11 +1,12 @@
 const express = require('express');
+const { mountLalamove } = require('./lalamove');
 const { validateItem } = require('./menu-validation');
 const { readMenu } = require('./menu-store');
 const { mountAdminOrders } = require('./orders');
 const { roleForUser, roleSets, requireRole } = require('./roles');
 const validId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function adminRouter(url, key, createClient, paymentService=null) {
+function adminRouter(url, key, createClient, paymentService=null, delivery=null) {
   const router = express.Router();
   router.use(async (req, res, next) => {
     res.set('Cache-Control', 'no-store');
@@ -30,6 +31,7 @@ function adminRouter(url, key, createClient, paymentService=null) {
   router.use('/orders', requireRole(...roleSets.orders));
   router.use(['/menu','/members'], requireRole(...roleSets.management));
   mountAdminOrders(router,paymentService);
+  mountLalamove(router,delivery);
   router.use('/payments',requireRole('owner','platform_admin','staff'));
   router.get('/payments',async(req,res)=>{
     const page=Number(req.query.page||1);

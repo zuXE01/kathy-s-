@@ -110,6 +110,8 @@ function quickUpdate(order,status,button) {
     el('ordersRefresh').focus();queued=null;loadOrders(page);
   });
 }
+import { addDeliveryControls } from './delivery.js';
+
 function openOrder(order) {
   selected=order;el('orderDetails').replaceChildren();el('orderUpdateMessage').textContent='';el('orderNote').value='';
   el('orderNote').required=false;
@@ -128,6 +130,7 @@ function openOrder(order) {
   const history=node('ol');
   order.history.forEach(event=>history.append(node('li',event.status+' · '+new Date(event.at).toLocaleString()+(event.note?' · '+event.note:''))));
   const historyDetails=node('details');historyDetails.append(node('summary','Show status history'),history);
+  if(order.customer && ['ready','completed'].includes(order.status)) addDeliveryControls(box,order.id);
   box.append(historyDetails);el('orderNextStatus').replaceChildren();
   const allowed=(order.allowed_statuses||[]).filter(status=>(transitions[order.status]||[]).includes(status));
   const actionLabels={accepted:'Accept order',preparing:'Start preparing',ready:'Mark ready',completed:'Mark completed',rejected:'Reject order',cancelled:'Cancel order'};

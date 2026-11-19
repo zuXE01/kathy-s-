@@ -1,4 +1,5 @@
 const express = require('express');
+const { sandboxConfig, createProvider } = require('./lalamove');
 const helmet = require('helmet');
 const path = require('node:path');
 const { rateLimit } = require('express-rate-limit');
@@ -59,7 +60,13 @@ function createApp(env = process.env, createAuthClient = createClient) {
   const reliable=env.MAYA_RELIABILITY_ENABLED==='true';
   const paymentService=sandbox?(reliable?createReliablePaymentService:createPaymentService)(createAuthClient(url,env.SUPABASE_SECRET_KEY,{auth:{persistSession:false,autoRefreshToken:false}}),createMayaClient(sandbox)):null;
   app.locals.startPaymentWorker=()=>paymentService&&reliable?startPaymentWorker(paymentService,{onError:code=>console.error(code)}):()=>{};
-  app.use('/api/admin', adminRouter(url, key, createAuthClient,paymentService));
+  const deliveryConfig = sandboxConfig(env);
+  const delivery = deliveryConfig ? {
+    config: deliveryConfig,
+    call: createProvider(deliveryConfig),
+    db: createAuthClient(url, env.SUPABASE_SECRET_KEY, { auth: { persistSession: false, autoRefreshToken: false } })
+  } : null;
+  app.use('/api/admin', adminRouter(url, key, createAuthClient,paymentService,delivery));
   app.use('/api/payments/maya',mayaRouter({config:sandbox,url,key,secret:env.SUPABASE_SECRET_KEY,createClient:createAuthClient,paymentService}));
   app.use('/api/orders', ordersRouter(url,key,createAuthClient,{mayaEnabled:!!sandbox,paymentService}));
   app.use('/api/recommendations', recommendationsRouter(url,key,createAuthClient));

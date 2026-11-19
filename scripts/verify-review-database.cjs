@@ -17,7 +17,7 @@ async function main() {
       insert into auth.users(id) values ('00000000-0000-4000-8000-000000000010'),('00000000-0000-4000-8000-000000000011');
     `);
     for(let run=0;run<2;run++) {
-      for(const file of ['schema.sql','admin-setup.sql','menu-catalog-setup.sql','customer-details-setup.sql','orders-setup.sql','maya-sandbox-setup.sql','maya-cancellation-setup.sql','maya-reliability-setup.sql','stock-notifications-setup.sql']) {
+      for(const file of ['schema.sql','admin-setup.sql','menu-catalog-setup.sql','customer-details-setup.sql','orders-setup.sql','maya-sandbox-setup.sql','maya-cancellation-setup.sql','maya-reliability-setup.sql','stock-notifications-setup.sql','lalamove-sandbox-setup.sql']) {
         await db.exec(fs.readFileSync(path.join(__dirname,'../supabase',file),'utf8'));
       }
       if(run===0)await db.exec("update public.profiles set name='Preserve this edited name';");
