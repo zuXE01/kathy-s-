@@ -1,0 +1,883 @@
+
+===== PDF PAGE 1 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 1 
+ 
+ 
+KATHY'S HUB 
+A WEB-BASED RESTAURANT ORDERING AND MANAGEMENT 
+SYSTEM 
+ 
+ 
+A Research Project 
+Presented to the Faculty of 
+DATAMEX COLLEGE OF ST. ADELINE 
+ 
+ 
+In Partial Fulfillment of the Requirements for 
+Bachelor of Science in Information Technology 
+ 
+Prepared by: 
+Aaron Nallas 
+Vincent John Guston 
+Janlance Rites 
+Miguel Villaluz 
+Joshua Charles Manadero 
+John-Michael Abaca 
+ 
+2026 
+ 
+===== PDF PAGE 2 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 2 
+CHAPTER 1 
+THE PROBLEM AND ITS BACKGROUND 
+Introduction 
+Digital technologies have changed how customers discover products, communicate 
+with businesses, and place orders. Restaurant websites can provide a centralized place for 
+presenting menus, displaying prices, maintaining customer accounts, and coordinating order 
+information. When these functions are connected to a database and supported by role -based 
+access, restaurant personnel can review incoming orders and manage their progress more 
+consistently than when information is scattered across separate channels. 
+Kathy’s Hub is represented in this project by a mobile -first web application for 
+restaurant customers and authorized staff. The repository contains a public -facing restaurant 
+website, an authenticated menu experience, a cart and demo checkout workflow, customer 
+order history, and an administrative workspace for menu and order management. The 
+application uses HTML, CSS, and JavaScript on the client side, an Express server built with 
+Node.js, and Supabase services for authentication and persistent data storag e. The website is 
+prepared for deployment through Render. 
+The project is intended to organize menu browsing and order processing in one web -
+based environment. Customers can review food and beverage options, select product 
+variants, manage cart quantities, submit authenticated demo orders, and view order status. 
+Authorized staff can review orders and move them through permitted stages. Owners or 
+administrators can manage menu items and member information. The current implementation 
+also provides a public event-offer page that lets users compare supplied packages and prepare 
+an email inquiry. 
+However, the repository explicitly identifies important limitations. Orders are marked 
+as demo orders; cash-on-delivery remains unpaid in the system, online payment is simulated, 
+and delivery booking is not implemented. The event inquiry page prepares a message for the 
+customer to send manually and does not save the inquiry, reserve a date, collect a deposit, or 
+confirm a booking. Therefore, this research describes the current system accurately and does 
+not present simulated transactions as live payment or delivery services. 
+===== PDF PAGE 3 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 3 
+Background of the Study 
+The project emerged from the need to present Kathy’s Hub menu and ordering-related 
+information through an accessible website. A digital menu allows customers to examine a 
+broad range of products, sections, and available sizes or portions before making a selection. 
+The repository documentation states that the catalog was transcribed from supplied menu 
+photographs and contains 120 products, 22 sections, and 169 priced options. The system 
+preserves product variants such as hot and cold drink sizes, slice and w hole cheesecake 
+portions, and different snack sizes. 
+The website is designed for mobile -first access and includes menu search, section 
+filtering, product cards, and a cart that can retain its contents across page navigation and 
+refresh within the browser session. Customers must sign in to submit an order. The checkout 
+workflow validates customer contact and delivery information and saves the order to 
+Supabase through a server API. Order items preserve product and price snapshots so later 
+menu edits do not silently rewrite the contents of an existing order. 
+For management, the administrative workspace separates overview, members, menu 
+management, and order management. Menu availability and product options can be 
+maintained by authorized users. The order queue supports status filtering and records a 
+history of status changes, including the actor, time, and note. Customers may cancel their 
+own orders while the order is still pending; rejected, cancelled, and completed orders are 
+terminal states. Permissions distinguish customers, staff, kitchen staff, owners, an d platform 
+administrators. 
+The study will document how these implemented functions address menu 
+presentation, authenticated ordering, order tracking, and administrative coordination. It will 
+also identify gaps that must be resolved before operational use, particularly real payment 
+processing, delivery scheduling and pricing, customer notifications, refunds, inventory 
+deduction, retention policies for personal data, and formal reservation management. These 
+limitations are relevant to system evaluation because an interface that accepts a demo order is 
+not equivalent to a fully operational restaurant delivery service. 
+===== PDF PAGE 4 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 4 
+Statement of the Problem 
+This study aims to document and evaluate the Kathy’s Hub web -based restaurant 
+ordering and management system based on its current implementation. It seeks to answer the 
+following questions: 
+1. How can the website present Kathy’s Hub products, sections, prices, and size or portion 
+options in a searchable and mobile-responsive menu? 
+2. How can authenticated customers create and review demo orders while maintaining 
+accurate order details and price snapshots? 
+3. How can authorized restaurant personnel manage menu availability and process orders 
+through defined status transitions? 
+4. How does the system restrict access to customer profiles, order records, and 
+administrative functions according to user roles? 
+5. What technical and operational limitations remain before the system can support live 
+payment collection, delivery coordination, and confirmed event reservations? 
+Objectives of the Study 
+General Objective 
+The general objective of this study is to document and assess Kathy’s Hub, a mobile -
+first web -based restaurant ordering and management system, with emphasis on menu 
+presentation, authenticated demo ordering, order -status management, role -based access, and 
+the limitations that must be addressed before live business deployment. 
+Specific Objectives 
+1. To describe the website’s menu catalog, including its product sections, search and 
+filtering functions, and size or portion options. 
+2. To examine the customer workflow for account access, cart management, checkout, 
+saved order history, and pending-order cancellation. 
+3. To document the administrative functions for member access, menu maintenance, order 
+review, status updates, and status-history recording. 
+===== PDF PAGE 5 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 5 
+4. To explain how Express, Supabase Authentication, database policies, and server-side 
+validation support the system’s data handling and access control. 
+5. To identify current constraints involving simulated payments, delivery booking, 
+notifications, inventory updates, refunds, and reservation processing. 
+6. To propose an evaluation approach that can be used to assess functionality, usability, 
+reliability, and security after stakeholder testing. 
+Significance of the Study 
+Kathy’s Hub Management 
+The project may provide management with a centralized view of menu information 
+and a structured interface for reviewing and processing demo orders. Its documented 
+limitations can also guide decisions about the policies and integrations needed before the 
+website is used for live transactions. 
+Customers 
+Customers may benefit from browsing product details, selecting available options, 
+maintaining a cart, and reviewing order status in one web interface. Since current checkout is 
+explicitly a demo, customers must not interpret it as confirmation that payment or delivery 
+has been completed. 
+Restaurant Staff and Kitchen Personnel 
+The order queue and defined status transitions may help authorized staff 
+communicate order progress consistently. Role-based permissions limit each staff type to the 
+operations permitted by the application. 
+The Researchers and Future Developers 
+The study provides a record of the implemented architecture, workflows, data 
+safeguards, and development gaps. Future developers may use it to plan and test 
+enhancements such as live payment integration, delivery management, notifications, and 
+more complete reservation handling. 
+===== PDF PAGE 6 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 6 
+The Academic Institution 
+The project demonstrates the application of web development, database design, 
+authentication, software testing, and systems analysis concepts to a restaurant -oriented 
+information system. 
+Scope and Delimitation 
+Scope 
+• A responsive public restaurant website and authenticated customer menu experience. 
+• A catalog currently documented as 120 products, 22 sections, and 169 priced options, 
+with search, section filtering, and product variants. 
+• A browser-session cart with quantity adjustment, removal, item count, and subtotal 
+display. 
+• Customer registration/sign-in, email confirmation and password recovery through 
+Supabase Authentication, and a My Account page with saved contact details. 
+• Authenticated demo checkout that validates customer details, checks current menu 
+options and prices, stores order data, and displays order history. 
+• Order status handling through Pending, Accepted, Preparing, Ready, Completed, 
+Rejected, and Cancelled, subject to permitted transitions. 
+• An administrative workspace for permitted menu and member management, order 
+filtering, status updates, and order-history review. 
+• A public event-offer comparison and email-draft workflow based on supplied brochure 
+information. 
+• A Node.js/Express server, Supabase database and row-level security policies, and 
+deployment preparation for Render. 
+Delimitations 
+• The current ordering workflow labels all orders as demo orders and does not constitute a 
+live fulfillment service. 
+• Cash-on-delivery is recorded as unpaid; online payment is simulated. No real payment is 
+collected by the checkout workflow. 
+===== PDF PAGE 7 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 7 
+• The demo delivery fee is ₱0, and the system does not book a delivery partner, schedule 
+dispatch, calculate operational delivery pricing, or send delivery notifications. 
+• Inventory deduction, refund processing, payment collection, and customer notifications 
+are not implemented in the documented checkout phase. 
+• The event page does not store inquiry submissions, hold event dates, automatically send 
+email, take deposits, or confirm reservations. 
+• The study does not claim that the system has been fully validated in a live restaurant 
+environment. Usability and operational effectiveness require stakeholder testing and 
+evidence. 
+• Actual business policies, availability, final package quotes, delivery coverage, and 
+production readiness remain subject to confirmation by Kathy’s Hub management. 
+Definition of Terms 
+Term Definition 
+Authenticated customer 
+A user whose identity has been verified through the 
+application’s sign-in process and who is permitted to 
+use customer functions. 
+Cart 
+A temporary collection of selected products, options, 
+and quantities maintained by the customer before 
+checkout. 
+Demo order 
+An order record used to demonstrate the ordering 
+workflow; it does not establish that payment or 
+delivery has been completed. 
+Express A Node.js web application framework used to define 
+the server and API routes. 
+Menu catalog 
+The structured collection of product names, 
+categories, sections, availability, prices, and variant 
+options. 
+Order status 
+The recorded stage of an order, such as Pending, 
+Accepted, Preparing, Ready, Completed, Rejected, 
+or Cancelled. 
+Role-based access control A method of restricting application actions according 
+to a user’s assigned role. 
+Row-level security (RLS) Database policies that restrict which records a user 
+can access or change. 
+Supabase The backend platform used by the project for 
+authentication and PostgreSQL database services. 
+Variant A selectable product option, such as a drink size or 
+dessert portion, with its own label and price. 
+Web-based system An application accessed through a web browser and 
+supported by server-side services and data storage. 
+===== PDF PAGE 8 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 8 
+CHAPTER 2 
+REVIEW OF RELATED LITERATURE AND STUDIES 
+Related Literature 
+Web-Based Information Systems in Restaurant Operations 
+A web -based information system connects user -facing pages with server -side rules 
+and persistent data. In a restaurant context, such a system can present menu information, 
+collect customer selections, and give authorized staff a shared view of orders. The benefit 
+depends on the consistency of the data and the reliability of the workflow, not merely on the 
+presence of a website. Kathy’s Hub follows this pattern by separating its public pages, 
+Express server routes, and Supabase-backed records. 
+Digital Menus and Product Catalog Management 
+A digital menu makes product information easier to browse and update than a menu 
+embedded in a static document. Search and category or section filters help customers 
+navigate a large catalog, while explicit variants avoid confusing a product’s size or portion 
+with a separate product. The Kathy’s Hub repository documents a catalog of 120 products, 22 
+sections, and 169 priced options. It also uses database constraints and server -side validation 
+to reduce duplicate entries and invalid option data. 
+Shopping Carts and Checkout Validation 
+A cart lets users review selected products, change quantities, and estimate a subtotal 
+before submission. A dependable checkout process must revalidate the product’s current 
+availability and price on the server rather than trust totals supplied by a browser. The Kathy’s 
+Hub implementation calculates order totals in integer centavos, checks selected options 
+against the saved catalog, snapshots the items and prices, and requires customers to review a 
+changed total when the catalog price no longer matches their cart. 
+Authentication, Authorization, and Privacy 
+Authentication identifies a user; authorization determines what that user is allowed to 
+do. A restaurant application may need different privileges for customers, order -processing 
+===== PDF PAGE 9 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 9 
+staff, kitchen staff, and owners. The project uses Supabase Authentication and role 
+information held in trusted application metadata. Database row -level security limits 
+customers to their own order records, while administrative roles are permitted to perform 
+specified management tasks. These controls are important because orders and customer 
+profiles can contain contact information and delivery addresses. 
+Order Lifecycle and Audit History 
+Order management requires a clear set of permitted states and a record of changes. 
+Without defined transitions, orders may be advanced incorrectly or conflicting updates may 
+overwrite one another. The Kathy’s Hub order workflow documents the stages Pending, 
+Accepted, Preparing, Ready, and Completed, along with Rejected and Cancelled terminal 
+outcomes. Status changes retain actor, time, and note information, and version checks help 
+reject stale concurrent updates. 
+Responsive Design and Mobile Accessibility 
+Responsive design adapts navigation and controls to different screen sizes. Mobile 
+ordering interfaces should keep search, section selection, variant selection, and cart controls 
+usable on narrow screens. The project documentation describes mobile -first menu filters, 
+touch targets, and browser checks at 320 -pixel and 390 -pixel viewport widths. These 
+implementation checks provide useful technical evidence, although formal user testing is still 
+required to establish user satisfaction and ease of use. 
+Event Package Information and Reservation Inquiries 
+Digital event pages can help prospective customers compare venue rental and 
+celebration packages before contacting a business. However, an inquiry form should clearly 
+distinguish a request for information from a confirmed booking. Kathy’s Hub’s current event 
+page states that prices are transcribed from supplied brochures, package rates may require 
+confirmation, and inquiry drafts are prepared for customers to send through their own email 
+application. The page does not store inquiries or reserve dates. 
+Limitations of Demo Payments and Delivery Workflows 
+A checkout demonstration is not equivalent to a production transaction. Live ordering 
+requires clear payment states, delivery fees and coverage, dispatch coordination, customer 
+===== PDF PAGE 10 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 10 
+communications, cancellation and refund rules, and procedures for handling failed 
+transactions. Kathy’s Hub documentation explicitly keeps online payment simulated and 
+cash-on-delivery unpaid, with no delivery booking or payment collection. These limits 
+should remain visible in the system description and user -facing notices until real integrations 
+and business procedures are approved. 
+Related Studies 
+Studies on Web-Based Food Ordering Systems 
+Research and development projects on web -based food ordering systems commonly 
+focus on online menu presentation, cart functions, order submission, and staff -side order 
+management. These system features are relevant to Kathy’s Hub because its implementation 
+joins menu browsing with authenticated demo checkout and an administrative order queue. 
+For the final manuscript, the researchers should add peer -reviewed local or international 
+studies from the institution’s approved databases and record their exact auth ors, publication 
+years, methods, and findings; citations should not be guessed from titles alone. 
+Research on E-Commerce Security and Access Control 
+Literature on secure web applications emphasizes that access controls should be 
+enforced on the server and data layer rather than relying only on hidden interface elements. 
+Kathy’s Hub reflects this principle through server -side authorization, database row -level 
+security, restricted column grants, order validation, and checks on legal status transitions. 
+The implementation is therefore relevant as a case for examining how role separation and 
+database policies support privacy and data integrity in a small-business web application. 
+Research on Responsive Web Usability 
+Studies of mobile web usability generally examine whether users can locate 
+information, understand available choices, and complete tasks with limited effort on different 
+screen sizes. The project’s mobile -first menu and cart design is intended to support these 
+tasks. Existing viewport checks demonstrate that selected layouts were inspected on narrow 
+screens, but they should be supplemented with task -based testing involving representative 
+customers and staff before drawing conclusions about overall usability. 
+===== PDF PAGE 11 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 11 
+Related Systems 
+System type Common functions 
+Relevance to Kathy’s 
+Hub 
+Important distinction 
+Restaurant menu website 
+Product display, prices, 
+categories, contact 
+details 
+Provides a public digital 
+storefront and menu 
+navigation 
+A menu website alone 
+does not save or manage 
+customer orders. 
+Online food ordering 
+platform 
+Menu, cart, checkout, 
+order confirmation, order 
+history 
+The project includes 
+authenticated demo 
+checkout and saved 
+order records 
+Payment collection and 
+delivery booking are not 
+live in this version. 
+Restaurant 
+administration dashboard 
+Menu editing, order 
+queue, user or staff 
+permissions 
+The admin workspace 
+manages permitted 
+menu, member, and 
+order tasks 
+Access depends on 
+trusted role assignments 
+and database policies. 
+Event package inquiry 
+page 
+Package comparison, 
+event details, inquiry 
+contact 
+The project lets visitors 
+compare offers and 
+prepare an email draft 
+The page does not store 
+requests or confirm 
+event bookings. 
+ 
+Synthesis 
+The reviewed concepts indicate that a restaurant web system needs more than an 
+attractive public website. Its menu data must remain consistent, cart totals should be verified 
+at checkout, access should be limited by role, and order changes should follow defined 
+transitions. Responsive design is important because customers may browse from phones, 
+while clear notices are necessary when payment, delivery, or booking steps are only 
+simulated or handled outside the website. 
+Kathy’s Hub brings these elements together in a mobile -first web application using 
+HTML, CSS, JavaScript, Node.js/Express, and Supabase. Its catalog, authentication, saved 
+demo orders, role-based administrative tools, and status history provide a practical basis for 
+studying an integrated restaurant workflow. At the same time, the project documentation 
+shows that live payment, delivery booking, inventory deduction, notifications, refunds, and 
+reservation persistence remain outside the current scope. 
+Research/System Gap 
+The system gap addressed by this project is the need to consolidate menu 
+presentation, authenticated order submission, and staff -side order-status management within 
+===== PDF PAGE 12 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 12 
+a single website for Kathy’s Hub. The implementation addresses this gap at the 
+demonstration and information -management level. It does not yet close the operational gap 
+between an order record and actual fulfillment: real payment collection, delivery scheduling 
+and pricing, notifications, refund handling, and a persistent reservation workflow still require 
+additional development and management decisions. 
+Conceptual Framework 
+The study uses an Input –Process–Output (IPO) model to organize the system’s main 
+components. Inputs include the menu catalog, customer account and contact details, selected 
+products and variants, and authorized staff actions. Processes include authentication, menu 
+filtering, cart management, server-side validation, order persistence, role checking, and status 
+updates. Outputs include the displayed menu, order summary, saved demo order, order 
+history, status history, administrative views, and prepared event-inquiry email draft. 
+INPUT PROCESS OUTPUT 
+Menu items, sections, prices and 
+variants; customer credentials and 
+contact details; cart selections; 
+staff actions 
+Authenticate user; display/filter 
+menu; validate cart and prices; 
+save order; enforce permissions; 
+update status and history; prepare 
+event inquiry draft 
+Searchable menu; cart summary; 
+saved demo order; customer order 
+history; staff order queue; status 
+history; event inquiry draft 
+ 
+Theoretical / Development Framework 
+The project can be described through a systems -development lifecycle: requirements 
+identification, interface and data design, implementation, verification, deployment, and 
+maintenance. The repository includes automated tests for ordering and menu behavior and 
+documents isolated browser checks for checkout and order status transitions. For academic 
+reporting, the researchers should supplement repository evidence with their own stakeholder 
+interviews, acceptance criteria, and test results. The framework is us ed to describe the 
+development process; it does not imply that all production integrations are complete. 
+ 
+===== PDF PAGE 13 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 13 
+CHAPTER 3 
+RESEARCH METHODOLOGY / SYSTEM ANALYSIS AND DESIGN 
+Research Design 
+This project uses a descriptive -developmental approach. The descriptive component 
+documents the current restaurant website, user roles, workflows, data handling, and system 
+limitations. The developmental component concerns the design and implementation of the 
+web application and its supporting services. The researchers should gather primary evidence 
+from Kathy’s Hub management and intended users before claiming that the system meets 
+operational needs or improves performance. 
+Locale of the Study 
+The system is developed for Kathy’s Hub Café, Restaurant, and Event Place, 
+identified on the public event page at 8165 Dr. A. Santos Avenue, Parañaque City. The 
+repository’s public website is available at https://kathy -s.onrender.com. Any on -site 
+observation, interview, or testing activity should be conducted only with management’s 
+permission and according to the school’s research procedures. 
+Respondents / Participants of the Study 
+The intended participants are the restaurant manager or owner, staff responsible for 
+receiving and preparing orders, and representative customers who can test menu browsing 
+and the demo checkout. The final sample size and selection method must be determined and 
+reported by the researchers after coordinating with the establishment and adviser; no 
+respondent count is assumed in this draft. 
+Participant group Expected contribution 
+Manager/owner Confirm business processes, menu accuracy, roles, 
+privacy expectations, and deployment limitations. 
+Restaurant/order staff Review order queue, status transitions, and the 
+practicality of the administrative workflow. 
+Kitchen staff Review the Preparing and Ready stages and the 
+information needed to fulfill orders. 
+Customer testers Attempt menu search, option selection, cart editing, 
+===== PDF PAGE 14 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 14 
+checkout validation, and order-history tasks. 
+Project researchers Document requirements, conduct tests, analyze 
+feedback, and maintain the research record. 
+ 
+Data-Gathering Procedures 
+1. Conduct a management interview, with permission, to verify the current ordering process, 
+user roles, menu accuracy, delivery practices, event inquiries, and operational 
+requirements. 
+2. Review the available website, source code, setup scripts, and project documentation to 
+identify implemented features and technical dependencies. 
+3. Observe representative menu, cart, checkout, customer-history, and administrative tasks 
+using test accounts and non-production data. 
+4. Prepare a test checklist covering functional correctness, responsive layout, validation, 
+role permissions, order-status transitions, and error handling. 
+5. Collect feedback from approved participants using a short questionnaire or task-based 
+interview, and record the date, participant category, and procedure. 
+6. Summarize results descriptively and distinguish observed results from expectations or 
+recommendations. 
+Existing System Analysis 
+The repository indicates that Kathy’s Hub already has a web -based implementation 
+rather than a purely manual or paper -only process. The system presents the menu publicly, 
+provides authenticated ordering, stores demo order records, and supplies an administrative 
+queue. Therefore, the analysis below describes the existing project workflow and its 
+remaining limitations, rather than asserting that the establishment previously relied entirely 
+on manual records. 
+Area Current project behavior Remaining limitation 
+Menu presentation Searchable and filterable catalog 
+with product variants and prices 
+Menu accuracy and availability 
+must be maintained by authorized 
+users. 
+Customer account Supabase-based sign-in and saved 
+customer contact details 
+Production account and privacy 
+policies need management 
+approval and review. 
+===== PDF PAGE 15 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 15 
+Cart and checkout 
+Session cart, server-side 
+validation, order snapshots, retry 
+protection 
+Orders remain demo orders; no 
+live payment or fulfillment. 
+Order handling Queue, filters, permitted status 
+transitions, status history 
+No delivery booking, 
+notifications, refunds, or inventory 
+deduction. 
+Payments COD can be recorded as unpaid; 
+online method is simulated 
+No actual payment collection in 
+the described flow. 
+Event inquiries Visitors compare offers and 
+prepare a draft email 
+Inquiry is not stored or sent 
+automatically; no date hold or 
+booking confirmation. 
+ 
+Proposed System 
+The proposed system, as implemented in the repository, is a mobile -first restaurant 
+website with connected customer and staff workflows. Customers browse the menu, select 
+product variants, maintain a cart, sign in, submit a demo order, and review order history. 
+Authorized staff review the order queue and update order statuses. Owners or platform 
+administrators manage the catalog and member records according to their permissions. A 
+separate public event page presents supplied package information and prepares  an inquiry 
+draft. 
+The system is intended to improve the organization and visibility of menu and order 
+information. Its present operational boundary must be made clear: the checkout is 
+demonstrative, online payment is simulated, cash -on-delivery remains unpaid, the delivery 
+fee is set to zero for the demo, and the event page does not create a confirmed reservation. 
+Functional Requirements 
+1. The system shall display the restaurant menu and product details to visitors. 
+2. The system shall allow users to search the menu and filter items by section. 
+3. The system shall display available product variants and their corresponding prices. 
+4. The system shall allow signed-in customers to add products to a cart, change quantities, 
+and remove items. 
+5. The system shall require authentication before a customer submits an order. 
+6. The server shall validate customer details, product availability, selected variants, 
+quantities, and current prices before saving an order. 
+===== PDF PAGE 16 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 16 
+7. The system shall save demo orders and preserve item and price snapshots. 
+8. The system shall allow customers to view their own order history and cancel their own 
+order only while its status is Pending. 
+9. The system shall allow authorized staff to view and update orders only through permitted 
+status transitions. 
+10. The system shall record status-change history, including actor, time, and note where 
+applicable. 
+11. The system shall restrict menu and member management to authorized owner or 
+platform-administrator roles. 
+12. The system shall allow visitors to compare supplied event offers and prepare an email 
+inquiry draft without representing it as a confirmed booking. 
+Non-Functional Requirements 
+• Usability: controls and content should remain understandable on desktop and narrow 
+mobile screens. 
+• Responsiveness: the menu, cart, and navigation should adapt to small viewport widths 
+without horizontal overflow. 
+• Security: protected operations should be enforced by the server and database policies, not 
+only by front-end visibility. 
+• Data integrity: order totals and selected prices should be verified against the database 
+catalog. 
+• Privacy: customer profile and order information should only be exposed to the user or 
+staff roles permitted by policy. 
+• Reliability: duplicate checkout retries and stale administrative updates should be handled 
+safely. 
+• Maintainability: menu rendering, filtering, validation, and order workflows should be 
+organized into reusable modules. 
+• Transparency: simulated payments and unimplemented delivery or reservation functions 
+must be disclosed clearly. 
+===== PDF PAGE 17 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 17 
+Development Methodology 
+A staged iterative process is appropriate for the project because menu, authentication, 
+ordering, administration, and database safeguards can be implemented and tested in 
+manageable increments. The repository shows modular client -side scripts, server -side API 
+handling, SQL setup scripts, and automated tests. The following stages provide a reporting 
+framework; the researchers should add dates and evidence from their actual project history. 
+Stage Activities Evidence to document 
+Requirements analysis 
+Review business needs, user roles, 
+catalog structure, and operational 
+limits 
+Interview notes, approved 
+requirements, scope decisions 
+System design 
+Plan page structure, user 
+workflows, database entities, 
+permissions, and status transitions 
+Use cases, flowcharts, schema, 
+interface sketches 
+Implementation 
+Build front-end pages, Express 
+routes, Supabase integration, and 
+role-restricted tools 
+Source repository, commit history, 
+configuration notes 
+Verification 
+Test menu functions, checkout 
+validation, access rules, order 
+transitions, and responsive 
+behavior 
+Test cases, results, defects, 
+screenshots where allowed 
+Deployment and review 
+Deploy approved build, confirm 
+environment settings, collect 
+stakeholder feedback 
+Deployment record, management 
+sign-off, feedback summary 
+Maintenance planning 
+Identify security, data-retention, 
+payment, delivery, and reservation 
+requirements 
+Issue list, risk register, prioritized 
+enhancements 
+ 
+System Architecture 
+The architecture consists of a browser -based front end, a Node.js/Express application 
+server, and Supabase services. The browser presents pages and handles interaction. The 
+Express server exposes application endpoints and performs server -side checks. Supabase 
+Authentication manages user identity, while PostgreSQL tables store profile, menu, 
+customer-detail, and order data. Database row -level security and constraints provide an 
+additional enforcement layer. The application is configured for deployment through Render. 
+Layer Technology / component Responsibility 
+Presentation HTML, CSS, JavaScript 
+Public pages, menu, cart, account, 
+order history, administration 
+interface 
+Application server Node.js, Express 5 Serve the application, expose API 
+===== PDF PAGE 18 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 18 
+routes, validate requests, enforce 
+permitted actions 
+Identity Supabase Authentication 
+Registration, sign-in, 
+confirmation, password recovery, 
+user identity 
+Database Supabase PostgreSQL 
+Profiles, menu items, customer 
+details, orders, status history and 
+related constraints 
+Hosting Render (deployment target) 
+Host the Express application; 
+deployment must be verified after 
+each release 
+ 
+System Workflow 
+Customer Ordering Workflow 
+13. The customer opens the website and browses the public menu. 
+14. The customer searches or filters products, selects a variant, and adds items to the cart. 
+15. The customer signs in or creates an account before submitting checkout. 
+16. The customer provides contact and delivery details and reviews the order total. 
+17. The server verifies the user, customer details, product availability, options, quantities, and 
+current prices. 
+18. The validated demo order is saved in the database and appears in the customer’s order 
+history. 
+19. Authorized staff process the order through the permitted status stages; the customer can 
+view the recorded status. 
+Order Status Model 
+Current status 
+Permitted next status(es) described in project 
+documentation 
+Pending Accepted, Rejected, Cancelled 
+Accepted Preparing, Rejected 
+Preparing Ready, Rejected 
+Ready Completed 
+Completed Terminal; no further status transition 
+Rejected Terminal; no further status transition 
+Cancelled Terminal; no further status transition 
+ 
+===== PDF PAGE 19 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 19 
+Data Design 
+The database uses PostgreSQL through Supabase. The following entities summarize 
+the principal data structures visible in the repository. The exact deployed schema should be 
+checked against the current Supabase project before the diagram and table descriptions are 
+treated as a final database specification. 
+Entity/table Key data Purpose 
+auth.users (Supabase-managed) User ID, authentication 
+credentials and metadata 
+Identity and sign-in state managed 
+by Supabase Authentication. 
+profiles 
+User ID, name, date of birth, 
+gender, created/updated 
+timestamps 
+Stores profile details linked to the 
+authenticated user. 
+menu_items 
+ID, name, description, category, 
+price, availability, section, 
+variants, source key 
+Stores products and their available 
+options. 
+customer_details 
+User ID, name, phone, address, 
+barangay, city, province, postal 
+code, notes 
+Stores customer contact and 
+address details for the account. 
+orders 
+Order ID, user ID, request 
+ID/hash, customer snapshot, items 
+snapshot, total in centavos, 
+payment/status fields, history, 
+version, timestamps 
+Stores demo orders, selected 
+items, status, and audit history. 
+ 
+Data Relationship Summary 
+Each authenticated user can have a profile and saved customer -detail record. A user 
+may submit multiple orders. Each order references its user and contains a snapshot of the 
+customer information and selected menu items at the time of checkout. Menu items may 
+contain multiple variants with their own labels and prices. The order snapshot preserves the 
+transaction’s item descriptions and prices even if the live catalog is edited later. 
+Relationship Description 
+User → Profile One authenticated user is associated with a profile 
+record. 
+User → Customer Details One user can have one saved customer-details 
+record. 
+User → Orders One user can submit multiple order records. 
+Menu Item → Variants One menu item can have zero or more selectable 
+variants. 
+Order → Items Snapshot An order stores a list of item/option/quantity/price 
+details at submission time. 
+ 
+===== PDF PAGE 20 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 20 
+System Design / Main Modules 
+Module Main responsibilities Primary users 
+Public website 
+Present brand information, 
+product promotions, menu entry 
+points, and event offers 
+Visitors and customers 
+Menu catalog Search, filter, show sections, 
+variants, prices, and availability Visitors, customers, owners 
+Account Registration/sign-in, password 
+recovery, saved contact details Customers 
+Cart and checkout 
+Cart changes, subtotal display, 
+customer details, validation, demo 
+order submission 
+Signed-in customers 
+Order history 
+Show a customer’s own orders 
+and allow cancellation while 
+Pending 
+Customers 
+Admin overview Display permitted management 
+summaries Authorized staff/owners 
+Menu manager Add or edit product data, variants, 
+prices, and availability Owners/platform administrators 
+Order queue 
+Filter orders, view customer/item 
+details, update allowed statuses, 
+inspect history 
+Authorized staff and kitchen staff 
+according to role 
+Event inquiry Compare supplied offers and 
+prepare an email draft 
+Visitors and prospective event 
+customers 
+ 
+System Requirements 
+Hardware Requirements 
+The system is browser -based and does not require a dedicated client application. 
+Minimum hardware requirements should be confirmed through actual testing; at a practical 
+baseline, users need a smartphone, tablet, laptop, or desktop computer capable of running a 
+modern browser and accessing the internet. Restaurant staff should use a reliable device with 
+sufficient screen size for order review. 
+Software Requirements 
+• Client: a modern web browser with JavaScript enabled. 
+• Server runtime: Node.js 22.x, as declared in package configuration. 
+• Application framework: Express 5.x. 
+• Backend services: a configured Supabase project with Authentication and PostgreSQL. 
+===== PDF PAGE 21 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 21 
+• Hosting: Render or an equivalent supported Node.js hosting environment, configured 
+with the appropriate environment variables. 
+• Development tools: Git and GitHub for source control; a code editor and terminal for 
+local development and testing. 
+Testing and Evaluation Plan 
+The repository documentation reports automated tests for menu and order behavior, 
+along with isolated browser checks of checkout and status transitions. The researchers should 
+rerun relevant tests against the final submitted version and attach the actual outputs. The 
+table below is a proposed evaluation plan and must not be represented as completed test 
+results until executed. 
+Test area Sample test Expected result 
+Menu search/filter Search a product and select a 
+section 
+Only matching available items are 
+displayed. 
+Variant selection Select a product size or portion Correct option label and price are 
+shown. 
+Cart Increase/decrease quantity and 
+remove an item 
+Cart count and subtotal update 
+accurately. 
+Checkout validation Submit invalid contact details or 
+unavailable option 
+Server rejects invalid input and 
+explains the issue. 
+Price integrity Change catalog price after a cart is 
+created 
+Checkout requires review of the 
+updated total. 
+Authentication 
+Attempt protected order 
+submission without a valid 
+signed-in user 
+Request is rejected. 
+Privacy Attempt to read another 
+customer’s orders 
+Database/API denies unauthorized 
+access. 
+Order status Attempt a disallowed transition or 
+stale update 
+Update is rejected without 
+overwriting the latest state. 
+Responsive layout Check menu and cart at narrow 
+viewport widths 
+Content remains usable without 
+horizontal page overflow. 
+Event inquiry Prepare an event inquiry draft Draft is created for user review; 
+no booking is falsely confirmed. 
+ 
+Ethical and Data-Protection Considerations 
+The researchers should obtain management permission before collecting business 
+information, photographing internal processes, or testing with staff. Customer data used for 
+demonstrations should be fictional or explicitly authorized, and real customer information 
+===== PDF PAGE 22 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 22 
+should not be copied into the thesis. Access credentials, API secrets, and private deployment 
+configuration must not be published in the manuscript. The project’s current customer/order 
+retention and account -deletion implications should be reviewed before live use, and 
+management should approve a retention or anonymization policy. 
+Chapter Summary 
+This chapter described the research approach, study locale, intended participants, 
+data-gathering procedures, existing project workflow, functional and non -functional 
+requirements, development methodology, architecture, data design, modules, technical 
+requirements, and a proposed testing plan. The system already supports a substantial 
+demonstration workflow for menu browsing, authenticated demo ordering, and role -based 
+order management. Further validation and operational integrations are needed before it ca n 
+be characterized as a fully live ordering, payment, delivery, or reservation system. 
+ 
+===== PDF PAGE 23 =====
+KATHY'S HUB: WEB-BASED RESTAURANT MANAGEMENT AND ORDERING SYSTEM 
+Page 23 
+REFERENCES 
+Kathy’s Hub. (n.d.). Kathy’s Hub source repository [Source code and project 
+documentation]. GitHub. https://github.com/zuXE01/kathy-s- 
+Kathy’s Hub. (n.d.). Kathy’s Hub public website. https://kathy-s.onrender.com 
+Kathy’s Hub. (n.d.). Product overview and project constraints (PRODUCT.md) [Project 
+documentation]. GitHub. https://github.com/zuXE01/kathy-s-
+/blob/main/PRODUCT.md 
+Kathy’s Hub. (n.d.). Saved orders and admin order management (CHECKOUT.md) [Project 
+documentation]. GitHub. https://github.com/zuXE01/kathy-s-
+/blob/main/CHECKOUT.md 
+Kathy’s Hub. (n.d.). Photo menu catalog (MENU_CATALOG.md) [Project documentation]. 
+GitHub. https://github.com/zuXE01/kathy-s-/blob/main/MENU_CATALOG.md 
+Supabase. (n.d.). Row level security. 
+https://supabase.com/docs/guides/database/postgres/row-level-security 
+Supabase. (n.d.). Authentication. https://supabase.com/docs/guides/auth 
+Express. (n.d.). Express documentation. https://expressjs.com/ 
+Node.js. (n.d.). Node.js documentation. https://nodejs.org/docs/latest/api/ 
+ 
